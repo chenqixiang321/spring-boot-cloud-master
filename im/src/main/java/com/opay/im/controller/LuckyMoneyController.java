@@ -1,8 +1,7 @@
 package com.opay.im.controller;
 
-import com.opay.im.model.Group;
-import com.opay.im.model.LuckyMoney;
-import com.opay.im.model.request.CreateLuckyMoney;
+import com.opay.im.model.LuckyMoneyModel;
+import com.opay.im.model.request.CreateLuckyMoneyRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -28,13 +26,13 @@ public class LuckyMoneyController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "红包ID", required = true, paramType = "path", dataType = "Long")
     })
-    public LuckyMoney getGroupInfo(@PathVariable Long id) {
-        return new LuckyMoney(1l, new BigDecimal(3), 1);
+    public LuckyMoneyModel getGroupInfo(@PathVariable Long id) {
+        return new LuckyMoneyModel();
     }
 
     @ApiOperation(value = "生成红包", notes = "生成红包")
     @PostMapping
-    public CreateLuckyMoney createLuckyMoney(@RequestBody @ApiParam(name = "生成红包", value = "传入json格式", required = true) CreateLuckyMoney createLuckyMoney) {
+    public CreateLuckyMoneyRequest createLuckyMoney(@RequestBody @ApiParam(name = "生成红包", value = "传入json格式", required = true) CreateLuckyMoneyRequest createLuckyMoney) {
         return createLuckyMoney;
     }
 }

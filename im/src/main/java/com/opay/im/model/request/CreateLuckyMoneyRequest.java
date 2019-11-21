@@ -12,9 +12,12 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @ApiModel(value = "生成红包", description = "生成红包所需参数")
-public class CreateLuckyMoney {
-    @ApiModelProperty(value = "红包金额")
+public class CreateLuckyMoneyRequest {
+    @ApiModelProperty(value = "红包金额", required = true)
     private BigDecimal money;
+
+    @ApiModelProperty(value = "发红包人ID", required = true)
+    private long fromUserId;
 
     @ApiModelProperty(value = "红包数量")
     private int number;

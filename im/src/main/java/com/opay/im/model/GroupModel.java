@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @ApiModel(value = "群组信息", description = "群组信息")
-public class Group {
+public class GroupModel {
 
     @ApiModelProperty(value = "群组ID")
     private String id;
