@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.opay.im.mapper.UserTokenMapper">
+  <resultMap id="BaseResultMap" type="com.opay.im.model.UserTokenModel">
+    <!--@mbg.generated-->
+    <!--@Table user_token-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="opay_id" jdbcType="VARCHAR" property="opayId" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="token" jdbcType="VARCHAR" property="token" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, opay_id, phone, token, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from user_token
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--@mbg.generated-->
+    delete from user_token
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.opay.im.model.UserTokenModel" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into user_token (opay_id, phone, token,
+      create_time)
+    values (#{opayId,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{token,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.opay.im.model.UserTokenModel" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into user_token
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="opayId != null">
+        opay_id,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="token != null">
+        token,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="opayId != null">
+        #{opayId,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null">
+        #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.opay.im.model.UserTokenModel">
+    <!--@mbg.generated-->
+    update user_token
+    <set>
+      <if test="opayId != null">
+        opay_id = #{opayId,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null">
+        token = #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.opay.im.model.UserTokenModel">
+    <!--@mbg.generated-->
+    update user_token
+    set opay_id = #{opayId,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      token = #{token,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user_token
+    where opay_id = #{userId}
+  </select>
+</mapper>

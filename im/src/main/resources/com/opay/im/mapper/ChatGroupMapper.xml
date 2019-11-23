@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.opay.im.mapper.ChatGroupMapper">
+  <resultMap id="BaseResultMap" type="com.opay.im.model.ChatGroupModel">
+    <!--@mbg.generated-->
+    <!--@Table chat_group-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="img" jdbcType="VARCHAR" property="img" />
+    <result column="opay_id" jdbcType="VARCHAR" property="opayId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="notice" jdbcType="VARCHAR" property="notice" />
+    <result column="number" jdbcType="INTEGER" property="number" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, opay_id, img, `name`, notice, `number`, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from chat_group
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--@mbg.generated-->
+    delete from chat_group
+    where id = #{id,jdbcType=BIGINT}updateByPrimaryKeySelective
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.opay.im.model.ChatGroupModel" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into chat_group (opay_id, img, `name`,
+      notice, `number`, create_time
+      )
+    values (#{opayId,jdbcType=BIGINT}, #{img,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+      #{notice,jdbcType=VARCHAR}, #{number,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.opay.im.model.ChatGroupModel">
+    <!--@mbg.generated-->
+    insert into chat_group
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="opayId != null">
+        opay_id,
+      </if>
+      <if test="img != null">
+        img,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="notice != null">
+        notice,
+      </if>
+      <if test="number != null">
+        `number`,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="opayId != null">
+        #{opayId,jdbcType=VARCHAR},
+      </if>
+      <if test="img != null">
+        #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="notice != null">
+        #{notice,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null">
+        #{number,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.opay.im.model.ChatGroupModel">
+    <!--@mbg.generated-->
+    update chat_group
+    <set>
+      <if test="opayId != null">
+        opay_id = #{opayId,jdbcType=VARCHAR},
+      </if>
+      <if test="img != null">
+        img = #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="notice != null">
+        notice = #{notice,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null">
+        `number` = #{number,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT} and opay_id = #{opayId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.opay.im.model.ChatGroupModel">
+    <!--@mbg.generated-->
+    update chat_group
+    set img = #{img,jdbcType=VARCHAR},
+        opay_id = #{opayId,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR},
+      notice = #{notice,jdbcType=VARCHAR},
+      `number` = #{number,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
