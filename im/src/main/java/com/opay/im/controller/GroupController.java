@@ -1,16 +1,20 @@
 package com.opay.im.controller;
 
-import com.opay.im.model.GroupModel;
+import com.opay.im.model.ChatGroupModel;
 import com.opay.im.model.request.CreateGroupRequest;
 import com.opay.im.model.request.InviteGroupRequest;
 import com.opay.im.model.request.QuitGroupRequest;
 import com.opay.im.model.request.RemoveGroupMemberRequest;
-import com.opay.im.model.request.UpdateGroupModelRequest;
+import com.opay.im.model.request.UpdateGroupRequest;
+import com.opay.im.model.response.ResultResponse;
+import com.opay.im.model.response.SuccessResponse;
+import com.opay.im.service.ChatGroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,30 +22,47 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
-@RequestMapping(value = "/group")
+@RequestMapping(value = "/api/group")
 @Api(value = "聊天群组功能API")
 public class GroupController {
+    @Autowired
+    private HttpServletRequest request;
+    @Autowired
+    private ChatGroupService chatGroupService;
 
     @ApiOperation(value = "获取群组信息", notes = "获取群组信息")
     @GetMapping("{id}")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "群组ID", required = true, paramType = "path", dataType = "String")
     })
-    public GroupModel getGroupInfo(@PathVariable String id) {
-        return new GroupModel(id, "","","",100);
+    public ChatGroupModel getGroupInfo(@PathVariable String id) {
+        return null;
     }
 
     @ApiOperation(value = "建群", notes = "建群")
     @PostMapping("/create")
-    public CreateGroupRequest createGroup(@RequestBody @ApiParam(name = "建群参数", value = "传入json格式", required = true) CreateGroupRequest createGroupRequest) {
-        return createGroupRequest;
+    public ResultResponse createGroup(@RequestBody @ApiParam(name = "建群参数", value = "传入json格式", required = true) CreateGroupRequest createGroupRequest) throws Exception {
+        ChatGroupModel record = new ChatGroupModel();
+        record.setOpayId(String.valueOf(request.getAttribute("opayId")));
+        record.setName(createGroupRequest.getName());
+        chatGroupService.insert(record);
+        return new SuccessResponse();
     }
 
     @ApiOperation(value = "修改群信息", notes = "修改群信息")
     @PostMapping("/update")
-    public UpdateGroupModelRequest updateGroup(@RequestBody @ApiParam(name = "修改群信息参数", value = "传入json格式", required = true) UpdateGroupModelRequest updateGroupModelRequest) {
-        return updateGroupModelRequest;
+    public ResultResponse updateGroup(@RequestBody @ApiParam(name = "修改群信息参数", value = "传入json格式", required = true) UpdateGroupRequest updateGroupRequest) throws Exception {
+        ChatGroupModel record = new ChatGroupModel();
+        record.setId(updateGroupRequest.getId());
+        record.setOpayId(String.valueOf(request.getAttribute("opayId")));
+        record.setName(updateGroupRequest.getName());
+        record.setImg(updateGroupRequest.getImg());
+        record.setNotice(updateGroupRequest.getNotice());
+        chatGroupService.updateByPrimaryKeySelective(record);
+        return new SuccessResponse();
     }
 
     @ApiOperation(value = "邀请入群", notes = "邀请入群")

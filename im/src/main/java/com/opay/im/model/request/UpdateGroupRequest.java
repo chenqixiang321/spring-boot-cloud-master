@@ -10,10 +10,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @ApiModel(value = "修改群组信息", description = "修改群组信息")
-public class UpdateGroupModelRequest {
+public class UpdateGroupRequest {
 
     @ApiModelProperty(value = "群组ID")
-    private String id;
+    private long id;
 
     @ApiModelProperty(value = "群组头像")
     private String img;
