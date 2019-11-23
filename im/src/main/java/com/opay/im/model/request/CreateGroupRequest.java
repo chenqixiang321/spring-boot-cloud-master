@@ -18,5 +18,11 @@ public class CreateGroupRequest {
     //@ApiModelProperty(value = "群主ID,创建人ID")
     private String opayId;
     @ApiModelProperty(value = "群名称")
-    private String name;
+    private String groupName;
+    @ApiModelProperty(value = "群头像")
+    private String groupImg;
+    @ApiModelProperty(value = "创建人头像")
+    private String headImg;
+    @ApiModelProperty(value = "创建人名称")
+    private String founderName;
 }

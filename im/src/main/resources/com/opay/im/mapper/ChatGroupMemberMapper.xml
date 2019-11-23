@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.opay.im.mapper.ChatGroupMemberMapper">
+  <resultMap id="BaseResultMap" type="com.opay.im.model.ChatGroupMemberModel">
+    <!--@mbg.generated-->
+    <!--@Table chat_group_member-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="group_id" jdbcType="BIGINT" property="groupId" />
+    <result column="opay_id" jdbcType="VARCHAR" property="opayId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="img" jdbcType="VARCHAR" property="img" />
+    <result column="is_mute" jdbcType="BOOLEAN" property="isMute" />
+    <result column="is_block" jdbcType="BOOLEAN" property="isBlock" />
+    <result column="join_time" jdbcType="TIMESTAMP" property="joinTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, group_id, opay_id, `name`, img, is_mute, is_block, join_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from chat_group_member
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--@mbg.generated-->
+    delete from chat_group_member
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.opay.im.model.ChatGroupMemberModel" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into chat_group_member (group_id, opay_id, `name`, 
+      img, is_mute, is_block, 
+      join_time)
+    values (#{groupId,jdbcType=BIGINT}, #{opayId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{img,jdbcType=VARCHAR}, #{isMute,jdbcType=BOOLEAN}, #{isBlock,jdbcType=BOOLEAN}, 
+      #{joinTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.opay.im.model.ChatGroupMemberModel" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into chat_group_member
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="groupId != null">
+        group_id,
+      </if>
+      <if test="opayId != null">
+        opay_id,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="img != null">
+        img,
+      </if>
+      <if test="isMute != null">
+        is_mute,
+      </if>
+      <if test="isBlock != null">
+        is_block,
+      </if>
+      <if test="joinTime != null">
+        join_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="groupId != null">
+        #{groupId,jdbcType=BIGINT},
+      </if>
+      <if test="opayId != null">
+        #{opayId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="img != null">
+        #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="isMute != null">
+        #{isMute,jdbcType=BOOLEAN},
+      </if>
+      <if test="isBlock != null">
+        #{isBlock,jdbcType=BOOLEAN},
+      </if>
+      <if test="joinTime != null">
+        #{joinTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.opay.im.model.ChatGroupMemberModel">
+    <!--@mbg.generated-->
+    update chat_group_member
+    <set>
+      <if test="groupId != null">
+        group_id = #{groupId,jdbcType=BIGINT},
+      </if>
+      <if test="opayId != null">
+        opay_id = #{opayId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="img != null">
+        img = #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="isMute != null">
+        is_mute = #{isMute,jdbcType=BOOLEAN},
+      </if>
+      <if test="isBlock != null">
+        is_block = #{isBlock,jdbcType=BOOLEAN},
+      </if>
+      <if test="joinTime != null">
+        join_time = #{joinTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.opay.im.model.ChatGroupMemberModel">
+    <!--@mbg.generated-->
+    update chat_group_member
+    set group_id = #{groupId,jdbcType=BIGINT},
+      opay_id = #{opayId,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR},
+      img = #{img,jdbcType=VARCHAR},
+      is_mute = #{isMute,jdbcType=BOOLEAN},
+      is_block = #{isBlock,jdbcType=BOOLEAN},
+      join_time = #{joinTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectGroupMemberCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+    select count(id) from chat_group_member where group_id=#{groupId}
+  </select>
+</mapper>

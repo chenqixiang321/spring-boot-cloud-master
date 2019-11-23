@@ -15,5 +15,7 @@ public interface ChatGroupMapper {
 
     int updateByPrimaryKeySelective(ChatGroupModel record);
 
+    int updateByPrimaryKeySelectiveWithVersion(ChatGroupModel record);
+
     int updateByPrimaryKey(ChatGroupModel record);
 }

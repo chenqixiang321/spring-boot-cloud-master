@@ -1,0 +1,21 @@
+package com.opay.im.mapper;
+
+import com.opay.im.model.ChatGroupMemberModel;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface ChatGroupMemberMapper {
+    int deleteByPrimaryKey(Long id);
+
+    int insert(ChatGroupMemberModel record);
+
+    int insertSelective(ChatGroupMemberModel record);
+
+    ChatGroupMemberModel selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(ChatGroupMemberModel record);
+
+    int updateByPrimaryKey(ChatGroupMemberModel record);
+
+    int selectGroupMemberCount(Long groupId);
+}

@@ -36,8 +36,8 @@ public class RongCloudServiceImpl implements RongCloudService {
                 .setId(userId)
                 .setName(userName)
                 .setPortrait("default");
-        User user = getRongCloud().user;
-        TokenResult result = user.register(userModel);
+        User userApi = getRongCloud().user;
+        TokenResult result = userApi.register(userModel);
         if (result.getCode() == 200) {
             return result.getToken();
         } else {
@@ -48,15 +48,44 @@ public class RongCloudServiceImpl implements RongCloudService {
 
     @Override
     public void createGroup(String userId, String groupId, String groupName) throws Exception {
-        Group Group = getRongCloud().group;
+        Group groupApi = getRongCloud().group;
         GroupMember[] members = {new GroupMember().setId(userId)};
         GroupModel group = new GroupModel()
                 .setId(groupId)
                 .setMembers(members)
                 .setName(groupName);
-        Result groupCreateResult = (Result) Group.create(group);
+        Result groupCreateResult = (Result) groupApi.create(group);
         if (groupCreateResult.getCode() != 200) {
             throw new Exception(groupCreateResult.errorMessage);
         }
     }
+
+    @Override
+    public void joinGroup(String userId, String groupId, String groupName) throws Exception {
+        Group groupApi = getRongCloud().group;
+        GroupMember[] members = {new GroupMember().setId(userId)};
+        GroupModel group = new GroupModel()
+                .setId(groupId)
+                .setMembers(members)
+                .setName(groupName);
+        Result joinGroupResult = (Result) groupApi.join(group);
+        if (joinGroupResult.getCode() != 200) {
+            throw new Exception(joinGroupResult.errorMessage);
+        }
+    }
+
+    @Override
+    public void inviteGroup(String userId, String groupId, String groupName) throws Exception {
+        Group groupApi = getRongCloud().group;
+        GroupMember[] members = {new GroupMember().setId(userId)};
+        GroupModel group = new GroupModel()
+                .setId(groupId)
+                .setMembers(members)
+                .setName(groupName);
+        Result joinGroupResult = (Result) groupApi.invite(group);
+        if (joinGroupResult.getCode() != 200) {
+            throw new Exception(joinGroupResult.errorMessage);
+        }
+    }
+
 }

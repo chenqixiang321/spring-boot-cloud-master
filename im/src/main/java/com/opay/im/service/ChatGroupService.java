@@ -1,12 +1,15 @@
 package com.opay.im.service;
 
 import com.opay.im.model.ChatGroupModel;
+import com.opay.im.model.request.CreateGroupRequest;
+import com.opay.im.model.request.JoinGroupRequest;
+
 public interface ChatGroupService {
 
 
     int deleteByPrimaryKey(Long id);
 
-    int insert(ChatGroupModel record) throws Exception;
+    int insert(CreateGroupRequest createGroupRequest) throws Exception;
 
     int insertSelective(ChatGroupModel record);
 
@@ -16,4 +19,5 @@ public interface ChatGroupService {
 
     int updateByPrimaryKey(ChatGroupModel record);
 
+    void joinGroup(JoinGroupRequest joinGroupRequest) throws Exception;
 }

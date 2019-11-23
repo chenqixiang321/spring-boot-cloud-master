@@ -54,3 +54,6 @@ config:
     merchantId: 256619090900002
     aesKey: UxanhvcUC3aeiLRR
     iv: qazwert12345!@#$
+im:
+  group:
+    maxMember: 200

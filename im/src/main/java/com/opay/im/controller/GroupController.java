@@ -3,6 +3,7 @@ package com.opay.im.controller;
 import com.opay.im.model.ChatGroupModel;
 import com.opay.im.model.request.CreateGroupRequest;
 import com.opay.im.model.request.InviteGroupRequest;
+import com.opay.im.model.request.JoinGroupRequest;
 import com.opay.im.model.request.QuitGroupRequest;
 import com.opay.im.model.request.RemoveGroupMemberRequest;
 import com.opay.im.model.request.UpdateGroupRequest;
@@ -45,10 +46,8 @@ public class GroupController {
     @ApiOperation(value = "建群", notes = "建群")
     @PostMapping("/create")
     public ResultResponse createGroup(@RequestBody @ApiParam(name = "建群参数", value = "传入json格式", required = true) CreateGroupRequest createGroupRequest) throws Exception {
-        ChatGroupModel record = new ChatGroupModel();
-        record.setOpayId(String.valueOf(request.getAttribute("opayId")));
-        record.setName(createGroupRequest.getName());
-        chatGroupService.insert(record);
+        createGroupRequest.setOpayId(String.valueOf(request.getAttribute("opayId")));
+        chatGroupService.insert(createGroupRequest);
         return new SuccessResponse();
     }
 
@@ -71,15 +70,22 @@ public class GroupController {
         return inviteGroupRequest;
     }
 
+    @ApiOperation(value = "加入群", notes = "加入群")
+    @PostMapping("/invite")
+    public ResultResponse joinGroup(@RequestBody @ApiParam(name = "加入群参数", value = "传入json格式", required = true) JoinGroupRequest joinGroupRequest) throws Exception {
+        chatGroupService.joinGroup(joinGroupRequest);
+        return new SuccessResponse();
+    }
+
     @ApiOperation(value = "删除群成员", notes = "删除群成员")
     @PostMapping("/remove")
-    public RemoveGroupMemberRequest removeGroupMember(@RequestBody @ApiParam(name = "删除群成员参数", value = "传入json格式", required = true) RemoveGroupMemberRequest removeGroupMemberRequest) {
-        return removeGroupMemberRequest;
+    public ResultResponse removeGroupMember(@RequestBody @ApiParam(name = "删除群成员参数", value = "传入json格式", required = true) RemoveGroupMemberRequest removeGroupMemberRequest) {
+        return new SuccessResponse();
     }
 
     @ApiOperation(value = "群成员退群", notes = "群成员退群")
     @PostMapping("/quit")
-    public QuitGroupRequest quitGroup(@RequestBody @ApiParam(name = "群成员退群参数", value = "传入json格式", required = true) QuitGroupRequest quitGroupRequest) {
-        return quitGroupRequest;
+    public ResultResponse quitGroup(@RequestBody @ApiParam(name = "群成员退群参数", value = "传入json格式", required = true) QuitGroupRequest quitGroupRequest) {
+        return new SuccessResponse();
     }
 }
