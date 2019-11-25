@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@ApiModel(value = "删除群成员", description = "删除群成员")
-public class RemoveGroupMemberRequest {
+@ApiModel(value = "群成员退群", description = "删除群成员退群")
+public class GroupMemberQuitRequest {
     /**
      * 群id
      */
@@ -20,10 +20,7 @@ public class RemoveGroupMemberRequest {
     /**
      * 群成员的opay_id
      */
-    @ApiModelProperty(value="群成员的opay_id")
+    @ApiModelProperty(value="群成员的opay_id",hidden = true)
     private String opayId;
 
-
-    @ApiModelProperty(value="群主的opay_id",hidden = true)
-    private String ownerOpayId;
 }

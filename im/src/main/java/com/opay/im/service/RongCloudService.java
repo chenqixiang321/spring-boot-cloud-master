@@ -7,5 +7,11 @@ public interface RongCloudService {
 
     void joinGroup(String userId, String groupId, String groupName) throws Exception;
 
-    void inviteGroup(String userId, String groupId, String groupName) throws Exception;
+    void quitGroup(String userId, String groupId) throws Exception;
+
+    void muteGroup(String userId, String targetId) throws Exception;
+
+    void blockMember(String userId, String groupId) throws Exception;
+
+    void unblockMember(String userId, String groupId) throws Exception;
 }

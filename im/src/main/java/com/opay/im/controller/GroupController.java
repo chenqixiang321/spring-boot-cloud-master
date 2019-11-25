@@ -1,10 +1,12 @@
 package com.opay.im.controller;
 
 import com.opay.im.model.ChatGroupModel;
+import com.opay.im.model.request.BlockGroupMemberRequest;
 import com.opay.im.model.request.CreateGroupRequest;
+import com.opay.im.model.request.GroupMemberQuitRequest;
 import com.opay.im.model.request.InviteGroupRequest;
 import com.opay.im.model.request.JoinGroupRequest;
-import com.opay.im.model.request.QuitGroupRequest;
+import com.opay.im.model.request.MuteGroupRequest;
 import com.opay.im.model.request.RemoveGroupMemberRequest;
 import com.opay.im.model.request.UpdateGroupRequest;
 import com.opay.im.model.response.ResultResponse;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/group")
@@ -37,10 +40,16 @@ public class GroupController {
     @ApiOperation(value = "获取群组信息", notes = "获取群组信息")
     @GetMapping("{id}")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "群组ID", required = true, paramType = "path", dataType = "String")
+            @ApiImplicitParam(name = "id", value = "群组ID", required = true, paramType = "path", dataType = "Long")
     })
-    public ChatGroupModel getGroupInfo(@PathVariable String id) {
-        return null;
+    public ChatGroupModel getGroupInfo(@PathVariable long id) {
+        return chatGroupService.selectByPrimaryKey(id);
+    }
+
+    @ApiOperation(value = "获取我加入的群组列表", notes = "获取我加入的群组列表")
+    @GetMapping
+    public List<ChatGroupModel> getGroupList() throws Exception {
+        return chatGroupService.selectGroupList(String.valueOf(request.getAttribute("opayId")));
     }
 
     @ApiOperation(value = "建群", notes = "建群")
@@ -71,21 +80,42 @@ public class GroupController {
     }
 
     @ApiOperation(value = "加入群", notes = "加入群")
-    @PostMapping("/invite")
+    @PostMapping("/join")
     public ResultResponse joinGroup(@RequestBody @ApiParam(name = "加入群参数", value = "传入json格式", required = true) JoinGroupRequest joinGroupRequest) throws Exception {
+        joinGroupRequest.setOpayId(String.valueOf(request.getAttribute("opayId")));
         chatGroupService.joinGroup(joinGroupRequest);
         return new SuccessResponse();
     }
 
     @ApiOperation(value = "删除群成员", notes = "删除群成员")
     @PostMapping("/remove")
-    public ResultResponse removeGroupMember(@RequestBody @ApiParam(name = "删除群成员参数", value = "传入json格式", required = true) RemoveGroupMemberRequest removeGroupMemberRequest) {
+    public ResultResponse removeGroupMember(@RequestBody @ApiParam(name = "删除群成员参数", value = "传入json格式", required = true) RemoveGroupMemberRequest removeGroupMemberRequest) throws Exception {
+        removeGroupMemberRequest.setOwnerOpayId(String.valueOf(request.getAttribute("opayId")));
+        chatGroupService.removeGroupMember(removeGroupMemberRequest);
         return new SuccessResponse();
     }
 
     @ApiOperation(value = "群成员退群", notes = "群成员退群")
     @PostMapping("/quit")
-    public ResultResponse quitGroup(@RequestBody @ApiParam(name = "群成员退群参数", value = "传入json格式", required = true) QuitGroupRequest quitGroupRequest) {
+    public ResultResponse quitGroup(@RequestBody @ApiParam(name = "群成员退群参数", value = "传入json格式", required = true) GroupMemberQuitRequest groupMemberQuitRequest) throws Exception {
+        groupMemberQuitRequest.setOpayId(String.valueOf(request.getAttribute("opayId")));
+        chatGroupService.leaveGroup(groupMemberQuitRequest);
+        return new SuccessResponse();
+    }
+
+    @ApiOperation(value = "群免打扰", notes = "是否开启群免打扰")
+    @PostMapping("/mute")
+    public ResultResponse muteGroup(@RequestBody @ApiParam(name = "群免打扰参数", value = "传入json格式", required = true) MuteGroupRequest muteGroupRequest) throws Exception {
+        muteGroupRequest.setOpayId(String.valueOf(request.getAttribute("opayId")));
+        chatGroupService.muteGroup(muteGroupRequest);
+        return new SuccessResponse();
+    }
+
+    @ApiOperation(value = "禁言", notes = "是否禁言群成员")
+    @PostMapping("/block")
+    public ResultResponse blockGroupMember(@RequestBody @ApiParam(name = "禁言群成员参数", value = "传入json格式", required = true) BlockGroupMemberRequest blockGroupMemberRequest) throws Exception {
+        blockGroupMemberRequest.setOwnerOpayId(String.valueOf(request.getAttribute("opayId")));
+        chatGroupService.blockGroupMember(blockGroupMemberRequest);
         return new SuccessResponse();
     }
 }

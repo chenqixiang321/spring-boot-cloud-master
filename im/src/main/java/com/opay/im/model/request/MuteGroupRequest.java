@@ -9,21 +9,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@ApiModel(value = "删除群成员", description = "删除群成员")
-public class RemoveGroupMemberRequest {
+@ApiModel(value = "群免打扰", description = "群免打扰所需参数")
+public class MuteGroupRequest {
     /**
      * 群id
      */
     @ApiModelProperty(value="群id")
     private Long groupId;
 
-    /**
-     * 群成员的opay_id
-     */
-    @ApiModelProperty(value="群成员的opay_id")
+    @ApiModelProperty(value="群成员的opay_id",hidden = true)
     private String opayId;
 
-
-    @ApiModelProperty(value="群主的opay_id",hidden = true)
-    private String ownerOpayId;
+    @ApiModelProperty(value="是否开启免打扰 true:开启 false;关闭")
+    private boolean IsMute;
 }

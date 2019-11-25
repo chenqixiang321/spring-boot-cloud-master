@@ -17,5 +17,5 @@ public interface UserTokenService {
 
     int updateByPrimaryKey(UserTokenModel record);
 
-    String getRyToken(String userId, String phone) throws Exception;
+    String getRyToken(String opayId, String phone) throws Exception;
 }

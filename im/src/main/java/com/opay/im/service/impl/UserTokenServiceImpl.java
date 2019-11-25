@@ -53,13 +53,13 @@ public class UserTokenServiceImpl implements UserTokenService {
 
     @Override
     @Cacheable(value = "ryToken", key = "#userId", unless = "#result == null")
-    public String getRyToken(String userId, String phone) throws Exception{
-        UserTokenModel userToken = userTokenMapper.selectByUserId(userId);
+    public String getRyToken(String opayId, String phone) throws Exception{
+        UserTokenModel userToken = userTokenMapper.selectByUserId(opayId);
         if (userToken == null) {
-            String token = rongCloudService.register(userId, phone);
+            String token = rongCloudService.register(opayId, phone);
             if (token != null) {
                 userToken = new UserTokenModel();
-                userToken.setOpayId(userId);
+                userToken.setOpayId(opayId);
                 userToken.setPhone(phone);
                 userToken.setToken(token);
                 userToken.setCreateTime(new Date());

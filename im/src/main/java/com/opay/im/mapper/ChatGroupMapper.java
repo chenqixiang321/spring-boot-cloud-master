@@ -3,6 +3,8 @@ package com.opay.im.mapper;
 import com.opay.im.model.ChatGroupModel;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface ChatGroupMapper {
     int deleteByPrimaryKey(Long id);
@@ -18,4 +20,6 @@ public interface ChatGroupMapper {
     int updateByPrimaryKeySelectiveWithVersion(ChatGroupModel record);
 
     int updateByPrimaryKey(ChatGroupModel record);
+
+    List<ChatGroupModel> selectGroupList(String opayId);
 }

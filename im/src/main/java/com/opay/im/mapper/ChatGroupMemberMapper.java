@@ -18,4 +18,10 @@ public interface ChatGroupMemberMapper {
     int updateByPrimaryKey(ChatGroupMemberModel record);
 
     int selectGroupMemberCount(Long groupId);
+
+    int deleteByGroupIdAndOpayId(ChatGroupMemberModel chatGroupMemberModel);
+
+    ChatGroupMemberModel selectFirstJoinGroupMember(ChatGroupMemberModel chatGroupMemberModel);
+
+    int updateByOpayIdAndGroupId(ChatGroupMemberModel chatGroupMemberModel);
 }

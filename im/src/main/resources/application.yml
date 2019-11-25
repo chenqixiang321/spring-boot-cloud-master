@@ -1,5 +1,7 @@
 server:
   port: 8081
+logging:
+  config: classpath:log/logback.xml
 #app:
 #  id: opay-im-invite
 #apollo:
@@ -25,7 +27,7 @@ spring:
       pool-prepared-statements: true
       max-open-prepared-statements: 20
       max-pool-prepared-statement-per-connection-size: 20
-      filters: stat, wall
+      filters: stat
       connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
       use-global-data-source-stat: true
       filter:
@@ -34,7 +36,7 @@ spring:
           log-slow-sql: true
           slow-sql-millis: 2000
         wall:
-          enabled: true
+          enabled: false
           db-type: mysql
           config:
             delete-allow: false
@@ -45,6 +47,9 @@ spring:
     timeout: 20000
   cache:
     type: redis
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+1
 rongyun:
   appKey: k51hidwqk4icb
   appSecret: 02hEdHbsDuB
