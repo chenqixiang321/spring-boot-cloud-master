@@ -1,4 +1,4 @@
-package com.opay.im.config;
+package com.opay.invite.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

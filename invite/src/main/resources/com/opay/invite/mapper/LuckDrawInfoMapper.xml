@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.opay.invite.mapper.LuckDrawInfoMapper">
+    <resultMap id="BaseResultMap" type="com.opay.invite.model.LuckDrawInfoModel">
+        <!--@mbg.generated-->
+        <!--@Table luck_draw_info-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="opay_id" jdbcType="VARCHAR" property="opayId"/>
+        <result column="opay_name" jdbcType="VARCHAR" property="opayName"/>
+        <result column="opay_phone" jdbcType="VARCHAR" property="opayPhone"/>
+        <result column="prize" jdbcType="VARCHAR" property="prize"/>
+        <result column="prize_level" jdbcType="INTEGER" property="prizeLevel"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, opay_id, opay_name, opay_phone, prize, prize_level, create_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from luck_draw_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        <!--@mbg.generated-->
+        delete from luck_draw_info
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.opay.invite.model.LuckDrawInfoModel">
+        <!--@mbg.generated-->
+        insert into luck_draw_info (id, opay_id, opay_name,
+        opay_phone, prize, prize_level,
+        create_time)
+        values (#{id,jdbcType=BIGINT}, #{opayId,jdbcType=VARCHAR}, #{opayName,jdbcType=VARCHAR},
+        #{opayPhone,jdbcType=VARCHAR}, #{prize,jdbcType=VARCHAR}, #{prizeLevel,jdbcType=INTEGER},
+        #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.opay.invite.model.LuckDrawInfoModel">
+        <!--@mbg.generated-->
+        insert into luck_draw_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="opayId != null">
+                opay_id,
+            </if>
+            <if test="opayName != null">
+                opay_name,
+            </if>
+            <if test="opayPhone != null">
+                opay_phone,
+            </if>
+            <if test="prize != null">
+                prize,
+            </if>
+            <if test="prizeLevel != null">
+                prize_level,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="opayId != null">
+                #{opayId,jdbcType=VARCHAR},
+            </if>
+            <if test="opayName != null">
+                #{opayName,jdbcType=VARCHAR},
+            </if>
+            <if test="opayPhone != null">
+                #{opayPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="prize != null">
+                #{prize,jdbcType=VARCHAR},
+            </if>
+            <if test="prizeLevel != null">
+                #{prizeLevel,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.opay.invite.model.LuckDrawInfoModel">
+        <!--@mbg.generated-->
+        update luck_draw_info
+        <set>
+            <if test="opayId != null">
+                opay_id = #{opayId,jdbcType=VARCHAR},
+            </if>
+            <if test="opayName != null">
+                opay_name = #{opayName,jdbcType=VARCHAR},
+            </if>
+            <if test="opayPhone != null">
+                opay_phone = #{opayPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="prize != null">
+                prize = #{prize,jdbcType=VARCHAR},
+            </if>
+            <if test="prizeLevel != null">
+                prize_level = #{prizeLevel,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.opay.invite.model.LuckDrawInfoModel">
+        <!--@mbg.generated-->
+        update luck_draw_info
+        set opay_id = #{opayId,jdbcType=VARCHAR},
+        opay_name = #{opayName,jdbcType=VARCHAR},
+        opay_phone = #{opayPhone,jdbcType=VARCHAR},
+        prize = #{prize,jdbcType=VARCHAR},
+        prize_level = #{prizeLevel,jdbcType=INTEGER},
+        create_time = #{createTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectLuckDrawInfoList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from luck_draw_info where prize_level in (7,8)
+    </select>
+</mapper>

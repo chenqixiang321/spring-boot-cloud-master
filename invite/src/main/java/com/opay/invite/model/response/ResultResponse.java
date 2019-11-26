@@ -1,4 +1,4 @@
-package com.opay.im.model.response;
+package com.opay.invite.model.response;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +11,8 @@ public class ResultResponse<T> {
     private T data;
 
     public ResultResponse() {
+        this.code = 200;
+        this.message = "success";
     }
 
     public ResultResponse(int code, String message) {

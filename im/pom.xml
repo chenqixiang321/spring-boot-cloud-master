@@ -19,10 +19,6 @@
             <version>3.0.10</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.opay.opos</groupId>
             <artifactId>opos-feign-opay</artifactId>
             <version>1.0-20191106.131530-1</version>
