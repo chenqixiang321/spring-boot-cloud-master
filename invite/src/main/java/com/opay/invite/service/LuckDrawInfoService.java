@@ -21,5 +21,7 @@ public interface LuckDrawInfoService {
     int updateByPrimaryKey(LuckDrawInfoModel record);
 
     List<LuckDrawInfoResponse> selectLuckDrawInfoList() throws Exception;
+
+    LuckDrawInfoResponse getLuckDraw() throws Exception;
 }
 

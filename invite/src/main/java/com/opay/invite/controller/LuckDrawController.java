@@ -40,8 +40,15 @@ public class LuckDrawController {
 
     @ApiOperation(value = "分享次数+1", notes = "分享次数+1")
     @PostMapping("/share")
-    public SuccessResponse updateShareCount()throws Exception{
-        InviteCountService.updateShareCount("1","1","1");
+    public SuccessResponse updateShareCount() throws Exception {
+        boolean t = InviteCountService.updateShareCount("1", "1", "1");
+        return new SuccessResponse();
+    }
+
+    @ApiOperation(value = "邀请次数+1", notes = "邀请次数+1")
+    @PostMapping("/invite")
+    public SuccessResponse updateInviteCount() throws Exception {
+        boolean t = InviteCountService.updateInviteCount("1", "1", "1");
         return new SuccessResponse();
     }
 }

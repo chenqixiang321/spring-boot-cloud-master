@@ -18,8 +18,8 @@ public interface InviteCountService {
 
     int updateByPrimaryKey(InviteCountModel record);
 
-    int updateInviteCount(String opayId, String opayName, String opayPhone) throws Exception;
+    boolean updateInviteCount(String opayId, String opayName, String opayPhone) throws Exception;
 
-    int updateShareCount(String opayId, String opayName, String opayPhone) throws Exception;
+    boolean updateShareCount(String opayId, String opayName, String opayPhone) throws Exception;
 }
 

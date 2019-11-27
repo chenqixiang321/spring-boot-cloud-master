@@ -64,5 +64,10 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         return luckDrawInfoResponseList;
     }
 
+    @Override
+    public LuckDrawInfoResponse getLuckDraw() throws Exception {
+        return null;
+    }
+
 }
 

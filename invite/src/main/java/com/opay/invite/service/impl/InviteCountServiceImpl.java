@@ -24,9 +24,9 @@ public class InviteCountServiceImpl implements InviteCountService {
     private InviteCountMapper inviteCountMapper;
     @Autowired
     private RedisTemplate redisTemplate;
-    @Value("${upperLimit.invite:5}")
+    @Value("${upperLimit.invite:100}")
     private int inviteUpperLimit;
-    @Value("${upperLimit.share:5}")
+    @Value("${upperLimit.share:3}")
     private int shareUpperLimit;
     @Resource
     private DefaultRedisScript<Boolean> inviteShareCount;
@@ -62,39 +62,33 @@ public class InviteCountServiceImpl implements InviteCountService {
     }
 
     @Override
-    public int updateInviteCount(String opayId, String opayName, String opayPhone) throws Exception {
+    public boolean updateInviteCount(String opayId, String opayName, String opayPhone) throws Exception {
         Date date = new Date();
-        StringBuilder key = new StringBuilder();
-        key.append("invite:");
-        key.append(opayId);
-        List<String> keys = Arrays.asList(key.toString());
+        List<String> keys = Arrays.asList(opayId, "invite");
         Boolean execute = (Boolean) redisTemplate.execute(inviteShareCount, keys, inviteUpperLimit, getSecondsToMidnight(date));
         if (execute) {
             InviteCountModel inviteCountModel = inviteCountMapper.selectByOpayId(opayId);
             if (inviteCountModel == null) {
                 inviteCountModel = new InviteCountModel();
                 inviteCountModel.setOpayId(opayId);
-                inviteCountModel.setInvite(1);
+                inviteCountModel.setInvite(5);
                 inviteCountModel.setOpayName(opayName);
                 inviteCountModel.setOpayPhone(opayPhone);
                 inviteCountModel.setCreateTime(date);
                 inviteCountMapper.insertSelective(inviteCountModel);
             } else {
-                inviteCountModel.setInvite(inviteCountModel.getInvite() + 1);
+                inviteCountModel.setInvite(inviteCountModel.getInvite() + 5);
                 inviteCountMapper.updateByPrimaryKeySelective(inviteCountModel);
             }
         }
-        return 0;
+        return execute;
     }
 
     @Override
-    public int updateShareCount(String opayId, String opayName, String opayPhone) throws Exception {
+    public boolean updateShareCount(String opayId, String opayName, String opayPhone) throws Exception {
         Date date = new Date();
-        StringBuilder key = new StringBuilder();
-        key.append("share:");
-        key.append(opayId);
-        List<String> keys = Arrays.asList(key.toString());
-        Boolean execute = (Boolean) redisTemplate.execute(inviteShareCount, keys, inviteUpperLimit, getSecondsToMidnight(date));
+        List<String> keys = Arrays.asList(opayId, "share");
+        Boolean execute = (Boolean) redisTemplate.execute(inviteShareCount, keys, shareUpperLimit, getSecondsToMidnight(date));
         if (execute) {
             InviteCountModel inviteCountModel = inviteCountMapper.selectByOpayId(opayId);
             if (inviteCountModel == null) {
@@ -110,7 +104,7 @@ public class InviteCountServiceImpl implements InviteCountService {
                 inviteCountMapper.updateByPrimaryKeySelective(inviteCountModel);
             }
         }
-        return 0;
+        return execute;
     }
 
     private long getSecondsToMidnight(Date date) {
