@@ -25,16 +25,23 @@ public class TransferServiceImpl implements TransferService {
                                 String orderType, String callBackURL) throws Exception{
         Map<String,String> map = getParamMap(senderId,recieptId,amount, currency, country, reference, orderType, callBackURL);
         String str = getEncrypt(map,transferConfig.getAesKey());
-        Map<String,Object> paramMap = new HashMap<>();
-        String result = HttpClientUtil.post(paramMap,transferConfig.getDomain()+transferConfig.getUrl());
+        Map<String,String> paramMap = new HashMap<>();
+        paramMap.put("requestId",requestId);
+        paramMap.put("merchantId",merchantId);
+        paramMap.put("data",str);
+        String result = HttpClientUtil.postEntity(paramMap,transferConfig.getDomain()+transferConfig.getUrl());
         if(result!=null && "-1".equals(result)){//超时异常
             Map<String,String> rMap = new HashMap<>();
             rMap.put("code","504");
             return rMap;
         }
         if(result!=null && !"".equals(result)){
-            String resultStr = getDecrypt(result, transferConfig.getAesKey());
-            Map<String,String> rMap = JSONObject.parseObject(resultStr,Map.class);
+            Map<String,String> rMap = JSONObject.parseObject(result,Map.class);
+            String dataStr = rMap.get("data");
+            if(dataStr!=null && !"".equals(dataStr)) {
+                String resultStr = getDecrypt(dataStr, transferConfig.getAesKey());
+                rMap.put("data",dataStr);
+            }
             return rMap;
         }
         return null;

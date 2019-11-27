@@ -111,9 +111,11 @@ public class TixianController {
                         }
                     }
                     if (i==list.size()-1){
-                        if (withdrawalRequest.getAmount().compareTo(tixian.getMinAmount()) < 0) {
-                            f = true;
-                            break;
+                        if(relationCount>tixian.getMax()) {
+                            if (withdrawalRequest.getAmount().compareTo(tixian.getMinAmount()) < 0) {
+                                f = true;
+                                break;
+                            }
                         }
                     }
                 }
