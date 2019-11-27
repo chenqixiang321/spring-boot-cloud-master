@@ -7,12 +7,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(value = "邀请关系", description = "邀请关系")
-public class InviteModel {
+@ApiModel(value = "邀请关系列表", description = "邀请关系列表")
+public class OpayInviteRelationVo {
 
     @ApiModelProperty(value = "邀请人")
     private String masterId;
@@ -21,14 +23,9 @@ public class InviteModel {
     private String pupilId;
 
     @ApiModelProperty(value = "邀请时间")
-    private Long dateline;
+    private Date createAt;
 
-    @ApiModelProperty(value = "邀请人的邀请人")
-    private String masterParentId;
-
-    @ApiModelProperty(value = "0:普通新用户，1:老用户 2:代理")
-    private int markType;
-
-
+    @ApiModelProperty(value = "邀请人得到奖励,及被邀人贡献")
+    private Long masterReward;
 
 }

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.opay.invite.mapper.InviteMapper">
+
+  <resultMap id="BaseResultMap" type="com.opay.invite.model.OpayInviteRelation">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="master_id" jdbcType="VARCHAR" property="masterId" />
+    <result column="pupil_id" jdbcType="VARCHAR" property="pupilId" />
+    <result column="create_at" property="createAt" />
+    <result column="master_parent_id" jdbcType="VARCHAR" property="masterParentId" />
+    <result column="mark_type" jdbcType="INTEGER" property="markType" />
+    <result column="month" jdbcType="INTEGER" property="month" />
+    <result column="day" jdbcType="INTEGER" property="day" />
+  </resultMap>
+    <resultMap id="BaseVoResultMap" type="com.opay.invite.model.OpayInviteRelationVo">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="master_id" jdbcType="VARCHAR" property="masterId" />
+        <result column="pupil_id" jdbcType="VARCHAR" property="pupilId" />
+        <result column="create_at" property="createAt" />
+        <result column="master_reward" jdbcType="DECIMAL" property="masterReward" />
+    </resultMap>
+  <sql id="Base_Column_List">
+    id, master_id, pupil_id,create_at,master_parent_id,mark_type
+  </sql>
+  
+  <select id="selectRelationCount" resultType="Integer">
+        select count(*) from opay_invite_relation
+        where pupil_id=#{pupilId,jdbcType=VARCHAR}
+        or (master_id=#{pupilId,jdbcType=VARCHAR} and pupil_id=#{masterId,jdbcType=VARCHAR})
+  </select>
+  
+  <insert id="saveInviteRelation" parameterType="com.opay.invite.model.OpayInviteRelation">
+    insert into opay_invite_relation (master_id, pupil_id,create_at,master_parent_id,mark_type,`month`,`day`)
+    values
+     (#{masterId,jdbcType=VARCHAR}, #{pupilId,jdbcType=VARCHAR},#{createAt},
+     #{masterParentId,jdbcType=VARCHAR}, #{markType,jdbcType=INTEGER}, #{month,jdbcType=INTEGER}, #{day,jdbcType=INTEGER})
+  </insert>
+
+    <select id="selectRelationMasterByMasterId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from opay_invite_relation
+        where pupil_id=#{masterId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectRelationByMasterId" resultMap="BaseVoResultMap">
+        select
+        a.master_id,a.pupil_id,b.create_at,b.master_reward
+        from opay_invite_relation a
+        left join opay_master_pupil_award b on a.pupil_id = b.opay_id
+        where a.master_id=#{masterId,jdbcType=VARCHAR} and b.master_type=0
+        order by a.id desc
+    </select>
+
+    <insert id="saveInviteReward" parameterType="java.util.List">
+        insert into opay_master_pupil_award (opay_id, reward,create_at,status,`action`,amount,`mark_type`,step_json,master_reward,master_type,`month`,`day`,order_id)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.opayId,jdbcType=VARCHAR}, #{item.reward,jdbcType=BIGINT},#{item.createAt,jdbcType=BIGINT},#{item.status,jdbcType=INTEGER},
+            #{item.action,jdbcType=INTEGER},#{item.amount,jdbcType=BIGINT},#{item.markType,jdbcType=INTEGER},#{item.stepJson,jdbcType=VARCHAR}
+            ,#{item.masterReward,jdbcType=BIGINT},#{item.masterType,jdbcType=INTEGER},#{item.month,jdbcType=INTEGER}, #{item.day,jdbcType=INTEGER}, #{item.orderId,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <select id="getRankList" resultType="com.opay.invite.model.OpayInviteRankVo">
+       select * from (
+            select a.master_id masterId,SUM(b.master_reward) totalReward,count(DISTINCT a.pupil_id) totalNum from opay_invite_relation a
+            left join opay_master_pupil_award b on a.pupil_id=b.opay_id
+            where b.master_type=0
+            group by a.master_id
+            )a
+        order by a.totalReward desc
+    </select>
+
+    <select id="getDetailList" resultType="com.opay.invite.model.OpayMasterPupilAwardVo">
+            select reward,`action`,create_at
+            from opay_master_pupil_award
+            where opay_id=#{opayId,jdbcType=VARCHAR}
+             <![CDATA[
+                and `day` >= #{startYmd}
+            ]]>
+            <![CDATA[
+                and `day` <= #{endYmd}
+            ]]>
+            order by id desc
+    </select>
+    
+    <select id="getRelationCount" resultType="java.lang.Integer">
+        select count(*) from opay_invite_relation where master_id=#{opayId,jdbcType=VARCHAR};
+    </select>
+    
+   <select id="getTaskByOpayId" resultType="com.opay.invite.model.OpayMasterPupilAwardVo">
+        select reward,`action`,create_at
+         from opay_master_pupil_award
+        where opay_id=#{opayId,jdbcType=VARCHAR} and mark_type in(1,2) and master_type=0
+   </select>
+
+    <select id="getInviteInfoByOpayId" resultType="com.opay.invite.model.OpayInviteRankVo">
+       select a.master_id,SUM(b.master_reward) totalReward,count(DISTINCT a.pupil_id) totalNum
+             from opay_invite_relation a
+            left join opay_master_pupil_award b on a.pupil_id=b.opay_id
+            where a.master_id = #{opayId,jdbcType=VARCHAR} and b.master_type=0
+    </select>
+
+    <select id="getTotalRewardByDetail" resultType="com.opay.invite.model.OpayInviteRankVo">
+       select a.opay_id master_id,SUM(b.reward) totalReward
+             from opay_master_pupil_award a
+            where a.opay_id = #{opayId,jdbcType=VARCHAR}
+    </select>
+    
+</mapper>

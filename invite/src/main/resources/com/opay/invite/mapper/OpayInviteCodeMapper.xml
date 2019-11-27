@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.opay.invite.mapper.OpayInviteCodeMapper">
+
+    <select id="getInviteCode" resultType="java.lang.String">
+        select invite_code
+        from opay_invite_code where opay_id=#{opayId,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="saveInviteCode">
+    insert into opay_invite_code (invite_code, opay_id,create_at)
+    values
+     (#{inviteCode,jdbcType=VARCHAR}, #{opayId,jdbcType=VARCHAR},now())
+  </insert>
+
+    <select id="getOpayIdByInviteCode" resultType="java.lang.String">
+        select opay_id
+        from opay_invite_code where invite_code=#{inviteCode,jdbcType=VARCHAR}
+    </select>
+</mapper>
