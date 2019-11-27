@@ -27,4 +27,9 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     public void saveTixianLog(OpayActiveTixianLog saveTixianLog) {
         opayCashbackTixianMapper.saveTixianLog(saveTixianLog);
     }
+
+    @Override
+    public void updateTixian(long id,String opayId, String reference, String orderNo) {
+        opayCashbackTixianMapper.updateTixian(id,opayId,reference,orderNo);
+    }
 }

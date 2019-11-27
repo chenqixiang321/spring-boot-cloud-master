@@ -6,20 +6,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Getter
 @Setter
-@Component
-@ConfigurationProperties(prefix = "tixian.limit")
-public class TixianLimitConfig {
+public class TixianLimit {
 
-    private BigDecimal perDayAmount;
+    private int min;
 
-    private int open;
+    private int max;
 
-    private List<TixianLimit> list;
-
+    private BigDecimal minAmount;
 
 
 }

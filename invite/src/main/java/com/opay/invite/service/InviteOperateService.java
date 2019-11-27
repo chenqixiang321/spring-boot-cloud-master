@@ -3,6 +3,8 @@ package com.opay.invite.service;
 import com.alibaba.fastjson.JSON;
 import com.opay.invite.model.*;
 import com.opay.invite.stateconfig.*;
+import com.opay.invite.transferconfig.OrderType;
+import com.opay.invite.transferconfig.TransferConfig;
 import com.opay.invite.utils.DateFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -28,6 +30,12 @@ public class InviteOperateService {
 
     @Autowired
     private WithdrawalService withdrawalService;
+
+    @Autowired
+    private TransferService transferService;
+
+    @Autowired
+    private TransferConfig transferConfig;
 
     public OpayInviteRelation getInviteRelation(String masterId, String pupilId, OpayInviteRelation vr,int markType) {
         OpayInviteRelation relation = new OpayInviteRelation();
@@ -206,5 +214,28 @@ public class InviteOperateService {
         saveTixianLog.setTixianId(saveTixian.getId());
         saveTixianLog.setMark(0);
         withdrawalService.saveTixianLog(saveTixianLog);
+        String orderType =OrderType.bonusOffer.getOrderType();
+        if(saveTixian.getType()==1){
+            orderType =OrderType.MUAATransfer.getOrderType();
+        }
+        long mills = System.currentTimeMillis();
+        String reference = transferConfig.getReference()+""+String.format("%10d", saveTixian.getId()).replace(" ", "0");;
+        Map<String,String> map = transferService.transfer(String.valueOf(mills),cashback.getOpayId(),saveTixian.getAmount().toString(),reference,orderType);
+        if(map==null || map.size()==0){
+            log.error("transfer err {}",JSON.toJSONString(saveTixian));
+            throw new Exception("transfer error");
+        }
+        if(map!=null && map.size()>0){
+            if("504".equals(map.get("code"))){
+                log.error("timeout err {}",JSON.toJSONString(saveTixian));
+            }else if("00000".equals(map.get("code")) && "SUCCESS".equals(map.get("status"))){
+                try {
+                    withdrawalService.updateTixian(saveTixian.getId(), saveTixian.getOpayId(), reference, map.get("orderNo"));
+                }catch (Exception e){}
+            }else{
+                log.error("transter err {},map:{}",JSON.toJSONString(saveTixian),JSON.toJSONString(map));
+                throw new Exception("transfer error");
+            }
+        }
     }
 }

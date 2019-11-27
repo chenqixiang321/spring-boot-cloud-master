@@ -97,9 +97,30 @@ activity:
       pupilReward: 1
 tixian:
   limit:
-    person: 24
+    open: 1
     perDayAmount: 3000
-    minAmount: 8000
+    list[0]:
+      min: 0
+      max: 24
+      minAmount: 8000
+    list[1]:
+      min: 25
+      max: 42
+      minAmount: 15000
+    list[2]:
+      min: 43
+      max: 79
+      minAmount: 30000
+
 invite:
   code: opay9102c7uw27er4$!=
   productKey: opay9102codec7uw27er4$!=
+
+transfer:
+  opay:
+    domain: http://graphql.opaydev.com:8081
+    merchantId: 256619112712004
+    aesKey: p2LfpyyoKkrv1mjr
+    url: /api/m/createOrder
+    reference: IVE
+

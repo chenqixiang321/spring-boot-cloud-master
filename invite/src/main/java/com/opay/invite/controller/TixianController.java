@@ -10,6 +10,7 @@ import com.opay.invite.resp.Result;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.service.WithdrawalService;
+import com.opay.invite.stateconfig.TixianLimit;
 import com.opay.invite.stateconfig.TixianLimitConfig;
 import com.opay.invite.utils.DateFormatter;
 import com.opay.invite.utils.InviteCode;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/cash")
@@ -51,12 +53,9 @@ public class TixianController {
         LoginUser user = inviteOperateService.getOpayInfo(request);
         //判断申请用户是否是代理，如果是代理，每天最大提现额度3000,必须超过8000可提现,拉新人数24人
         OpayActiveCashback cashback = inviteService.getActivityCashbackByOpayId(user.getOpayId());
-        Result rt = checkParam(withdrawalRequest,cashback);
-        if(rt !=null) return rt;
         int relationCount = inviteService.getRelationCount(user.getOpayId());
-        if(relationCount<tixianLimitConfig.getPerson()){
-            return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN_LIMIT);
-        }
+        Result rt = checkParam(withdrawalRequest,cashback,relationCount);
+        if(rt !=null) return rt;
         Integer day = Integer.valueOf(DateFormatter.formatShortYMDDate(new Date()));
         Integer month = Integer.valueOf(DateFormatter.formatShortYMDate(new Date()));
         OpayActiveTixian tixian = withdrawalService.getTixianAmount(user.getOpayId(),day);
@@ -89,20 +88,39 @@ public class TixianController {
         return Result.success();
     }
 
-    private Result checkParam(WithdrawalRequest withdrawalRequest, OpayActiveCashback cashback) {
+    private Result checkParam(WithdrawalRequest withdrawalRequest, OpayActiveCashback cashback,int relationCount) {
         if(cashback==null){
             return Result.error(CodeMsg.ILLEGAL_PARAMETER);
         }
-        if(withdrawalRequest.getType()<0 || withdrawalRequest.getType()>2){
+        if(withdrawalRequest.getType()<0 || withdrawalRequest.getType()>1){
             return Result.error(CodeMsg.ILLEGAL_PARAMETER);
         }
         if(withdrawalRequest.getAmount()==null || withdrawalRequest.getAmount().compareTo(BigDecimal.ZERO)<=0){
             return Result.error(CodeMsg.ILLEGAL_PARAMETER);
         }
-        if(withdrawalRequest.getType()==2){//用户balance提现
-           if(withdrawalRequest.getAmount().compareTo(tixianLimitConfig.getMinAmount())<0){
-                return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN);
-           }
+        if(withdrawalRequest.getType()==1){//用户balance提现
+            if(tixianLimitConfig.getOpen()==1) {
+                boolean f = false;
+                List<TixianLimit> list = tixianLimitConfig.getList();
+                for(int i=0;i<list.size();i++){
+                    TixianLimit tixian = list.get(i);
+                    if(tixian.getMin()<=relationCount && tixian.getMax()>=relationCount){
+                        if (withdrawalRequest.getAmount().compareTo(tixian.getMinAmount()) < 0) {
+                            f = true;
+                            break;
+                        }
+                    }
+                    if (i==list.size()-1){
+                        if (withdrawalRequest.getAmount().compareTo(tixian.getMinAmount()) < 0) {
+                            f = true;
+                            break;
+                        }
+                    }
+                }
+                if (f){
+                    return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN);
+                }
+            }
         }
         if(cashback.getAmount().compareTo(withdrawalRequest.getAmount())<0){
             return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN);

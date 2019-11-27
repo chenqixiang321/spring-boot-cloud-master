@@ -40,4 +40,8 @@
     values
      (#{opayId,jdbcType=VARCHAR}, #{amount}, #{type},#{createAt}, #{tixianId}, #{month}, #{day}, #{deviceId}, #{ip},#{mark})
   </insert>
+
+  <update id="updateTixian">
+    update opay_active_tixian set trade_no=#{tradeNo},reference=#{reference} where id=#{id} and opay_id=#{opayId}
+  </update>
 </mapper>
