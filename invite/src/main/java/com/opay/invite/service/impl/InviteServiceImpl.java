@@ -97,17 +97,17 @@ public class InviteServiceImpl implements InviteService {
     }
 
     @Override
-    public String getInviteCode(String opayId) {
+    public OpayInviteCode getInviteCode(String opayId) {
         return opayInviteCodeMapper.getInviteCode(opayId);
     }
 
     @Override
-    public void saveInviteCode(String opayId, String code) {
-        opayInviteCodeMapper.saveInviteCode(opayId,code);
+    public void saveInviteCode(String opayId, String code,String phone) {
+        opayInviteCodeMapper.saveInviteCode(opayId,code,phone);
     }
 
     @Override
-    public String getOpayIdByInviteCode(String inviteCode) {
+    public OpayInviteCode getOpayIdByInviteCode(String inviteCode) {
         return opayInviteCodeMapper.getOpayIdByInviteCode(inviteCode);
     }
 

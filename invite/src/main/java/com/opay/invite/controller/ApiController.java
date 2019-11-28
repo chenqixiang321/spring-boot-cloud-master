@@ -7,6 +7,8 @@ import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.resp.Result;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
+import com.opay.invite.service.RpcService;
+import com.opay.invite.transferconfig.TransferConfig;
 import com.opay.invite.utils.DateFormatter;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,14 +39,22 @@ public class ApiController {
     @Value("${invite.code:''}")
     private String key;
 
+    @Autowired
+    private RpcService rpcService;
+
+    @Autowired
+    private TransferConfig transferConfig;
 
     @ApiOperation(value = "用户填入邀请码回调", notes = "用户填入邀请码回调")
     @PostMapping("/notifyInvite")
-    public Result notifyInvite(HttpServletRequest request, @RequestBody NotifyInvite notifyInvite) {
+    public Result notifyInvite(HttpServletRequest request, @RequestBody NotifyInvite notifyInvite) throws Exception {
         if(notifyInvite.getOpayId()==null || "".equals(notifyInvite.getOpayId())){
             return Result.error(CodeMsg.ILLEGAL_PARAMETER);
         }
         if(notifyInvite.getCreateTime()==null || "".equals(notifyInvite.getCreateTime())){
+            return Result.error(CodeMsg.ILLEGAL_PARAMETER);
+        }
+        if(notifyInvite.getPhone()==null || "".equals(notifyInvite.getPhone())){
             return Result.error(CodeMsg.ILLEGAL_PARAMETER);
         }
         if(notifyInvite.getInviteCode()==null || "".equals(notifyInvite.getInviteCode())){
@@ -70,16 +80,16 @@ public class ApiController {
         }
 
         //判断邀请码是否合法,和反作弊，不能建立师徒关系,当前用户已经过了7天不能填写邀请码
-        String masterId = inviteService.getOpayIdByInviteCode(notifyInvite.getInviteCode());
+        OpayInviteCode inviteCode = inviteService.getOpayIdByInviteCode(notifyInvite.getInviteCode());
         //获取code用户类型
-        if(masterId==null || "".equals(masterId)){
+        if(inviteCode==null){
             return Result.error(CodeMsg.ILLEGAL_CODE);
         }
         //解析登录用户ID和邀请码用户ID
+        String masterId = inviteCode.getOpayId();
         if(masterId.equals(notifyInvite.getOpayId())){
             return Result.error(CodeMsg.ILLEGAL_CODE);
         }
-        //当前用户是代理不能存在师傅
 
         //校验用户是否已经建立关系，或是不能互相邀请关系
         int count = inviteService.checkRelation(masterId,notifyInvite.getOpayId());
@@ -107,8 +117,17 @@ public class ApiController {
         cashbacklist.add(pupilcashback);
         // 建立关系，增加金额奖励,同时充入账户，需要判断角色和用户邀请人数所属阶梯，奖励不同
         OpayInviteRelation vr = inviteService.selectRelationMasterByMasterId(masterId);
+        long mlis = System.currentTimeMillis();
         //TODO 查询邀请账号，判断所属类型 mark_type
-        OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,notifyInvite.getOpayId(),vr,1);
+        Map<String, String> userMap = rpcService.getOpayUser(inviteCode.getPhone(), String.valueOf(mlis), transferConfig.getMerchantId());
+        int markType=0;//
+        if(userMap!=null && userMap.size()>0){
+            String role = userMap.get("role");
+            if(role!=null && "agent".equals(role)){
+                markType=1;
+            }
+        }
+        OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,notifyInvite.getOpayId(),inviteCode.getPhone(),notifyInvite.getPhone(),vr,1);
         List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,notifyInvite.getOpayId(),vr,1);
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
         try {

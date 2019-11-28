@@ -1,14 +1,15 @@
 package com.opay.invite.mapper;
 
+import com.opay.invite.model.OpayInviteCode;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface OpayInviteCodeMapper {
 
-    String getInviteCode(@Param("opayId") String opayId);
+    OpayInviteCode getInviteCode(@Param("opayId") String opayId);
 
-    void saveInviteCode(@Param("opayId") String opayId,@Param("inviteCode") String code);
+    void saveInviteCode(@Param("opayId") String opayId,@Param("inviteCode") String code,@Param("phone") String phone);
 
-    String getOpayIdByInviteCode(@Param("inviteCode") String inviteCode);
+    OpayInviteCode getOpayIdByInviteCode(@Param("inviteCode") String inviteCode);
 }

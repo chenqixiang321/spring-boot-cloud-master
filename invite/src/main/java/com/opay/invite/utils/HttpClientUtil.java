@@ -1,5 +1,6 @@
 package com.opay.invite.utils;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
@@ -10,12 +11,14 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.http.entity.StringEntity;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -221,7 +224,8 @@ public class HttpClientUtil {
 				for (Map.Entry<String, String> entry : map.entrySet()) {
 					pairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
 				}
-				post.setEntity(new UrlEncodedFormEntity(pairs, "UTF-8"));
+				//post.setEntity(new UrlEncodedFormEntity(pairs, "UTF-8"));
+				post.setEntity(new StringEntity(JSON.toJSONString(map), ContentType.APPLICATION_JSON.getMimeType(),"UTF-8"));
 			}
 		}catch (Exception e){}
 	}
@@ -229,9 +233,9 @@ public class HttpClientUtil {
 	private static RequestConfig getConfig() {
 		RequestConfig requestConfig = RequestConfig.custom()
 				// 设置连接超时时间(单位毫秒)
-				.setConnectTimeout(1000)
+				.setConnectTimeout(2000)
 				// 设置请求超时时间(单位毫秒)
-				.setConnectionRequestTimeout(1000)
+				.setConnectionRequestTimeout(2000)
 				// socket读写超时时间(单位毫秒)
 				.setSocketTimeout(3000)
 				// 设置是否允许重定向(默认为true)

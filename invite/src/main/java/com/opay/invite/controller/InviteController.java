@@ -40,13 +40,13 @@ public class InviteController {
     public Result getInviteCode(HttpServletRequest request) {
         //更登录用户生成code
         LoginUser user = inviteOperateService.getOpayInfo(request);
-        String inviteCode = inviteService.getInviteCode(user.getOpayId());
+        OpayInviteCode inviteCode = inviteService.getInviteCode(user.getOpayId());
         if(inviteCode==null || "".equals(inviteCode)) {
             String code = InviteCode.getCode(user.getOpayId(), key);
-            inviteService.saveInviteCode(user.getOpayId(),code);
+            inviteService.saveInviteCode(user.getOpayId(),code,user.getPhoneNumber());
             return Result.success(code);
         }
-        return Result.success(inviteCode);
+        return Result.success(inviteCode.getInviteCode());
     }
 
 
@@ -54,13 +54,14 @@ public class InviteController {
     @PostMapping("/save")
     public Result save(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) throws Exception{
         //判断邀请码是否合法,和反作弊，不能建立师徒关系,当前用户已经过了7天不能填写邀请码
-        String masterId = inviteService.getOpayIdByInviteCode(inviteRequest.getInviteCode());
+        OpayInviteCode inviteCode = inviteService.getOpayIdByInviteCode(inviteRequest.getInviteCode());
         //获取code用户类型
-        if(masterId==null || "".equals(masterId)){
+        if(inviteCode==null){
             return Result.error(CodeMsg.ILLEGAL_CODE);
         }
         //解析登录用户ID和邀请码用户ID
         LoginUser user = inviteOperateService.getOpayInfo(request);
+        String masterId=inviteCode.getOpayId();
         if(masterId.equals(user.getOpayId())){
             return Result.error(CodeMsg.ILLEGAL_CODE);
         }
@@ -92,7 +93,7 @@ public class InviteController {
         // 建立关系，增加金额奖励,同时充入账户，需要判断角色和用户邀请人数所属阶梯，奖励不同
         OpayInviteRelation vr = inviteService.selectRelationMasterByMasterId(masterId);
         //TODO 查询邀请账号，判断所属类型 mark_type
-        OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,user.getOpayId(),vr,1);
+        OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,user.getOpayId(),inviteCode.getPhone(),user.getPhoneNumber(),vr,1);
         List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,user.getOpayId(),vr,1);
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
         inviteOperateService.saveRelationAndRewardAndCashback(relation, list,cashbacklist);

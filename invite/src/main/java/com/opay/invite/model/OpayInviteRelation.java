@@ -40,4 +40,10 @@ public class OpayInviteRelation {
     @ApiModelProperty(value = "年月日20191101")
     private int day;
 
+    @ApiModelProperty(value = "")
+    private String pupilPhone;
+
+    @ApiModelProperty(value = "")
+    private String masterPhone;
+
 }

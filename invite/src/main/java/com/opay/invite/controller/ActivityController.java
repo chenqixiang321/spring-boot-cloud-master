@@ -5,9 +5,11 @@ import com.opay.invite.model.InviteRequest;
 import com.opay.invite.resp.Result;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
+import com.opay.invite.service.RpcService;
 import com.opay.invite.stateconfig.AgentRoyaltyReward;
 import com.opay.invite.stateconfig.MsgConst;
 import com.opay.invite.stateconfig.RewardConfig;
+import com.opay.invite.transferconfig.TransferConfig;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,12 @@ public class ActivityController {
 
     @Autowired
     private RewardConfig rewardConfig;
+
+    @Autowired
+    private RpcService rpcService;
+
+    @Autowired
+    private TransferConfig transferConfig;
 
     @ApiOperation(value = "获取活动页内容", notes = "获取活动页内容")
     @PostMapping("/getActivity")
@@ -83,11 +91,21 @@ public class ActivityController {
 
     @ApiOperation(value = "获取活动页历史用户前30名数据", notes = "获取活动页历史用户前30名数据")
     @PostMapping("/rank")
-    public Result getRankList(HttpServletRequest request) {
+    public Result getRankList(HttpServletRequest request) throws Exception {
 
         List<OpayInviteRankVo> list = inviteService.getRankList(1,30);
         //获取列表,名称和奖励金额，邀请人数
-
+        if(list!=null && list.size()>0){
+            for(int i=0;i<list.size();i++){
+                OpayInviteRankVo vo = list.get(i);
+                Map<String,String> map = rpcService.getOpayUser(vo.getMasterId(),vo.getMasterPhone(),transferConfig.getMerchantId());
+                if(map!=null && map.size()>0){
+                   String firstName = map.get("firstName");
+                    vo.setName(firstName+"***");
+                }
+                list.add(i,vo);
+            }
+        }
         //缓存一定时间
 
         return Result.success(list);
@@ -96,11 +114,22 @@ public class ActivityController {
 
     @ApiOperation(value = "获取当前登录人邀请列表", notes = "获取当前登录人邀请列表")
     @PostMapping("/list")
-    public Result getInviteList(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) {
+    public Result getInviteList(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) throws Exception {
         //获取列表关系列表和奖励金额
         LoginUser user = inviteOperateService.getOpayInfo(request);
         List<OpayInviteRelationVo> list= inviteService.selectRelationByMasterId(user.getOpayId(),inviteRequest.getPageNum(),inviteRequest.getPageSize());
         //调用opay 获取用户头像信息
+        if(list!=null && list.size()>0){
+            for(int i=0;i<list.size();i++){
+                OpayInviteRelationVo vo = list.get(i);
+                Map<String,String> map = rpcService.getOpayUser(vo.getPupilId(),vo.getPupilPhone(),transferConfig.getMerchantId());
+                if(map!=null && map.size()>0){
+                    String firstName = map.get("firstName");
+                    vo.setName(map.get("firstName")+map.get("middleName")+map.get("surname"));
+                }
+                list.add(i,vo);
+            }
+        }
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("list",list);
         if(list!=null && list.size()>0){//有好友

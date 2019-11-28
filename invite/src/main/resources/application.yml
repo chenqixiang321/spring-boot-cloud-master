@@ -43,11 +43,6 @@ spring:
         max-wait: 1
         max-idle: 8
         min-idle: 0
-  cache:
-    type: redis
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+1
 upperLimit:
   invite: 100
   share: 5
@@ -128,7 +123,14 @@ transfer:
     aesKey: p2LfpyyoKkrv1mjr
     url: /api/m/createOrder
     reference: IVE
+    userUrl: /api/users/queryUserInfoByPhone
 
+opay:
+  settings:
+    jobs:
+      fix-merchant-balance:
+        expression: "*/2 * * * * ?"
+        jobClass: "com.opay.invite.job.UserTradeJob"
 
 #prize-pool:
 #  count: 100000

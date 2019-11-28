@@ -28,5 +28,7 @@ public class OpayInviteRankVo {
     @ApiModelProperty(value = "邀请人的总人数")
     private int totalNum;
 
+    @ApiModelProperty(value = "")
+    private String masterPhone;
 
 }

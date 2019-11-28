@@ -1,5 +1,6 @@
 package com.opay.invite.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -27,5 +28,11 @@ public class OpayInviteRelationVo {
 
     @ApiModelProperty(value = "邀请人得到奖励,及被邀人贡献")
     private Long masterReward;
+
+    @JsonIgnore
+    @ApiModelProperty(value = "徒弟电话号")
+    private String pupilPhone;
+
+    private String name;
 
 }

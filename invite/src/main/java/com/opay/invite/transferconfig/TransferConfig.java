@@ -20,4 +20,6 @@ public class TransferConfig {
     private String url;
 
     private String reference;
+
+    private String userUrl;
 }

@@ -32,18 +32,20 @@ public class InviteOperateService {
     private WithdrawalService withdrawalService;
 
     @Autowired
-    private TransferService transferService;
+    private RpcService rpcService;
 
     @Autowired
     private TransferConfig transferConfig;
 
-    public OpayInviteRelation getInviteRelation(String masterId, String pupilId, OpayInviteRelation vr,int markType) {
+    public OpayInviteRelation getInviteRelation(String masterId, String pupilId,String masterPhone,String pupilPhone, OpayInviteRelation vr,int markType) {
         OpayInviteRelation relation = new OpayInviteRelation();
         relation.setMasterId(masterId);
         relation.setPupilId(pupilId);
         relation.setCreateAt(new Date());
         relation.setMonth(Integer.valueOf(DateFormatter.formatShortYMDate(new Date())));
         relation.setDay(Integer.valueOf(DateFormatter.formatShortYMDDate(new Date())));
+        relation.setPupilPhone(pupilPhone);
+        relation.setMasterPhone(masterPhone);
         if(vr!=null){
             relation.setMasterParentId(vr.getMasterId());
         }
@@ -218,9 +220,8 @@ public class InviteOperateService {
         if(saveTixian.getType()==1){
             orderType =OrderType.MUAATransfer.getOrderType();
         }
-        long mills = System.currentTimeMillis();
         String reference = transferConfig.getReference()+""+String.format("%10d", saveTixian.getId()).replace(" ", "0");;
-        Map<String,String> map = transferService.transfer(String.valueOf(mills),cashback.getOpayId(),saveTixian.getAmount().toString(),reference,orderType);
+        Map<String,String> map = rpcService.transfer(reference,cashback.getOpayId(),saveTixian.getAmount().toString(),reference,orderType,"BalancePayment");
         if(map==null || map.size()==0){
             log.error("transfer err {}",JSON.toJSONString(saveTixian));
             throw new Exception("transfer error");
@@ -244,11 +245,11 @@ public class InviteOperateService {
                     cashback2.setAmount(saveTixian.getAmount());//扣件金额
                     cashback2.setUpdateAt(new Date());
                     inviteService.updateCashback(cashback2);
-                    return false;
                 }catch (Exception e){
-                    log.warn("transter err {},map:{},status:{}",JSON.toJSONString(saveTixian),JSON.toJSONString(map),4);
+                    log.warn("transter err {},map:{},status:{},err:{}",JSON.toJSONString(saveTixian),JSON.toJSONString(map),4,e.getMessage());
                 }
-                //throw new Exception("transfer error");
+                //return false;
+                throw new Exception("transfer error");
             }
         }
         return true;

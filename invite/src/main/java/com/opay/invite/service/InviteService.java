@@ -27,11 +27,11 @@ public interface InviteService {
 
     OpayInviteRankVo getTotalRewardByDetail(String opayId);
 
-    String getInviteCode(String opayId);
+    OpayInviteCode getInviteCode(String opayId);
 
-    void saveInviteCode(String opayId, String code);
+    void saveInviteCode(String opayId, String code,String phone);
 
-    String getOpayIdByInviteCode(String inviteCode);
+    OpayInviteCode getOpayIdByInviteCode(String inviteCode);
 
     OpayActiveCashback getActivityCashbackByOpayId(String opayId);
 

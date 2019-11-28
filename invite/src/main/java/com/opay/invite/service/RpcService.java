@@ -6,9 +6,10 @@ import com.opay.invite.utils.AESUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface TransferService {
+public interface RpcService {
+
     default Map<String,String> getParamMap(String senderId, String recieptId, String amount, String currency,
-                                           String country, String reference, String orderType, String callBackURL){
+                                           String country, String reference, String orderType, String callBackURL,String payChannel){
         Map<String,String> map =new HashMap<>();
         map.put("senderId",senderId);
         map.put("recieptId",recieptId);
@@ -24,6 +25,7 @@ public interface TransferService {
         map.put("reference",reference);
         map.put("orderType",orderType);
         map.put("callBackURL",callBackURL);
+        map.put("payChannel",payChannel);
         return map;
     }
     default String getEncrypt(Map<String,String> map,String key) throws Exception{
@@ -36,7 +38,9 @@ public interface TransferService {
         return str;
     }
     Map<String,String> transfer(String requestId, String merchantId,String senderId, String recieptId, String amount, String currency,
-                         String country, String reference, String orderType, String callBackURL) throws Exception;
+                                String country, String reference, String orderType, String callBackURL,String payChannel) throws Exception;
 
-    Map<String,String> transfer(String requestId,String recieptId, String amount,String reference, String orderType) throws Exception;
+    Map<String,String> transfer(String requestId,String recieptId, String amount,String reference, String orderType,String payChannel) throws Exception;
+
+    Map<String,String> getOpayUser(String phone,String requestId, String merchantId) throws Exception;
 }
