@@ -17,7 +17,9 @@ public class CodeMsg {
 
 
     public static final CodeMsg ILLEGAL_CODE_TIXIAN = new CodeMsg(1009, "Insufficient balance! Invite friends to earn more! ");
-    public static final CodeMsg ILLEGAL_CODE_TIXIAN_LIMIT = new CodeMsg(1010, "Withdraw in failure The withdrawal limit available today has been exhausted. Please withdraw your money tomorrow");
+    public static final CodeMsg ILLEGAL_CODE_TIXIAN_LIMIT = new CodeMsg(1010, "The withdrawal limit available today has been exhausted. Please withdraw your money tomorrow.");
+    public static final CodeMsg ILLEGAL_CODE_TIXIAN_SYSTERM = new CodeMsg(1011, "The withdrawal fail. Please withdraw again.");
+
 
     private int code;
     private String message;

@@ -84,7 +84,10 @@ public class TixianController {
         saveTixianLog.setIp(IpUtil.getLocalIp(request));
         saveTixianLog.setMonth(month);
         saveTixianLog.setDay(day);
-        inviteOperateService.saveTixianAndLog(saveTixian,saveTixianLog,cashback);
+        boolean f =inviteOperateService.saveTixianAndLog(saveTixian,saveTixianLog,cashback);
+        if(!f){
+            return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN_SYSTERM);
+        }
         return Result.success();
     }
 

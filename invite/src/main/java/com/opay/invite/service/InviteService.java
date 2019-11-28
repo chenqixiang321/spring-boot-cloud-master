@@ -40,4 +40,6 @@ public interface InviteService {
     void updateCashback(List<OpayActiveCashback> cashbacklist) throws Exception;
 
     int deductionCashback(OpayActiveCashback cashback);
+
+    void updateCashback(OpayActiveCashback cashback);
 }

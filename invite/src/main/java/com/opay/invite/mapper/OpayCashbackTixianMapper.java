@@ -15,5 +15,5 @@ public interface OpayCashbackTixianMapper {
 
     void saveTixianLog(OpayActiveTixianLog saveTixianLog);
 
-    void updateTixian(@Param("id") long id, @Param("opayId") String opayId,@Param("reference")  String reference,@Param("orderNo") String orderNo);
+    void updateTixian(@Param("id") long id, @Param("opayId") String opayId,@Param("reference")  String reference,@Param("orderNo") String orderNo,@Param("status") int status);
 }

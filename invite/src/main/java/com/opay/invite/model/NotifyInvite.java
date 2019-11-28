@@ -20,8 +20,6 @@ public class NotifyInvite {
     @ApiModelProperty(value = "注册用户人手机号")
     private String phone;
 
-
-
     @ApiModelProperty(value = "注册时间：格式：2019-01-22 21:23:32")
     private String createTime;
 

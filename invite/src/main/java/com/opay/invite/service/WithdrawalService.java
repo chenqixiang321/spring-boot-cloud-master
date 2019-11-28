@@ -11,5 +11,5 @@ public interface WithdrawalService {
 
     void saveTixianLog(OpayActiveTixianLog saveTixianLog);
 
-    void updateTixian(long id,String opayId, String reference, String orderNo);
+    void updateTixian(long id,String opayId, String reference, String orderNo,int status);
 }

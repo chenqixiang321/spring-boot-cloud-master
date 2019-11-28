@@ -29,7 +29,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     }
 
     @Override
-    public void updateTixian(long id,String opayId, String reference, String orderNo) {
-        opayCashbackTixianMapper.updateTixian(id,opayId,reference,orderNo);
+    public void updateTixian(long id,String opayId, String reference, String orderNo,int status) {
+        opayCashbackTixianMapper.updateTixian(id,opayId,reference,orderNo,status);
     }
 }

@@ -202,7 +202,7 @@ public class InviteOperateService {
     }
     //保存提现内容和日志
     @Transactional(rollbackFor=Exception.class)
-    public void saveTixianAndLog(OpayActiveTixian saveTixian,OpayActiveTixianLog saveTixianLog,OpayActiveCashback cashback) throws Exception {
+    public boolean saveTixianAndLog(OpayActiveTixian saveTixian,OpayActiveTixianLog saveTixianLog,OpayActiveCashback cashback) throws Exception {
         cashback.setAmount(saveTixian.getAmount());//扣件金额
         cashback.setUpdateAt(new Date());
         int count = inviteService.deductionCashback(cashback);
@@ -230,12 +230,27 @@ public class InviteOperateService {
                 log.error("timeout err {}",JSON.toJSONString(saveTixian));
             }else if("00000".equals(map.get("code")) && "SUCCESS".equals(map.get("status"))){
                 try {
-                    withdrawalService.updateTixian(saveTixian.getId(), saveTixian.getOpayId(), reference, map.get("orderNo"));
-                }catch (Exception e){}
+                    withdrawalService.updateTixian(saveTixian.getId(), saveTixian.getOpayId(), reference, map.get("orderNo"),3);
+                }catch (Exception e){
+                    log.error("updateTixian err:{},map:{},status:{}",JSON.toJSONString(saveTixian),JSON.toJSONString(map),3);
+                }
             }else{
-                log.error("transter err {},map:{}",JSON.toJSONString(saveTixian),JSON.toJSONString(map));
-                throw new Exception("transfer error");
+                log.warn("transter err {},map:{}",JSON.toJSONString(saveTixian),JSON.toJSONString(map));
+                try {
+                    withdrawalService.updateTixian(saveTixian.getId(), saveTixian.getOpayId(), reference, map.get("orderNo"),4);
+                    saveTixianLog.setMark(1);//异常
+                    withdrawalService.saveTixianLog(saveTixianLog);
+                    OpayActiveCashback cashback2 = inviteService.getActivityCashbackByOpayId(saveTixian.getOpayId());
+                    cashback2.setAmount(saveTixian.getAmount());//扣件金额
+                    cashback2.setUpdateAt(new Date());
+                    inviteService.updateCashback(cashback2);
+                    return false;
+                }catch (Exception e){
+                    log.warn("transter err {},map:{},status:{}",JSON.toJSONString(saveTixian),JSON.toJSONString(map),4);
+                }
+                //throw new Exception("transfer error");
             }
         }
+        return true;
     }
 }

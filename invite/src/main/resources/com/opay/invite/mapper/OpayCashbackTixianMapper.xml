@@ -42,6 +42,7 @@
   </insert>
 
   <update id="updateTixian">
-    update opay_active_tixian set trade_no=#{tradeNo},reference=#{reference} where id=#{id} and opay_id=#{opayId}
+    update opay_active_tixian set trade_no=#{tradeNo},reference=#{reference},status=#{status}
+    where id=#{id} and opay_id=#{opayId}
   </update>
 </mapper>

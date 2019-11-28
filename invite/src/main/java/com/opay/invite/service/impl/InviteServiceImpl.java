@@ -137,4 +137,8 @@ public class InviteServiceImpl implements InviteService {
     public int deductionCashback(OpayActiveCashback cashback) {
         return opayactiveCashbackMapper.deductionCashback(cashback);
     }
+
+    public void updateCashback(OpayActiveCashback cashback){
+        int num = opayactiveCashbackMapper.updateCashback(cashback);
+    }
 }
