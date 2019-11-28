@@ -1,5 +1,6 @@
 package com.opay.invite.service.impl;
 
+import com.opay.invite.config.PrizePoolConfig;
 import com.opay.invite.mapper.InviteCountMapper;
 import com.opay.invite.model.InviteCountModel;
 import com.opay.invite.service.InviteCountService;
@@ -28,8 +29,8 @@ public class InviteCountServiceImpl implements InviteCountService {
     private int inviteUpperLimit;
     @Value("${upperLimit.share:3}")
     private int shareUpperLimit;
-    @Resource
-    private DefaultRedisScript<Boolean> inviteShareCount;
+    @Resource(name = "inviteShareCountInc")
+    private DefaultRedisScript<Boolean> inviteShareCountInc;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -65,7 +66,7 @@ public class InviteCountServiceImpl implements InviteCountService {
     public boolean updateInviteCount(String opayId, String opayName, String opayPhone) throws Exception {
         Date date = new Date();
         List<String> keys = Arrays.asList(opayId, "invite");
-        Boolean execute = (Boolean) redisTemplate.execute(inviteShareCount, keys, inviteUpperLimit, getSecondsToMidnight(date));
+        Boolean execute = (Boolean) redisTemplate.execute(inviteShareCountInc, keys, inviteUpperLimit, getSecondsToMidnight(date));
         if (execute) {
             InviteCountModel inviteCountModel = inviteCountMapper.selectByOpayId(opayId);
             if (inviteCountModel == null) {
@@ -88,7 +89,7 @@ public class InviteCountServiceImpl implements InviteCountService {
     public boolean updateShareCount(String opayId, String opayName, String opayPhone) throws Exception {
         Date date = new Date();
         List<String> keys = Arrays.asList(opayId, "share");
-        Boolean execute = (Boolean) redisTemplate.execute(inviteShareCount, keys, shareUpperLimit, getSecondsToMidnight(date));
+        Boolean execute = (Boolean) redisTemplate.execute(inviteShareCountInc, keys, shareUpperLimit, getSecondsToMidnight(date));
         if (execute) {
             InviteCountModel inviteCountModel = inviteCountMapper.selectByOpayId(opayId);
             if (inviteCountModel == null) {

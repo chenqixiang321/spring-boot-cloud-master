@@ -44,11 +44,13 @@ public class LuckDrawInfoModel {
     private String prize;
 
     /**
-     * 奖品级别 数越大越值钱
+     * 奖品级别 数越小越值钱
      */
-    @ApiModelProperty(value = "奖品级别 数越大越值钱")
+    @ApiModelProperty(value = "奖品级别 数越小越值钱")
     private Integer prizeLevel;
 
+    @ApiModelProperty(value = "奖池号")
+    private Integer prizePool;
     /**
      * 创建时间
      */

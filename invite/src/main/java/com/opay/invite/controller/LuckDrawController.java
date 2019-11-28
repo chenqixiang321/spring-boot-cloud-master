@@ -1,5 +1,6 @@
 package com.opay.invite.controller;
 
+import com.opay.invite.model.response.LuckDrawInfoResponse;
 import com.opay.invite.model.response.LuckDrawResponse;
 import com.opay.invite.model.response.ResultResponse;
 import com.opay.invite.model.response.SuccessResponse;
@@ -45,10 +46,16 @@ public class LuckDrawController {
         return new SuccessResponse();
     }
 
-    @ApiOperation(value = "邀请次数+1", notes = "邀请次数+1")
+    @ApiOperation(value = "邀请次数+5", notes = "邀请次数+5")
     @PostMapping("/invite")
     public SuccessResponse updateInviteCount() throws Exception {
         boolean t = InviteCountService.updateInviteCount("1", "1", "1");
         return new SuccessResponse();
+    }
+
+    @ApiOperation(value = "抽奖", notes = "抽奖")
+    @GetMapping
+    public LuckDrawInfoResponse luckDraw() throws Exception {
+        return luckDrawInfoService.getLuckDraw("1", "1", "1");
     }
 }

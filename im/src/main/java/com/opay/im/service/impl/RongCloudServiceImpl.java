@@ -56,11 +56,8 @@ public class RongCloudServiceImpl implements RongCloudService {
     public void createGroup(String userId, String groupId, String groupName) throws Exception {
         Group groupApi = getRongCloud().group;
         GroupMember[] members = {new GroupMember().setId(userId)};
-        StringBuilder groupIdSb = new StringBuilder();
-        groupIdSb.append(groupIdPrefix);
-        groupIdSb.append(groupId);
         GroupModel group = new GroupModel()
-                .setId(groupIdSb.toString())
+                .setId(groupIdPrefix + groupId)
                 .setMembers(members)
                 .setName(groupName);
         Result groupCreateResult = (Result) groupApi.create(group);
@@ -73,11 +70,8 @@ public class RongCloudServiceImpl implements RongCloudService {
     public void joinGroup(String userId, String groupId, String groupName) throws Exception {
         Group groupApi = getRongCloud().group;
         GroupMember[] members = {new GroupMember().setId(userId)};
-        StringBuilder groupIdSb = new StringBuilder();
-        groupIdSb.append(groupIdPrefix);
-        groupIdSb.append(groupId);
         GroupModel group = new GroupModel()
-                .setId(groupIdSb.toString())
+                .setId(groupIdPrefix + groupId)
                 .setMembers(members)
                 .setName(groupName);
         Result joinGroupResult = (Result) groupApi.join(group);
@@ -90,11 +84,8 @@ public class RongCloudServiceImpl implements RongCloudService {
     public void quitGroup(String userId, String groupId) throws Exception {
         Group groupApi = getRongCloud().group;
         GroupMember[] members = {new GroupMember().setId(userId)};
-        StringBuilder groupIdSb = new StringBuilder();
-        groupIdSb.append(groupIdPrefix);
-        groupIdSb.append(groupId);
         GroupModel group = new GroupModel()
-                .setId(groupIdSb.toString())
+                .setId(groupIdPrefix + groupId)
                 .setMembers(members);
         Result joinGroupResult = (Result) groupApi.quit(group);
         if (joinGroupResult.getCode() != 200) {
@@ -105,13 +96,10 @@ public class RongCloudServiceImpl implements RongCloudService {
     @Override
     public void muteGroup(String userId, String targetId) throws Exception {
         Conversation conversationApi = getRongCloud().conversation;
-        StringBuilder groupIdSb = new StringBuilder();
-        groupIdSb.append(groupIdPrefix);
-        groupIdSb.append(targetId);
         ConversationModel conversation = new ConversationModel()
                 .setType(CodeUtil.ConversationType.PRIVATE.getName())
                 .setUserId(userId)
-                .setTargetId(groupIdSb.toString());
+                .setTargetId(groupIdPrefix + targetId);
         ResponseResult muteConversationResult = conversationApi.mute(conversation);
         if (muteConversationResult.getCode() != 200) {
             throw new Exception(muteConversationResult.errorMessage);
@@ -121,12 +109,9 @@ public class RongCloudServiceImpl implements RongCloudService {
     @Override
     public void blockMember(String userId, String groupId) throws Exception {
         MuteMembers muteMembers = getRongCloud().group.muteMembers;
-        StringBuilder groupIdSb = new StringBuilder();
-        groupIdSb.append(groupIdPrefix);
-        groupIdSb.append(groupId);
         GroupMember[] members = {new GroupMember().setId(userId)};
         GroupModel group = new GroupModel()
-                .setId(groupIdSb.toString())
+                .setId(groupIdPrefix + groupId)
                 .setMembers(members)
                 .setMinute(0);
         Result result = muteMembers.add(group);
@@ -138,12 +123,9 @@ public class RongCloudServiceImpl implements RongCloudService {
     @Override
     public void unblockMember(String userId, String groupId) throws Exception {
         MuteMembers muteMembers = getRongCloud().group.muteMembers;
-        StringBuilder groupIdSb = new StringBuilder();
-        groupIdSb.append(groupIdPrefix);
-        groupIdSb.append(groupId);
         GroupMember[] members = {new GroupMember().setId(userId)};
         GroupModel group = new GroupModel()
-                .setId(groupIdSb.toString())
+                .setId(groupIdPrefix + groupId)
                 .setMembers(members);
         Result result = muteMembers.remove(group);
         if (result.getCode() != 200) {

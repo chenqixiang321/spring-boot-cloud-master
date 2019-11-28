@@ -43,6 +43,11 @@ spring:
         max-wait: 1
         max-idle: 8
         min-idle: 0
+  cache:
+    type: redis
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+1
 upperLimit:
   invite: 100
   share: 5
@@ -124,3 +129,37 @@ transfer:
     url: /api/m/createOrder
     reference: IVE
 
+
+#prize-pool:
+#  count: 100000
+#  firstPool:
+#    - {prize: 10,prob: 0.00015}
+#    - {prize: 5,prob: 0.0002}
+#    - {prize: 2,prob: 0.001}
+#    - {prize: 1,prob: 0.24865}
+#    - {prize: 0,prob: 0.75}
+#  secondPool:
+#    - {prize: phone,prob: 0.00001}
+#    - {prize: 100,prob: 0.00004}
+#    - {prize: 50,prob: 0.0002}
+#    - {prize: 10,prob: 0.00035}
+#    - {prize: 5,prob: 0.0009}
+#    - {prize: 2,prob: 0.0285}
+#    - {prize: 1,prob: 0.27}
+#    - {prize: 0,prob: 0.7}
+prize-pool:
+  grandPrizeIndex: 37
+  secondPoolRate: 3
+  count: 100
+  firstPool:
+    - {prize: 10,prob: 0.01}
+    - {prize: 5,prob: 0.04}
+    - {prize: 2,prob: 0.05}
+    - {prize: 1,prob: 0.20}
+    - {prize: 0,prob: 0.70}
+  secondPool:
+    - {prize: 100,prob: 0.01}
+    - {prize: 5,prob: 0.04}
+    - {prize: 2,prob: 0.05}
+    - {prize: 1,prob: 0.20}
+    - {prize: 0,prob: 0.70}

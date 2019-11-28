@@ -22,6 +22,6 @@ public interface LuckDrawInfoService {
 
     List<LuckDrawInfoResponse> selectLuckDrawInfoList() throws Exception;
 
-    LuckDrawInfoResponse getLuckDraw() throws Exception;
+    LuckDrawInfoResponse getLuckDraw(String opayId, String opayName, String opayPhone) throws Exception;
 }
 

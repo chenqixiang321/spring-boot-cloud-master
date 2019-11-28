@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 @ApiModel(value = "com-opay-invite-model-LuckDrawInfoResponse")
 @Getter
 @Setter
@@ -24,4 +26,6 @@ public class LuckDrawInfoResponse {
     private String opayName;
     @ApiModelProperty(value = "奖品")
     private String prize;
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
 }

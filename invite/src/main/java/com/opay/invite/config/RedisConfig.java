@@ -61,12 +61,11 @@ public class RedisConfig extends CachingConfigurerSupport {
      */
     @Bean
     public RedisSerializer<Object> jackson2JsonRedisSerializer() {
-        //使用Jackson2JsonRedisSerializer来序列化和反序列化redis的value值
         Jackson2JsonRedisSerializer serializer = new Jackson2JsonRedisSerializer(Object.class);
-        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder().build();
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        mapper.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL);
+        PolymorphicTypeValidator validator = BasicPolymorphicTypeValidator.builder().allowIfBaseType(Object.class).build();
+        mapper.activateDefaultTyping(validator);
         serializer.setObjectMapper(mapper);
         return serializer;
     }

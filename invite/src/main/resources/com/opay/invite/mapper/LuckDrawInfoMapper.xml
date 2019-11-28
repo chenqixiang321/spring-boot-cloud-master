@@ -10,11 +10,12 @@
         <result column="opay_phone" jdbcType="VARCHAR" property="opayPhone"/>
         <result column="prize" jdbcType="VARCHAR" property="prize"/>
         <result column="prize_level" jdbcType="INTEGER" property="prizeLevel"/>
+        <result column="prize_pool" jdbcType="INTEGER" property="prizePool"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        id, opay_id, opay_name, opay_phone, prize, prize_level, create_time
+        id, opay_id, opay_name, opay_phone, prize, prize_level, prize_pool, create_time
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         <!--@mbg.generated-->
@@ -37,7 +38,8 @@
         #{opayPhone,jdbcType=VARCHAR}, #{prize,jdbcType=VARCHAR}, #{prizeLevel,jdbcType=INTEGER},
         #{createTime,jdbcType=TIMESTAMP})
     </insert>
-    <insert id="insertSelective" parameterType="com.opay.invite.model.LuckDrawInfoModel">
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" useGeneratedKeys="true"
+            parameterType="com.opay.invite.model.LuckDrawInfoModel">
         <!--@mbg.generated-->
         insert into luck_draw_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -58,6 +60,9 @@
             </if>
             <if test="prizeLevel != null">
                 prize_level,
+            </if>
+            <if test="prizePool != null">
+                prize_pool,
             </if>
             <if test="createTime != null">
                 create_time,
@@ -81,6 +86,9 @@
             </if>
             <if test="prizeLevel != null">
                 #{prizeLevel,jdbcType=INTEGER},
+            </if>
+            <if test="prizePool != null">
+                #{prizePool,jdbcType=INTEGER},
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
@@ -127,6 +135,6 @@
     <select id="selectLuckDrawInfoList" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from luck_draw_info where prize_level in (7,8)
+        from luck_draw_info where prize_level =0 and prize_pool =2
     </select>
 </mapper>
