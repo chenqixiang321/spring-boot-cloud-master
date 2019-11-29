@@ -1,3 +1,5 @@
+swagger:
+  show: true
 server:
   port: 8082
 logging:

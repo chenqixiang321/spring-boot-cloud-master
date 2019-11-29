@@ -1,5 +1,6 @@
 package com.opay.im.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -17,6 +18,11 @@ import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
+    @Value("${swagger.show:false}")
+    private boolean swaggerShow;
+    @Value("${spring.profiles.active}")
+    private String profileActive;
+
     @Bean
     public Docket createRestApi() {
         ParameterBuilder ticketPar = new ParameterBuilder();
@@ -25,13 +31,18 @@ public class SwaggerConfig {
                 .modelRef(new ModelRef("string")).parameterType("header")
                 .required(true).build();
         pars.add(ticketPar.build());
-        return new Docket(DocumentationType.SWAGGER_2)
+        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+                .enable(swaggerShow)
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.opay.im.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .globalOperationParameters(pars);
+        if ("test".equals(profileActive)) {
+            docket.host("t-api.iminvite.pos.operapay.com/im");
+        }
+        return docket;
     }
 
     private ApiInfo apiInfo() {
