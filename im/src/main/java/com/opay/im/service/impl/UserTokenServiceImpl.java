@@ -52,7 +52,7 @@ public class UserTokenServiceImpl implements UserTokenService {
     }
 
     @Override
-    @Cacheable(value = "ryToken", key = "#userId", unless = "#result == null")
+    @Cacheable(value = "ryToken", key = "#opayId", unless = "#result == null")
     public String getRyToken(String opayId, String phone) throws Exception{
         UserTokenModel userToken = userTokenMapper.selectByUserId(opayId);
         if (userToken == null) {
