@@ -90,6 +90,7 @@ public class ApiController {
         if(masterId.equals(notifyInvite.getOpayId())){
             return Result.error(CodeMsg.ILLEGAL_CODE);
         }
+        //当前用户是代理不能存在师傅
 
         //校验用户是否已经建立关系，或是不能互相邀请关系
         int count = inviteService.checkRelation(masterId,notifyInvite.getOpayId());
@@ -119,7 +120,7 @@ public class ApiController {
         OpayInviteRelation vr = inviteService.selectRelationMasterByMasterId(masterId);
         long mlis = System.currentTimeMillis();
         //TODO 查询邀请账号，判断所属类型 mark_type
-        Map<String, String> userMap = rpcService.getOpayUser(inviteCode.getPhone(), String.valueOf(mlis), transferConfig.getMerchantId());
+        Map<String, String> userMap = rpcService.getOpayUser(inviteCode.getPhone(), String.valueOf(mlis), null);
         int markType=0;//
         if(userMap!=null && userMap.size()>0){
             String role = userMap.get("role");
