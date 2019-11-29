@@ -37,11 +37,10 @@ public class TokenInterceptor implements HandlerInterceptor {
         System.out.println("getRequestURL:" + request.getRequestURL());
         System.out.println("getRealPath:" + request.getSession().getServletContext().getRealPath("image"));
         System.out.println("token:" + request.getHeader("token"));
-//        OpayUser opayUser = opayService.getOpayUser("Bearer "+request.getHeader("token"));
-//        request.setAttribute("opayId",opayUser.getId());
-//        request.setAttribute("phoneNumber",opayUser.getPhoneNumber());
-        request.setAttribute("opayId",request.getHeader("opayId"));
-        request.setAttribute("phoneNumber",request.getHeader("phoneNumber"));
+        OpayUser opayUser = opayService.getOpayUser("Bearer "+request.getHeader("token"));
+        request.setAttribute("opayId",opayUser.getId());
+        request.setAttribute("phoneNumber",opayUser.getPhoneNumber());
+
 
         return true;
     }
