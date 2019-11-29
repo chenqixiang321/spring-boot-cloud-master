@@ -14,7 +14,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(value = "提现记录", description = "提现记录")
+@ApiModel(value = "提现记录日志", description = "提现记录日志")
 public class OpayActiveTixianLog {
     @ApiModelProperty(value = "主键")
     private Long id;

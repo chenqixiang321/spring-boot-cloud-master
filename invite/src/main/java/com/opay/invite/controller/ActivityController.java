@@ -1,11 +1,13 @@
 package com.opay.invite.controller;
 
 import com.opay.invite.model.*;
-import com.opay.invite.model.InviteRequest;
+import com.opay.invite.model.request.InviteRequest;
+import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.resp.Result;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.service.RpcService;
+import com.opay.invite.stateconfig.ActionOperate;
 import com.opay.invite.stateconfig.AgentRoyaltyReward;
 import com.opay.invite.stateconfig.MsgConst;
 import com.opay.invite.stateconfig.RewardConfig;
@@ -20,9 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/activity")
@@ -134,9 +139,9 @@ public class ActivityController {
         map.put("list",list);
         if(list!=null && list.size()>0){//有好友
             OpayInviteRankVo rankVo = inviteService.getInviteInfoByOpayId(user.getOpayId());
-            map.put("msg",MsgConst.inviteFriendlist.replaceFirst("d%",rankVo.getTotalReward().toString()));
+            map.put("msg", MsgConst.inviteFriendlist.replaceFirst("d%",rankVo.getTotalReward().toString()));
         }else{
-            map.put("msg",MsgConst.inviteNoFriendlist+rewardConfig.getRegisterReward().add(rewardConfig.getRewardList().get(0).getWalletReward()));
+            map.put("msg", MsgConst.inviteNoFriendlist+rewardConfig.getRegisterReward().add(rewardConfig.getRewardList().get(0).getWalletReward()));
         }
         return Result.success(map);
     }
@@ -169,6 +174,36 @@ public class ActivityController {
         List<AgentRoyaltyReward> list = inviteOperateService.getAgentRule();
 
         return Result.success(list);
+    }
+
+    @ApiOperation(value = "获取充值返利", notes = "获取充值返利")
+    @PostMapping("/saveRecharge")
+    public Result saveRecharge(HttpServletRequest request) throws Exception {
+        LoginUser user = inviteOperateService.getOpayInfo(request);
+        OpayInviteRelation relation = inviteService.selectRelationMasterByMasterId(user.getOpayId());
+        if(relation==null){//没有师徒关系
+            return Result.error(CodeMsg.ILLEGAL_CODE_RELATION);
+        }
+        List<OpayMasterPupilAwardVo> list = inviteService.getTaskByOpayId(user.getOpayId());
+        if(list.size()==2){
+            return Result.error(CodeMsg.ILLEGAL_CODE_FIRST);
+        }
+        Map<Integer, OpayMasterPupilAwardVo> map = list.stream().collect(Collectors.toMap(OpayMasterPupilAwardVo::getAction, Function.identity()));
+        if(map.get(ActionOperate.operate_recharge.getOperate())!=null){
+            return Result.error(CodeMsg.ILLEGAL_CODE_FIRST);
+        }
+        int count =inviteService.getRelationCount(user.getOpayId());
+        //计算用户所属阶段
+        StepReward stepReward = inviteOperateService.getStepReward(count);
+        List<OpayMasterPupilAward>  list2 =inviteOperateService.getRechargeMasterPupilAward(relation.getMasterId(),user.getOpayId(),stepReward,relation.getMarkType());
+        OpayActiveCashback cashback = inviteService.getActivityCashbackByOpayId(user.getOpayId());
+        OpayActiveCashback masterCashback = inviteService.getActivityCashbackByOpayId(relation.getMasterId());
+        List<OpayActiveCashback> cashbacklist = new ArrayList<>();
+        cashbacklist.add(cashback);
+        cashbacklist.add(masterCashback);
+        cashbacklist = inviteOperateService.getOpayCashback(list2,cashbacklist);
+        inviteOperateService.saveRewardAndCashback(list2,cashbacklist);
+        return Result.success();
     }
 
 }

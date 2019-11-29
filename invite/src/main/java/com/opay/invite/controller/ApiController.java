@@ -1,6 +1,5 @@
 package com.opay.invite.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import com.opay.invite.model.*;
 import com.opay.invite.resp.CodeMsg;
@@ -23,7 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api")
@@ -128,8 +130,8 @@ public class ApiController {
                 markType=1;
             }
         }
-        OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,notifyInvite.getOpayId(),inviteCode.getPhone(),notifyInvite.getPhone(),vr,1);
-        List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,notifyInvite.getOpayId(),vr,1);
+        OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,notifyInvite.getOpayId(),inviteCode.getPhone(),notifyInvite.getPhone(),vr,markType);
+        List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,notifyInvite.getOpayId(),markType);
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
         try {
             inviteOperateService.saveRelationAndRewardAndCashback(relation, list, cashbacklist);

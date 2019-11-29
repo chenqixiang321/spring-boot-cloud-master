@@ -1,25 +1,29 @@
 package com.opay.invite.controller;
 
 import com.opay.invite.model.*;
-import com.opay.invite.model.InviteRequest;
+import com.opay.invite.model.request.InviteRequest;
 import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.resp.Result;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
+import com.opay.invite.service.RpcService;
+import com.opay.invite.stateconfig.RewardConfig;
+import com.opay.invite.transferconfig.TransferConfig;
 import com.opay.invite.utils.InviteCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/invite")
@@ -35,6 +39,15 @@ public class InviteController {
     @Value("${invite.productKey:''}")
     private String key;
 
+    @Autowired
+    private RpcService rpcService;
+
+    @Autowired
+    private TransferConfig transferConfig;
+
+    @Autowired
+    private RewardConfig rewardConfig;
+
     @ApiOperation(value = "生成邀请码", notes = "生成邀请码")
     @PostMapping("/getInviteCode")
     public Result getInviteCode(HttpServletRequest request) {
@@ -42,7 +55,9 @@ public class InviteController {
         LoginUser user = inviteOperateService.getOpayInfo(request);
         OpayInviteCode inviteCode = inviteService.getInviteCode(user.getOpayId());
         if(inviteCode==null || "".equals(inviteCode)) {
-            String code = InviteCode.getCode(user.getOpayId(), key);
+            //String code = InviteCode.getCode(user.getOpayId(), key);
+            String phone = user.getPhoneNumber().substring(user.getPhoneNumber().length()-10,user.getPhoneNumber().length());
+            String code = InviteCode.createCode(Long.valueOf(phone));
             inviteService.saveInviteCode(user.getOpayId(),code,user.getPhoneNumber());
             return Result.success(code);
         }
@@ -50,7 +65,7 @@ public class InviteController {
     }
 
 
-    @ApiOperation(value = "插入邀请关系信息", notes = "插入邀请关系信息")
+    //@ApiOperation(value = "插入邀请关系信息", notes = "插入邀请关系信息")
     @PostMapping("/save")
     public Result save(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) throws Exception{
         //判断邀请码是否合法,和反作弊，不能建立师徒关系,当前用户已经过了7天不能填写邀请码
@@ -94,14 +109,14 @@ public class InviteController {
         OpayInviteRelation vr = inviteService.selectRelationMasterByMasterId(masterId);
         //TODO 查询邀请账号，判断所属类型 mark_type
         OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,user.getOpayId(),inviteCode.getPhone(),user.getPhoneNumber(),vr,1);
-        List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,user.getOpayId(),vr,1);
+        List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,user.getOpayId(),1);
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
         inviteOperateService.saveRelationAndRewardAndCashback(relation, list,cashbacklist);
         return Result.success();
     }
 
 
-    @ApiOperation(value = "My cashback获取奖励总金额", notes = "My cashback获取奖励总金额")
+    //@ApiOperation(value = "My cashback获取奖励总金额", notes = "My cashback获取奖励总金额")
     @PostMapping("/getTotalReward")
     public Result getTotalReward(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) {
 
@@ -116,18 +131,31 @@ public class InviteController {
 
 
 
-    @ApiOperation(value = "任务弹窗引导,未做任务", notes = "任务弹窗引导,未做任务")
+    @ApiOperation(value = "任务弹窗引导,未做任务", notes = "任务弹窗引导,未做任务，没有任务结果为空，存在结果type:1没有师徒关系，2：没有充值")
     @PostMapping("/noTask")
-    public OpayInviteRelation getNoTask(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) {
-
+    public Result getNoTask(HttpServletRequest request) throws Exception {
         //登录用户是普通用户，如果是普通用户，有师徒关系，查看执行内容，如果没有提示一个
-
-
+        LoginUser user = inviteOperateService.getOpayInfo(request);
+        Map<String,String> map =rpcService.getOpayUser(user.getPhoneNumber(),user.getOpayId(),transferConfig.getMerchantId());
         //如果是代理不提示任何
-
-
-        return new OpayInviteRelation();
+        if(map.get("role")!=null && "agent".equals(map.get("role"))){
+            return Result.success();
+        }
+        OpayInviteRelation relation = inviteService.selectRelationMasterByMasterId(user.getOpayId());
+        if(relation==null){//没有师徒关系
+            Map<String,Object> map2 = new HashMap<>();
+            map2.put("type",1);
+            map2.put("reward",rewardConfig.getRegisterReward());
+            return Result.success(map2);
+        }
+        List<OpayMasterPupilAwardVo> list = inviteService.getTaskByOpayId(user.getOpayId());
+        if(list.size()==2){
+            return Result.success();
+        }
+        Map<String,Object> map2 = new HashMap<>();
+        map2.put("type",2);
+        map2.put("reward",rewardConfig.getRechargeReward());
+        return Result.success(map2);
     }
-
 
 }

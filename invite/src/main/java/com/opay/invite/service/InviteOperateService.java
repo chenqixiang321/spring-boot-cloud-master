@@ -26,7 +26,7 @@ public class InviteOperateService {
     private RewardConfig rewardConfig;
 
     @Autowired
-    private  InviteService inviteService;
+    private InviteService inviteService;
 
     @Autowired
     private WithdrawalService withdrawalService;
@@ -37,7 +37,7 @@ public class InviteOperateService {
     @Autowired
     private TransferConfig transferConfig;
 
-    public OpayInviteRelation getInviteRelation(String masterId, String pupilId,String masterPhone,String pupilPhone, OpayInviteRelation vr,int markType) {
+    public OpayInviteRelation getInviteRelation(String masterId, String pupilId, String masterPhone, String pupilPhone, OpayInviteRelation vr, int markType) {
         OpayInviteRelation relation = new OpayInviteRelation();
         relation.setMasterId(masterId);
         relation.setPupilId(pupilId);
@@ -53,17 +53,32 @@ public class InviteOperateService {
         return relation;
     }
 
-    public List<OpayMasterPupilAward> getRegisterMasterPupilAward(String masterId, String pupilId, OpayInviteRelation vr,int markType) {
+    public List<OpayMasterPupilAward> getRegisterMasterPupilAward(String masterId, String pupilId, int markType) {
         List<OpayMasterPupilAward> list = new ArrayList<>();
         Date date = new Date();
         int month = Integer.valueOf(DateFormatter.formatShortYMDate(new Date()));
         int day= Integer.valueOf(DateFormatter.formatShortYMDDate(new Date()));
         OpayMasterPupilAward master = new OpayMasterPupilAward(masterId,rewardConfig.getMasterReward(),
-                date,0, ActionOperate.operate_register.getOperate(), BigDecimal.ZERO,markType,null,
+                date,1, ActionOperate.operate_register.getOperate(), BigDecimal.ZERO,markType,null,
                 BigDecimal.ZERO,1,month,day);//师傅奖励
         OpayMasterPupilAward pupil = new OpayMasterPupilAward(pupilId,rewardConfig.getRegisterReward(),
-                date,0, ActionOperate.operate_register.getOperate(), BigDecimal.ZERO,markType,null,
+                date,1, ActionOperate.operate_register.getOperate(), BigDecimal.ZERO,markType,null,
                 rewardConfig.getMasterReward(),0,month,day);//徒弟奖励
+        list.add(master);
+        list.add(pupil);
+        return list;
+    }
+    public List<OpayMasterPupilAward> getRechargeMasterPupilAward(String masterId, String pupilId, StepReward stepReward, int markType) {
+        List<OpayMasterPupilAward> list = new ArrayList<>();
+        Date date = new Date();
+        int month = Integer.valueOf(DateFormatter.formatShortYMDate(new Date()));
+        int day= Integer.valueOf(DateFormatter.formatShortYMDDate(new Date()));
+        OpayMasterPupilAward master = new OpayMasterPupilAward(masterId,stepReward.getWalletReward(),
+                date,1, ActionOperate.operate_recharge.getOperate(), BigDecimal.ZERO,markType,JSON.toJSONString(stepReward),
+                BigDecimal.ZERO,1,month,day);//师傅奖励
+        OpayMasterPupilAward pupil = new OpayMasterPupilAward(pupilId,rewardConfig.getRechargeReward(),
+                date,1, ActionOperate.operate_recharge.getOperate(), BigDecimal.ZERO,markType,JSON.toJSONString(stepReward),
+                stepReward.getWalletReward(),0,month,day);//徒弟奖励
         list.add(master);
         list.add(pupil);
         return list;
@@ -78,7 +93,7 @@ public class InviteOperateService {
             Reward reward =list.get(i);
             StepReward stepReward = new StepReward();
             BeanUtils.copyProperties(reward,stepReward);
-            if(stepReward.getMin()<=count && count<stepReward.getMax()){
+            if(stepReward.getMin()<=count && count<=stepReward.getMax()){
                 stepReward.setStep(1);
             }
             if(i==0){
@@ -94,8 +109,36 @@ public class InviteOperateService {
         }
         return slist;
     }
+    public StepReward getStepReward(int count) {
+        List<Reward> list = rewardConfig.getRewardList();
+        Collections.sort(list, Comparator.comparing(Reward::getOrderId));
+        List<StepReward> slist = new ArrayList<>();
+        StepReward tmp_stepReward=null;
+        for(int i=0;i<list.size();i++){
+            Reward reward =list.get(i);
+            StepReward stepReward = new StepReward();
+            BeanUtils.copyProperties(reward,stepReward);
+            if(stepReward.getMin()<=count && count<=stepReward.getMax()){
+                stepReward.setStep(1);
+            }
+            if(i==0){
+                if(count==0){
+                    stepReward.setStep(1);
+                }
+            }else if(i==list.size()-1){
+                if(stepReward.getMin()<=count){
+                    stepReward.setStep(1);
+                }
+            }
+            if(stepReward.getStep()==1){
+                tmp_stepReward = stepReward;
+                break;
+            }
+        }
+        return tmp_stepReward;
+    }
 
-    public List<OpayMasterPupilAwardVo> getActivityTask(List<OpayMasterPupilAwardVo> task,OpayInviteRelation ir) {
+    public List<OpayMasterPupilAwardVo> getActivityTask(List<OpayMasterPupilAwardVo> task, OpayInviteRelation ir) {
         if(task!=null && task.size()>0){
             List<OpayMasterPupilAwardVo> list = new ArrayList<>();
             if(task.size()==1){
@@ -197,14 +240,14 @@ public class InviteOperateService {
     }
 
     //保存邀请关系、各自收益、钱包更新
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveRelationAndRewardAndCashback(OpayInviteRelation relation, List<OpayMasterPupilAward> list, List<OpayActiveCashback> cashbacklist) throws Exception{
         inviteService.saveInviteRelationAndReward(relation, list);
         inviteService.updateCashback(cashbacklist);
     }
     //保存提现内容和日志
     @Transactional(rollbackFor=Exception.class)
-    public boolean saveTixianAndLog(OpayActiveTixian saveTixian,OpayActiveTixianLog saveTixianLog,OpayActiveCashback cashback) throws Exception {
+    public boolean saveTixianAndLog(OpayActiveTixian saveTixian, OpayActiveTixianLog saveTixianLog, OpayActiveCashback cashback) throws Exception {
         cashback.setAmount(saveTixian.getAmount());//扣件金额
         cashback.setUpdateAt(new Date());
         int count = inviteService.deductionCashback(cashback);
@@ -216,9 +259,9 @@ public class InviteOperateService {
         saveTixianLog.setTixianId(saveTixian.getId());
         saveTixianLog.setMark(0);
         withdrawalService.saveTixianLog(saveTixianLog);
-        String orderType =OrderType.bonusOffer.getOrderType();
+        String orderType = OrderType.bonusOffer.getOrderType();
         if(saveTixian.getType()==1){
-            orderType =OrderType.MUAATransfer.getOrderType();
+            orderType = OrderType.MUAATransfer.getOrderType();
         }
         String reference = transferConfig.getReference()+""+String.format("%10d", saveTixian.getId()).replace(" ", "0");;
         Map<String,String> map = rpcService.transfer(reference,cashback.getOpayId(),saveTixian.getAmount().toString(),reference,orderType,"BalancePayment");
@@ -248,10 +291,16 @@ public class InviteOperateService {
                 }catch (Exception e){
                     log.warn("transter err {},map:{},status:{},err:{}",JSON.toJSONString(saveTixian),JSON.toJSONString(map),4,e.getMessage());
                 }
-                //return false;
-                throw new Exception("transfer error");
+                return false;
             }
         }
         return true;
+    }
+
+    //保存邀请关系、各自收益、钱包更新
+    @Transactional(rollbackFor = Exception.class)
+    public void saveRewardAndCashback(List<OpayMasterPupilAward> list, List<OpayActiveCashback> cashbacklist) throws Exception {
+        inviteService.saveReward(list);
+        inviteService.updateCashback(cashbacklist);
     }
 }

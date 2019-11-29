@@ -20,6 +20,7 @@ public class CodeMsg {
     public static final CodeMsg ILLEGAL_CODE_TIXIAN_LIMIT = new CodeMsg(1010, "The withdrawal limit available today has been exhausted. Please withdraw your money tomorrow.");
     public static final CodeMsg ILLEGAL_CODE_TIXIAN_SYSTERM = new CodeMsg(1011, "The withdrawal fail. Please withdraw again.");
 
+    public static final CodeMsg ILLEGAL_CODE_FIRST = new CodeMsg(1012, "First recharge balance completed");
 
     private int code;
     private String message;

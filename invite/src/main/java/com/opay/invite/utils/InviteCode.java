@@ -31,4 +31,20 @@ public class InviteCode {
         }
         return code[0];
     }
+
+    public static String createCode(long num){
+        long len = 35;
+        String[] source_string = new String[]{"E","5", "F", "C", "D", "G", "3", "H", "Q", "A", "4", "B", "1", "N", "O", "P", "I", "J", "2", "R", "S", "T",
+                "U", "V", "6", "7", "M", "W", "X", "8", "9", "K", "L", "Y", "Z"};
+        String code ="";
+        while (true){
+            if (num <= 0){
+                break;
+            }
+            Long mod = num % len;
+            num = (num - mod) / len;
+            code = source_string[mod.intValue()] + code;
+        }
+        return code;
+    }
 }

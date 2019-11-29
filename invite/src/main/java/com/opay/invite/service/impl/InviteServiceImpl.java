@@ -3,8 +3,8 @@ package com.opay.invite.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.opay.invite.mapper.InviteMapper;
-import com.opay.invite.mapper.OpayInviteCodeMapper;
 import com.opay.invite.mapper.OpayActiveCashbackMapper;
+import com.opay.invite.mapper.OpayInviteCodeMapper;
 import com.opay.invite.model.*;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.stateconfig.RewardConfig;
@@ -53,7 +53,7 @@ public class InviteServiceImpl implements InviteService {
     }
 
     @Override
-    public List<OpayInviteRelationVo> selectRelationByMasterId(String opayId,int pageNum,int pageSize) {
+    public List<OpayInviteRelationVo> selectRelationByMasterId(String opayId, int pageNum, int pageSize) {
         PageHelper.startPage(pageNum,pageSize);
         return inviteMapper.selectRelationByMasterId(opayId);
     }
@@ -65,7 +65,7 @@ public class InviteServiceImpl implements InviteService {
     }
 
     @Override
-    public List<OpayMasterPupilAwardVo> getDetailList(String opayId,int pageNum, int pageSize) {
+    public List<OpayMasterPupilAwardVo> getDetailList(String opayId, int pageNum, int pageSize) {
         Date endTime = new Date();
         Date startTime = DateFormatter.getDateBefore(endTime,30);
         String end_ymd = DateFormatter.formatShortYMDDate(endTime);
@@ -140,5 +140,10 @@ public class InviteServiceImpl implements InviteService {
 
     public void updateCashback(OpayActiveCashback cashback){
         int num = opayactiveCashbackMapper.updateCashback(cashback);
+    }
+
+    @Override
+    public void saveReward(List<OpayMasterPupilAward> list) {
+        inviteMapper.saveInviteReward(list);
     }
 }

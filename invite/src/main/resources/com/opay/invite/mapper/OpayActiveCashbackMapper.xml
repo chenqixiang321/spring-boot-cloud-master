@@ -40,5 +40,11 @@
    ,update_at=#{updateAt}
    where opay_id=#{opayId,jdbcType=VARCHAR} and version=#{version}
   </update>
-
+    <select id="selectCashback" resultMap="BaseResultMap">
+<!--        select-->
+<!--        <include refid="Base_Column_List" />-->
+<!--        from opay_active_cashback where opay_id in(-->
+<!--            -->
+<!--        )-->
+    </select>
 </mapper>

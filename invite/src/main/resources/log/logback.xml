@@ -6,9 +6,7 @@
 <!--    <property name="CONSOLE_LOG_PATTERN" -->
 <!--               value="%date{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) | %msg%n"/> -->
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-    <property name="loggerAppName" value="invite" />
-    ​<property name="logPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [${loggerAppName},%X{X-B3-TraceId},%X{X-B3-SpanId},%thread] [%-5level] [%logger{10}] %msg%n" />
-    <property name="loggerRoot" value="/data" />
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!--<pattern>${CONSOLE_LOG_PATTERN}</pattern> -->
@@ -27,13 +25,13 @@
 	      <onMatch>ACCEPT</onMatch>   
 	      <onMismatch>DENY</onMismatch>   
 	    </filter>   
-        <File>${loggerRoot}/${loggerAppName}/logs/info.log</File>
+        <File>logs/info.log</File>
         <!-- rollingPolicy:当发生滚动时，决定 RollingFileAppender 的行为，涉及文件移动和重命名。 -->  
         <!-- TimeBasedRollingPolicy： 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责出发滚动 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 活动文件的名字会根据fileNamePattern的值，每隔一段时间改变一次 -->  
             <!-- 文件名：log/sys.2017-12-05.0.log -->
-            <fileNamePattern>${loggerRoot}/${loggerAppName}/logs/info.%d.%i.log</fileNamePattern>
+            <fileNamePattern>logs/info.%d.%i.log</fileNamePattern>
             <!-- 每产生一个日志文件，该日志文件的保存期限为30天 -->
             <maxHistory>30</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">      
@@ -57,13 +55,13 @@
 	      <onMatch>ACCEPT</onMatch>   
 	      <onMismatch>DENY</onMismatch>   
 	    </filter>   
-        <File>${loggerRoot}/${loggerAppName}/logs/error.log</File>
+        <File>logs/error.log</File>
         <!-- rollingPolicy:当发生滚动时，决定 RollingFileAppender 的行为，涉及文件移动和重命名。 -->  
         <!-- TimeBasedRollingPolicy： 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责出发滚动 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 活动文件的名字会根据fileNamePattern的值，每隔一段时间改变一次 -->  
             <!-- 文件名：log/sys.2017-12-05.0.log -->
-            <fileNamePattern>${loggerRoot}/${loggerAppName}/logs/error.%d.%i.log</fileNamePattern>
+            <fileNamePattern>logs/error.%d.%i.log</fileNamePattern>
             <!-- 每产生一个日志文件，该日志文件的保存期限为30天 -->
             <maxHistory>30</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">      
@@ -87,13 +85,13 @@
 	      <onMatch>ACCEPT</onMatch>   
 	      <onMismatch>DENY</onMismatch>   
 	    </filter>   
-        <File>${loggerRoot}/${loggerAppName}/logs/warn.log</File>
+        <File>logs/warn.log</File>
         <!-- rollingPolicy:当发生滚动时，决定 RollingFileAppender 的行为，涉及文件移动和重命名。 -->  
         <!-- TimeBasedRollingPolicy： 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责出发滚动 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 活动文件的名字会根据fileNamePattern的值，每隔一段时间改变一次 -->  
             <!-- 文件名：log/sys.2017-12-05.0.log -->
-            <fileNamePattern>${loggerRoot}/${loggerAppName}/logs/warn.%d.%i.log</fileNamePattern>
+            <fileNamePattern>logs/warn.%d.%i.log</fileNamePattern>
             <!-- 每产生一个日志文件，该日志文件的保存期限为30天 -->
             <maxHistory>30</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">      

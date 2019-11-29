@@ -14,7 +14,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(value = "邀请奖励", description = "邀请奖励")
+@ApiModel(value = "邀请奖励结果", description = "邀请奖励结果")
 public class OpayMasterPupilAwardVo {
 
     @ApiModelProperty(value = "主键")

@@ -1,4 +1,4 @@
-package com.opay.invite.model;
+package com.opay.invite.model.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(value = "邀请关系", description = "邀请关系")
+@ApiModel(value = "InviteRequest邀请关系", description = "InviteRequest邀请关系")
 public class InviteRequest {
 
     @ApiModelProperty(value = "邀请码")
