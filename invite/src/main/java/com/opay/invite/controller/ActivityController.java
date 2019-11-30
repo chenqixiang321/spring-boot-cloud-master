@@ -169,6 +169,7 @@ public class ActivityController {
                     String firstName = map.get("firstName");
                     vo.setName(map.get("firstName")+map.get("middleName")+map.get("surname"));
                 }
+                vo.setCreateTime(vo.getCreateAt().getTime());
                 list.add(i,vo);
             }
         }

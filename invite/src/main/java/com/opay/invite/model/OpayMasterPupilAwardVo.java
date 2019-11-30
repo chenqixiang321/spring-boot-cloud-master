@@ -23,7 +23,6 @@ public class OpayMasterPupilAwardVo {
     @ApiModelProperty(value = "奖励金额")
     private BigDecimal reward;
 
-    @ApiModelProperty(value = "收益时间")
     private Date createAt;
 
     @ApiModelProperty(value = "收益状态")
@@ -35,4 +34,6 @@ public class OpayMasterPupilAwardVo {
     @ApiModelProperty(value = "行为名称")
     private String actionName;
 
+    @ApiModelProperty(value = "收益时间")
+    private Long createTime;
 }

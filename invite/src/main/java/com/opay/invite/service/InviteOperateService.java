@@ -207,6 +207,7 @@ public class InviteOperateService {
             OpayMasterPupilAwardVo vo = list.get(i);
             String msg = ActionOperate.getMsgEn(vo.getAction());
             vo.setActionName(msg);
+            vo.setCreateTime(vo.getCreateAt().getTime());
             nlist.add(vo);
         }
         return nlist;

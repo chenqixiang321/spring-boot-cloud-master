@@ -23,7 +23,7 @@ public class OpayInviteRelationVo {
     @ApiModelProperty(value = "被要人")
     private String pupilId;
 
-    @ApiModelProperty(value = "邀请时间")
+    @JsonIgnore
     private Date createAt;
 
     @ApiModelProperty(value = "邀请人得到奖励,及被邀人贡献")
@@ -35,5 +35,8 @@ public class OpayInviteRelationVo {
 
     @ApiModelProperty(value = "名称")
     private String name;
+
+    @ApiModelProperty(value = "邀请时间")
+    private Long createTime;
 
 }
