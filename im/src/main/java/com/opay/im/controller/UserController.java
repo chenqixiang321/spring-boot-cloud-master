@@ -1,7 +1,5 @@
 package com.opay.im.controller;
 
-import com.opay.im.model.request.GetRongCloudTokenRequest;
-import com.opay.im.model.request.InviteGroupRequest;
 import com.opay.im.model.response.BlackListUserIdsResponse;
 import com.opay.im.model.response.ResultResponse;
 import com.opay.im.model.response.SuccessResponse;
@@ -10,18 +8,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -63,7 +57,7 @@ public class UserController {
     @PostMapping("/black/remove/{blackUserId}")
     public SuccessResponse removeBlackList(@PathVariable String blackUserId) throws Exception {
         String userId = String.valueOf(request.getAttribute("opayId"));
-        userTokenService.addBlackList(userId, blackUserId);
+        userTokenService.removeBlackList(userId, blackUserId);
         return new SuccessResponse();
     }
 
