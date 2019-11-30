@@ -47,7 +47,7 @@ public class MessageController {
                     msg.setSource(source);
                 }
                 String[] groupUserIds = request.getParameterValues("groupUserIds");
-                if (groupUserIds.length != 0) {
+                if (groupUserIds != null && groupUserIds.length != 0) {
                     msg.setGroupUserIds(String.join(",", groupUserIds));
                 }
                 rongCloudMessageService.insertSelective(msg);
