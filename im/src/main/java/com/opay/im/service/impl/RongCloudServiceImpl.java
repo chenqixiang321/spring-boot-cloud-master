@@ -1,7 +1,6 @@
 package com.opay.im.service.impl;
 
 import com.opay.im.service.RongCloudService;
-import com.sun.deploy.util.BlackList;
 import io.rong.RongCloud;
 import io.rong.methods.conversation.Conversation;
 import io.rong.methods.group.Group;
@@ -60,29 +59,38 @@ public class RongCloudServiceImpl implements RongCloudService {
 
     @Override
     public void createGroup(String userId, String groupId, String groupName) throws Exception {
-        Group groupApi = getRongCloud().group;
-        GroupMember[] members = {new GroupMember().setId(userId)};
-        GroupModel group = new GroupModel()
-                .setId(groupIdPrefix + groupId)
-                .setMembers(members)
-                .setName(groupName);
-        Result groupCreateResult = (Result) groupApi.create(group);
-        if (groupCreateResult.getCode() != 200) {
-            throw new Exception(groupCreateResult.errorMessage);
-        }
+        operationGroup(userId, groupId, groupName, 0);
     }
 
     @Override
     public void joinGroup(String userId, String groupId, String groupName) throws Exception {
+        operationGroup(userId, groupId, groupName, 1);
+    }
+
+    /**
+     * @param userId
+     * @param groupId
+     * @param groupName
+     * @param type      0创建 1加入
+     */
+    private void operationGroup(String userId, String groupId, String groupName, int type) throws Exception {
         Group groupApi = getRongCloud().group;
         GroupMember[] members = {new GroupMember().setId(userId)};
         GroupModel group = new GroupModel()
                 .setId(groupIdPrefix + groupId)
                 .setMembers(members)
                 .setName(groupName);
-        Result joinGroupResult = (Result) groupApi.join(group);
-        if (joinGroupResult.getCode() != 200) {
-            throw new Exception(joinGroupResult.errorMessage);
+        Result groupResult = null;
+        if (type == 0) {
+            groupResult = (Result) groupApi.create(group);
+        } else {
+            groupResult = (Result) groupApi.join(group);
+        }
+        if (groupResult == null) {
+            throw new Exception("groupResult is null");
+        }
+        if (groupResult.getCode() != 200) {
+            throw new Exception(groupResult.errorMessage);
         }
     }
 
