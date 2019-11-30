@@ -30,8 +30,8 @@ public class OpayActivity {
     @ApiModelProperty(value = "任务完成数据,非代理按照这个展现")
     private List<OpayMasterPupilAwardVo> task;
 
-   // @ApiModelProperty(value = "邀请码")
-   // private String inviteCode;
+    @ApiModelProperty(value = "邀请码")
+    private String inviteCode;
 
     @ApiModelProperty(value = "是否代理,0:普通，1：代理")
     private int isAgent;

@@ -21,7 +21,7 @@ public class RewardConfig {
 
     private BigDecimal rechargeReward;//徒弟首次充值到，徒弟得到奖励
 
-    private int open;//开启、关闭 0:默认全局,1:关闭，使用区间
+    private int agentOpen;//控制代理下徒弟的任务显示
 
     private List<Reward> rewardList;//钱包充值
 

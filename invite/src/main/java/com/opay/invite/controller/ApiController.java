@@ -122,7 +122,7 @@ public class ApiController {
         OpayInviteRelation vr = inviteService.selectRelationMasterByMasterId(masterId);
         long mlis = System.currentTimeMillis();
         //TODO 查询邀请账号，判断所属类型 mark_type
-        Map<String, String> userMap = rpcService.getOpayUser(inviteCode.getPhone(), String.valueOf(mlis), null);
+        Map<String, String> userMap = rpcService.getOpayUser(inviteCode.getPhone(), String.valueOf(mlis), transferConfig.getMerchantId());
         int markType=0;//
         if(userMap!=null && userMap.size()>0){
             String role = userMap.get("role");

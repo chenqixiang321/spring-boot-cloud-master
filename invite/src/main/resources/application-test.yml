@@ -61,6 +61,7 @@ activity:
     registerReward: 10
     masterReward: 20
     rechargeReward: 100
+    agentOpen: 0
     rewardList[0]:
       orderId: 1
       min: 1

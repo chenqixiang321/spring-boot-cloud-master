@@ -1,5 +1,6 @@
 package com.opay.invite.controller;
 
+import com.google.inject.internal.cglib.core.$CodeEmitter;
 import com.opay.invite.model.*;
 import com.opay.invite.model.request.InviteRequest;
 import com.opay.invite.resp.CodeMsg;
@@ -12,8 +13,12 @@ import com.opay.invite.stateconfig.AgentRoyaltyReward;
 import com.opay.invite.stateconfig.MsgConst;
 import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.transferconfig.TransferConfig;
+import com.opay.invite.utils.DateFormatter;
+import com.opay.invite.utils.InviteCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,10 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -51,10 +56,40 @@ public class ActivityController {
 
     @ApiOperation(value = "获取活动页内容", notes = "获取活动页内容")
     @PostMapping("/getActivity")
-    public Result getActivity(HttpServletRequest request) {
+    public Result<OpayActivity> getActivity(HttpServletRequest request) throws Exception {
         LoginUser user = inviteOperateService.getOpayInfo(request);
         OpayActivity activity = new OpayActivity();
         activity.setIsAgent(0);//是否为代理
+        long mlis = System.currentTimeMillis();
+        Map<String,String> map = rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());
+        int isF7 =0;//未过七天
+        if(map!=null && map.size()>0){
+            String role = map.get("role");
+            if(role!=null && "agent".equals(role)){
+                activity.setIsAgent(1);//是否为代理
+            }
+            if(activity.getIsAgent()==1) {
+                String dateStr = map.get("createDate");
+                LocalDateTime date = LocalDateTime.parse(dateStr);
+                ZoneId zone = ZoneId.systemDefault();
+                Instant instant =date.atZone(zone).toInstant();
+                Date regDate = Date.from(instant);
+                Date date7 = DateFormatter.getDateAfter(regDate, 7);
+                if (date7.getTime() < new Date().getTime()) {
+                    isF7 =1;
+                }
+            }
+        }
+
+        OpayInviteCode inviteCode = inviteService.getInviteCode(user.getOpayId());
+        if(inviteCode==null || "".equals(inviteCode)) {
+            String phone = user.getPhoneNumber().substring(user.getPhoneNumber().length()-10,user.getPhoneNumber().length());
+            String code = InviteCode.createCode(Long.valueOf(phone));
+            inviteService.saveInviteCode(user.getOpayId(),code,user.getPhoneNumber());
+            activity.setInviteCode(code);
+        }else{
+            activity.setInviteCode(inviteCode.getInviteCode());
+        }
 
         OpayActiveCashback cashback = inviteService.getActivityCashbackByOpayId(user.getOpayId());
         if(cashback==null){
@@ -85,7 +120,7 @@ public class ActivityController {
         if(activity.getIsAgent()==0){//普通用户
             List<OpayMasterPupilAwardVo> task = inviteService.getTaskByOpayId(user.getOpayId());//获取注册任务和充值任务
             OpayInviteRelation ir = inviteService.selectRelationMasterByMasterId(user.getOpayId());
-            List<OpayMasterPupilAwardVo> noTask =inviteOperateService.getActivityTask(task,ir);
+            List<OpayMasterPupilAwardVo> noTask =inviteOperateService.getActivityTask(task,ir,isF7);
             activity.setTask(noTask);
         }else if(activity.getIsAgent()==1){//代理
             inviteOperateService.getAgentTask(activity);
@@ -96,14 +131,15 @@ public class ActivityController {
 
     @ApiOperation(value = "获取活动页历史用户前30名数据", notes = "获取活动页历史用户前30名数据")
     @PostMapping("/rank")
-    public Result getRankList(HttpServletRequest request) throws Exception {
+    public Result<List<OpayInviteRankVo>> getRankList(HttpServletRequest request) throws Exception {
 
         List<OpayInviteRankVo> list = inviteService.getRankList(1,30);
         //获取列表,名称和奖励金额，邀请人数
         if(list!=null && list.size()>0){
             for(int i=0;i<list.size();i++){
                 OpayInviteRankVo vo = list.get(i);
-                Map<String,String> map = rpcService.getOpayUser(vo.getMasterId(),vo.getMasterPhone(),transferConfig.getMerchantId());
+                long mlis = System.currentTimeMillis();
+                Map<String,String> map = rpcService.getOpayUser(vo.getMasterPhone(),String.valueOf(mlis),transferConfig.getMerchantId());
                 if(map!=null && map.size()>0){
                    String firstName = map.get("firstName");
                     vo.setName(firstName+"***");
@@ -119,7 +155,7 @@ public class ActivityController {
 
     @ApiOperation(value = "获取当前登录人邀请列表", notes = "获取当前登录人邀请列表")
     @PostMapping("/list")
-    public Result getInviteList(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) throws Exception {
+    public Result<InviteList> getInviteList(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) throws Exception {
         //获取列表关系列表和奖励金额
         LoginUser user = inviteOperateService.getOpayInfo(request);
         List<OpayInviteRelationVo> list= inviteService.selectRelationByMasterId(user.getOpayId(),inviteRequest.getPageNum(),inviteRequest.getPageSize());
@@ -127,7 +163,8 @@ public class ActivityController {
         if(list!=null && list.size()>0){
             for(int i=0;i<list.size();i++){
                 OpayInviteRelationVo vo = list.get(i);
-                Map<String,String> map = rpcService.getOpayUser(vo.getPupilId(),vo.getPupilPhone(),transferConfig.getMerchantId());
+                long mlis = System.currentTimeMillis();
+                Map<String,String> map = rpcService.getOpayUser(vo.getPupilPhone(),String.valueOf(mlis),transferConfig.getMerchantId());
                 if(map!=null && map.size()>0){
                     String firstName = map.get("firstName");
                     vo.setName(map.get("firstName")+map.get("middleName")+map.get("surname"));
@@ -135,41 +172,42 @@ public class ActivityController {
                 list.add(i,vo);
             }
         }
-        Map<String,Object> map = new HashMap<String,Object>();
-        map.put("list",list);
+        InviteList map = new InviteList();
+        map.setList(list);
         if(list!=null && list.size()>0){//有好友
             OpayInviteRankVo rankVo = inviteService.getInviteInfoByOpayId(user.getOpayId());
-            map.put("msg", MsgConst.inviteFriendlist.replaceFirst("d%",rankVo.getTotalReward().toString()));
+            map.setMsg(MsgConst.inviteFriendlist.replaceFirst("d%",rankVo.getTotalReward().toString()));
+
         }else{
-            map.put("msg", MsgConst.inviteNoFriendlist+rewardConfig.getRegisterReward().add(rewardConfig.getRewardList().get(0).getWalletReward()));
+            map.setMsg(MsgConst.inviteNoFriendlist+rewardConfig.getRegisterReward().add(rewardConfig.getRewardList().get(0).getWalletReward()));
         }
         return Result.success(map);
     }
 
     @ApiOperation(value = "My cashback获取奖励明细列表", notes = "获取奖励明细列表")
     @PostMapping("/detailList")
-    public Result getDetailList(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) {
+    public Result<CashbackDetailList> getDetailList(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) {
 
         //获取列表,默认最近30天
         LoginUser user = inviteOperateService.getOpayInfo(request);
         List<OpayMasterPupilAwardVo> list = inviteService.getDetailList(user.getOpayId(),inviteRequest.getPageNum(),inviteRequest.getPageSize());
         OpayActiveCashback cashback = inviteService.getActivityCashbackByOpayId(user.getOpayId());
-        Map<String,Object> map = new HashMap<String,Object>();
         if(cashback==null){
             cashback = new OpayActiveCashback();
             cashback.setAmount(BigDecimal.ZERO);
             cashback.setTotalAmount(BigDecimal.ZERO);
         }
-        map.put("totalReward",cashback.getTotalAmount());//所有总收益
-        map.put("cashReward",cashback.getAmount());//账户金额
+        CashbackDetailList map = new CashbackDetailList();
+        map.setTotalReward(cashback.getTotalAmount());//所有总收益
+        map.setCashReward(cashback.getAmount());//账户金额
         list = inviteOperateService.getDetailList(list);
-        map.put("list",list);
+        map.setList(list);
         return Result.success(map);
     }
 
     @ApiOperation(value = "获取代理任务规则", notes = "获取代理任务规则")
     @PostMapping("/getAgentRule")
-    public Result getAgentRule(HttpServletRequest request) {
+    public Result<List<AgentRoyaltyReward>> getAgentRule(HttpServletRequest request) {
 
         List<AgentRoyaltyReward> list = inviteOperateService.getAgentRule();
 

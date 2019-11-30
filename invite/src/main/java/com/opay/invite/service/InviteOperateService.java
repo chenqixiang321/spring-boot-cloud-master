@@ -138,7 +138,7 @@ public class InviteOperateService {
         return tmp_stepReward;
     }
 
-    public List<OpayMasterPupilAwardVo> getActivityTask(List<OpayMasterPupilAwardVo> task, OpayInviteRelation ir) {
+    public List<OpayMasterPupilAwardVo> getActivityTask(List<OpayMasterPupilAwardVo> task, OpayInviteRelation ir,int isF7) {
         if(task!=null && task.size()>0){
             List<OpayMasterPupilAwardVo> list = new ArrayList<>();
             if(task.size()==1){
@@ -148,19 +148,21 @@ public class InviteOperateService {
                 list.add(vo);
             }
             //区分当前用户师傅是否是代理
-            if(ir !=null){
-                if(ir.getMarkType()==2){//如果代理存在降级或是不存在情况?
-                   for(AgentRoyaltyReward rr :rewardConfig.getRoyList()){
-                       OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
-                       vo.setAction(rr.getAction());
-                       vo.setReward(rr.getPupilReward());
-                       list.add(vo);
+           if(rewardConfig.getAgentOpen()==1) {
+               if (ir != null) {
+                   if (ir.getMarkType() == 2) {//如果代理存在降级或是不存在情况?
+                       for (AgentRoyaltyReward rr : rewardConfig.getRoyList()) {
+                           OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
+                           vo.setAction(rr.getAction());
+                           vo.setReward(rr.getPupilReward());
+                           list.add(vo);
+                       }
                    }
-                }
-            }
+               }
+           }
             return list;
         }else{
-            if(1==2){//用户已经超过七天，
+            if(isF7==1){//用户已经超过七天，
                 return null;
             }
             List<OpayMasterPupilAwardVo> list = new ArrayList<>();

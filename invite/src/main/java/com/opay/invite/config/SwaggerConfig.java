@@ -35,7 +35,7 @@ public class SwaggerConfig {
                 .enable(swaggerShow)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.opay.invite.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.opay.invite"))
                 .paths(PathSelectors.any())
                 .build()
                 .globalOperationParameters(pars);

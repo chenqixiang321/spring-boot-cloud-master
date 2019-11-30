@@ -33,6 +33,7 @@ public class OpayInviteRelationVo {
     @ApiModelProperty(value = "徒弟电话号")
     private String pupilPhone;
 
+    @ApiModelProperty(value = "名称")
     private String name;
 
 }

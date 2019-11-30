@@ -1,19 +1,25 @@
 package com.opay.invite.stateconfig;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.math.BigDecimal;
 
+@ApiModel(value = "阶梯奖励", description = "阶梯奖励")
 public class Reward {
 
     private int orderId;//阶段顺序
-
+    @ApiModelProperty(value = "最小人数")
     private int min;//最小人数
 
+    @ApiModelProperty(value = "最大人数")
     private int max;//最大人数
 
     private BigDecimal walletReward;//充值奖励.师傅得到奖励
 
     private BigDecimal regReward;//注册码奖励
 
+    @ApiModelProperty(value = "阶梯总金额")
     private BigDecimal totalReward;
 
     public int getOrderId() {

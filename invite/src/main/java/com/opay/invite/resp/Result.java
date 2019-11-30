@@ -1,12 +1,23 @@
 package com.opay.invite.resp;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.io.Serializable;
 
+@Getter
+@Setter
 public class Result<T> implements Serializable {
 
     private static final long serialVersionUID = -5809782578272943999L;
 
+    @ApiModelProperty(value = "描述")
     private String message;
+    @ApiModelProperty(value = "code码:200正常，其它为非正常")
     private int code;
     private T data;
 

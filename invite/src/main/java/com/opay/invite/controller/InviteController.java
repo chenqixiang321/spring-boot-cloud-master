@@ -9,6 +9,7 @@ import com.opay.invite.service.InviteService;
 import com.opay.invite.service.RpcService;
 import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.transferconfig.TransferConfig;
+import com.opay.invite.utils.DateFormatter;
 import com.opay.invite.utils.InviteCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,10 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/invite")
@@ -50,7 +51,7 @@ public class InviteController {
 
     @ApiOperation(value = "生成邀请码", notes = "生成邀请码")
     @PostMapping("/getInviteCode")
-    public Result getInviteCode(HttpServletRequest request) {
+    public Result<String> getInviteCode(HttpServletRequest request) {
         //更登录用户生成code
         LoginUser user = inviteOperateService.getOpayInfo(request);
         OpayInviteCode inviteCode = inviteService.getInviteCode(user.getOpayId());
@@ -65,7 +66,7 @@ public class InviteController {
     }
 
 
-    //@ApiOperation(value = "插入邀请关系信息", notes = "插入邀请关系信息")
+    @ApiOperation(value = "插入邀请关系信息", notes = "插入邀请关系信息")
     @PostMapping("/save")
     public Result save(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) throws Exception{
         //判断邀请码是否合法,和反作弊，不能建立师徒关系,当前用户已经过了7天不能填写邀请码
@@ -81,7 +82,24 @@ public class InviteController {
             return Result.error(CodeMsg.ILLEGAL_CODE);
         }
         //当前用户是代理不能存在师傅
-
+        long mlis = System.currentTimeMillis();
+        Map<String,String> map = rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());
+        int isF7 =0;//未过七天
+        if(map!=null && map.size()>0){
+            String role = map.get("role");
+            if(role!=null && "agent".equals(role)){
+                return Result.error(CodeMsg.ILLEGAL_CODE);
+            }
+            String dateStr = map.get("createDate");
+            LocalDateTime date = LocalDateTime.parse(dateStr);
+            ZoneId zone = ZoneId.systemDefault();
+            Instant instant =date.atZone(zone).toInstant();
+            Date regDate = Date.from(instant);
+            Date date7 = DateFormatter.getDateAfter(regDate, 7);
+            if (date7.getTime() < new Date().getTime()) {
+                return Result.error(CodeMsg.ILLEGAL_CODE_DAY);
+            }
+        }
         //校验用户是否已经建立关系，或是不能互相邀请关系
        int count = inviteService.checkRelation(masterId,user.getOpayId());
        if(count>0){
@@ -136,7 +154,8 @@ public class InviteController {
     public Result getNoTask(HttpServletRequest request) throws Exception {
         //登录用户是普通用户，如果是普通用户，有师徒关系，查看执行内容，如果没有提示一个
         LoginUser user = inviteOperateService.getOpayInfo(request);
-        Map<String,String> map =rpcService.getOpayUser(user.getPhoneNumber(),user.getOpayId(),transferConfig.getMerchantId());
+        long mlis = System.currentTimeMillis();
+        Map<String,String> map =rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());
         //如果是代理不提示任何
         if(map.get("role")!=null && "agent".equals(map.get("role"))){
             return Result.success();
