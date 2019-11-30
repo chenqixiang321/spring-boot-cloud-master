@@ -1,5 +1,6 @@
 package com.opay.im.service.impl;
 
+import com.opay.im.model.response.BlackListUserIdsResponse;
 import com.opay.im.service.RongCloudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -12,6 +13,7 @@ import com.opay.im.mapper.UserTokenMapper;
 import com.opay.im.service.UserTokenService;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class UserTokenServiceImpl implements UserTokenService {
@@ -53,7 +55,7 @@ public class UserTokenServiceImpl implements UserTokenService {
 
     @Override
     @Cacheable(value = "ryToken", key = "#opayId", unless = "#result == null")
-    public String getRyToken(String opayId, String phone) throws Exception{
+    public String getRyToken(String opayId, String phone) throws Exception {
         UserTokenModel userToken = userTokenMapper.selectByUserId(opayId);
         if (userToken == null) {
             String token = rongCloudService.register(opayId, phone);
@@ -70,6 +72,21 @@ public class UserTokenServiceImpl implements UserTokenService {
             return userToken.getToken();
         }
         return null;
+    }
+
+    @Override
+    public void addBlackList(String userId, String blackUserId) throws Exception {
+        rongCloudService.addBlackList(userId, blackUserId);
+    }
+
+    @Override
+    public void removeBlackList(String userId, String blackUserId) throws Exception {
+        rongCloudService.removeBlackList(userId, blackUserId);
+    }
+
+    @Override
+    public BlackListUserIdsResponse getBlackList(String userId) throws Exception {
+        return new BlackListUserIdsResponse(rongCloudService.getBlackList(userId));
     }
 
 
