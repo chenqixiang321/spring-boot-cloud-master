@@ -121,7 +121,7 @@ invite:
 
 transfer:
   opay:
-    domain: http://graphql.opaydev.com:8081
+    domain: http://api.test.opaydev.com:8081
     merchantId: 256619112712004
     aesKey: p2LfpyyoKkrv1mjr
     url: /api/m/createOrder
