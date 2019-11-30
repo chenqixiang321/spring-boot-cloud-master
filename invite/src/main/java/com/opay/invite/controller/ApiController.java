@@ -1,5 +1,6 @@
 package com.opay.invite.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
 import com.opay.invite.model.*;
 import com.opay.invite.resp.CodeMsg;
@@ -11,6 +12,7 @@ import com.opay.invite.transferconfig.TransferConfig;
 import com.opay.invite.utils.DateFormatter;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.mockito.cglib.beans.BeanMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/api")
 @Api(value = "填入邀请码API")
@@ -78,7 +81,7 @@ public class ApiController {
         String beforeStr = getBeforeStr(map)+"&key="+key;
         String afterMd5Str = DigestUtils.md5DigestAsHex(beforeStr.getBytes());
         if (!afterMd5Str.equalsIgnoreCase(notifyInvite.getSign())){
-            return Result.error(CodeMsg.ILLEGAL_PARAMETER);
+            return Result.error(CodeMsg.ILLEGAL_CODE_SIGN);
         }
 
         //判断邀请码是否合法,和反作弊，不能建立师徒关系,当前用户已经过了7天不能填写邀请码
@@ -104,7 +107,7 @@ public class ApiController {
         List<OpayActiveCashback> cashbacklist = new ArrayList<>();
         OpayActiveCashback mastercashback = inviteService.getActivityCashbackByOpayId(masterId);//查询师傅存在钱包
         if(mastercashback ==null){
-            inviteService.saveCashback(masterId,notifyInvite.getPhone());
+            inviteService.saveCashback(masterId,inviteCode.getPhone());
             mastercashback = new OpayActiveCashback();
             mastercashback.setOpayId(masterId);
             mastercashback.setVersion(0);
@@ -132,6 +135,7 @@ public class ApiController {
         List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,notifyInvite.getOpayId(),markType);
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
         try {
+            log.info("save invite:{}", JSON.toJSONString(relation));
             inviteOperateService.saveRelationAndRewardAndCashback(relation, list, cashbacklist);
         }catch (Exception e){
             return Result.error(CodeMsg.CustomCodeMsg(500,"system error"));

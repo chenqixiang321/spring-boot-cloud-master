@@ -144,7 +144,6 @@ public class ActivityController {
                    String firstName = map.get("firstName");
                     vo.setName(firstName+"***");
                 }
-                list.add(i,vo);
             }
         }
         //缓存一定时间
@@ -170,7 +169,6 @@ public class ActivityController {
                     vo.setName(map.get("firstName")+map.get("middleName")+map.get("surname"));
                 }
                 vo.setCreateTime(vo.getCreateAt().getTime());
-                list.add(i,vo);
             }
         }
         InviteList map = new InviteList();

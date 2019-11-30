@@ -107,7 +107,7 @@ public class InviteController {
         List<OpayActiveCashback> cashbacklist = new ArrayList<>();
         OpayActiveCashback mastercashback = inviteService.getActivityCashbackByOpayId(masterId);//查询师傅存在钱包
         if(mastercashback ==null){
-            inviteService.saveCashback(masterId,user.getPhoneNumber());
+            inviteService.saveCashback(masterId,inviteCode.getPhone());
             mastercashback = new OpayActiveCashback();
             mastercashback.setOpayId(masterId);
             mastercashback.setVersion(0);

@@ -22,6 +22,8 @@ public class CodeMsg {
 
     public static final CodeMsg ILLEGAL_CODE_FIRST = new CodeMsg(1012, "First recharge balance completed");
 
+    public static final CodeMsg ILLEGAL_CODE_SIGN = new CodeMsg(1013, "Sign fail");
+
     private int code;
     private String message;
 
