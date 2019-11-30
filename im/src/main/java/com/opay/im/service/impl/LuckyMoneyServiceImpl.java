@@ -88,6 +88,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
     @Override
     public LuckyMoneyInfoResponse selectLuckyMoneyEveryPerson(Long id) throws Exception {
+        LuckyMoneyModel luckyMoneyModel = luckyMoneyMapper.selectByPrimaryKey(id);
         return null;
     }
 

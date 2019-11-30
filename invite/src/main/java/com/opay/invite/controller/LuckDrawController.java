@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/luckDraw")
 @Api(value = "抽奖功能API")
@@ -33,7 +35,7 @@ public class LuckDrawController {
 
     @ApiOperation(value = "获取中奖者信息", notes = "获取中奖者信息")
     @GetMapping("/list")
-    public ResultResponse getLuckDrawList() throws Exception {
+    public ResultResponse<List<LuckDrawInfoResponse>> getLuckDrawList() throws Exception {
         ResultResponse resultResponse = new ResultResponse();
         resultResponse.setData(luckDrawInfoService.selectLuckDrawInfoList());
         return resultResponse;
