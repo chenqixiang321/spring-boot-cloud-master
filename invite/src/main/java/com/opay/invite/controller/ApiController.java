@@ -124,11 +124,9 @@ public class ApiController {
         //TODO 查询邀请账号，判断所属类型 mark_type
         Map<String, String> userMap = rpcService.getOpayUser(inviteCode.getPhone(), String.valueOf(mlis), transferConfig.getMerchantId());
         int markType=0;//
-        if(userMap!=null && userMap.size()>0){
-            String role = userMap.get("role");
-            if(role!=null && "agent".equals(role)){
-                markType=1;
-            }
+        String role = userMap.get("role");
+        if(role!=null && "agent".equals(role)){
+            markType=1;
         }
         OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,notifyInvite.getOpayId(),inviteCode.getPhone(),notifyInvite.getPhone(),vr,markType);
         List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,notifyInvite.getOpayId(),markType);

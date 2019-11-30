@@ -85,20 +85,18 @@ public class InviteController {
         long mlis = System.currentTimeMillis();
         Map<String,String> map = rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());
         int isF7 =0;//未过七天
-        if(map!=null && map.size()>0){
-            String role = map.get("role");
-            if(role!=null && "agent".equals(role)){
-                return Result.error(CodeMsg.ILLEGAL_CODE);
-            }
-            String dateStr = map.get("createDate");
-            LocalDateTime date = LocalDateTime.parse(dateStr);
-            ZoneId zone = ZoneId.systemDefault();
-            Instant instant =date.atZone(zone).toInstant();
-            Date regDate = Date.from(instant);
-            Date date7 = DateFormatter.getDateAfter(regDate, 7);
-            if (date7.getTime() < new Date().getTime()) {
-                return Result.error(CodeMsg.ILLEGAL_CODE_DAY);
-            }
+        String role = map.get("role");
+        if(role!=null && "agent".equals(role)){
+            return Result.error(CodeMsg.ILLEGAL_CODE);
+        }
+        String dateStr = map.get("createDate");
+        LocalDateTime date = LocalDateTime.parse(dateStr);
+        ZoneId zone = ZoneId.systemDefault();
+        Instant instant =date.atZone(zone).toInstant();
+        Date regDate = Date.from(instant);
+        Date date7 = DateFormatter.getDateAfter(regDate, 7);
+        if (date7.getTime() < new Date().getTime()) {
+            return Result.error(CodeMsg.ILLEGAL_CODE_DAY);
         }
         //校验用户是否已经建立关系，或是不能互相邀请关系
        int count = inviteService.checkRelation(masterId,user.getOpayId());
@@ -157,6 +155,9 @@ public class InviteController {
         long mlis = System.currentTimeMillis();
         Map<String,String> map =rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());
         //如果是代理不提示任何
+        if(map==null){
+            return Result.success();
+        }
         if(map.get("role")!=null && "agent".equals(map.get("role"))){
             return Result.success();
         }

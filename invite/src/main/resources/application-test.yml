@@ -122,8 +122,8 @@ invite:
 transfer:
   opay:
     domain: http://api.test.opaydev.com:8081
-    merchantId: 256619112712004
-    aesKey: p2LfpyyoKkrv1mjr
+    merchantId: 256619090900002
+    aesKey: UxanhvcUC3aeiLRR
     url: /api/m/createOrder
     reference: IVE
     userUrl: /api/users/queryUserInfoByPhone

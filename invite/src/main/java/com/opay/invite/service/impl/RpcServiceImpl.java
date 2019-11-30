@@ -59,7 +59,7 @@ public class RpcServiceImpl implements RpcService {
             merchantId=transferConfig.getMerchantId();
         }
         Map<String,String> map = new HashMap<>();
-        map.put("phone",phone);
+        map.put("phoneNumber",phone);
         String str = getEncrypt(map,transferConfig.getAesKey());
         Map<String,String> paramMap = new HashMap<>();
         paramMap.put("requestId",requestId);
