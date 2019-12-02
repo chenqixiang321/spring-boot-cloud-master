@@ -252,7 +252,12 @@ public class ActivityController {
             list2 = inviteOperateService.getRechargeMasterPupilAward(null, user.getOpayId(), stepReward,0);//默认普通
         }
         OpayActiveCashback cashback = inviteService.getActivityCashbackByOpayId(user.getOpayId());
-
+        if(cashback ==null){
+            inviteService.saveCashback(user.getOpayId(),user.getPhoneNumber());
+            cashback = new OpayActiveCashback();
+            cashback.setOpayId(user.getOpayId());
+            cashback.setVersion(0);
+        }
         List<OpayActiveCashback> cashbacklist = new ArrayList<>();
         cashbacklist.add(cashback);
         if(relation !=null) {
