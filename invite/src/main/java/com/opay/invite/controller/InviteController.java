@@ -7,6 +7,7 @@ import com.opay.invite.resp.Result;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.service.RpcService;
+import com.opay.invite.stateconfig.ActionOperate;
 import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.transferconfig.TransferConfig;
 import com.opay.invite.utils.DateFormatter;
@@ -149,7 +150,7 @@ public class InviteController {
 
     @ApiOperation(value = "任务弹窗引导,未做任务", notes = "任务弹窗引导,未做任务，没有任务结果为空，存在结果type:1没有师徒关系，2：没有充值")
     @PostMapping("/noTask")
-    public Result getNoTask(HttpServletRequest request) throws Exception {
+    public Result<FinishTask> getNoTask(HttpServletRequest request) throws Exception {
         //登录用户是普通用户，如果是普通用户，有师徒关系，查看执行内容，如果没有提示一个
         LoginUser user = inviteOperateService.getOpayInfo(request);
         long mlis = System.currentTimeMillis();
@@ -161,21 +162,31 @@ public class InviteController {
         if(map.get("role")!=null && "agent".equals(map.get("role"))){
             return Result.success();
         }
+
         OpayInviteRelation relation = inviteService.selectRelationMasterByMasterId(user.getOpayId());
         if(relation==null){//没有师徒关系
-            Map<String,Object> map2 = new HashMap<>();
-            map2.put("type",1);
-            map2.put("reward",rewardConfig.getRegisterReward());
-            return Result.success(map2);
+            String dateStr = map.get("createDate");
+            LocalDateTime date = LocalDateTime.parse(dateStr);
+            ZoneId zone = ZoneId.systemDefault();
+            Instant instant =date.atZone(zone).toInstant();
+            Date regDate = Date.from(instant);
+            Date date7 = DateFormatter.getDateAfter(regDate, 7);
+            if (date7.getTime() < new Date().getTime()) {
+                return Result.success();
+            }
+            FinishTask task = new FinishTask();
+            task.setType(ActionOperate.operate_register.getOperate());
+            task.setReward(rewardConfig.getRegisterReward());
+            return Result.success(task);
         }
         List<OpayMasterPupilAwardVo> list = inviteService.getTaskByOpayId(user.getOpayId());
         if(list.size()==2){
             return Result.success();
         }
-        Map<String,Object> map2 = new HashMap<>();
-        map2.put("type",2);
-        map2.put("reward",rewardConfig.getRechargeReward());
-        return Result.success(map2);
+        FinishTask task = new FinishTask();
+        task.setType(ActionOperate.operate_recharge.getOperate());
+        task.setReward(rewardConfig.getRechargeReward());
+        return Result.success(task);
     }
 
 }

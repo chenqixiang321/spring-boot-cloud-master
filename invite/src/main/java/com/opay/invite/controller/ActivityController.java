@@ -1,5 +1,6 @@
 package com.opay.invite.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.google.inject.internal.cglib.core.$CodeEmitter;
 import com.opay.invite.model.*;
 import com.opay.invite.model.request.InviteRequest;
@@ -19,6 +20,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +36,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/activity")
 @Api(value = "活动API")
@@ -139,7 +142,7 @@ public class ActivityController {
             for(int i=0;i<list.size();i++){
                 OpayInviteRankVo vo = list.get(i);
                 long mlis = System.currentTimeMillis();
-                Map<String,String> map = rpcService.getOpayUser(vo.getMasterPhone(),String.valueOf(mlis),transferConfig.getMerchantId());
+                Map<String,String> map = rpcService.getOpayUser(vo.getPhone(),String.valueOf(mlis),transferConfig.getMerchantId());
                 if(map!=null && map.size()>0){
                    String firstName = map.get("firstName");
                     vo.setName(firstName+"***");
@@ -165,7 +168,6 @@ public class ActivityController {
                 long mlis = System.currentTimeMillis();
                 Map<String,String> map = rpcService.getOpayUser(vo.getPupilPhone(),String.valueOf(mlis),transferConfig.getMerchantId());
                 if(map!=null && map.size()>0){
-                    String firstName = map.get("firstName");
                     vo.setName(map.get("firstName")+map.get("middleName")+map.get("surname"));
                 }
                 vo.setCreateTime(vo.getCreateAt().getTime());
@@ -217,9 +219,17 @@ public class ActivityController {
     @PostMapping("/saveRecharge")
     public Result saveRecharge(HttpServletRequest request) throws Exception {
         LoginUser user = inviteOperateService.getOpayInfo(request);
+        long mlis = System.currentTimeMillis();
+        Map<String,String> umap = rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());
+        String role = umap.get("role");
+        if(role!=null && "agent".equals(role)){
+            log.warn("当前用户是代理info:{},map:{}", JSON.toJSONString(user),JSON.toJSONString(umap));
+            return Result.success();
+        }
+
         OpayInviteRelation relation = inviteService.selectRelationMasterByMasterId(user.getOpayId());
         if(relation==null){//没有师徒关系
-            return Result.error(CodeMsg.ILLEGAL_CODE_RELATION);
+            log.warn("当前用户没有师徒关系info:{}", JSON.toJSONString(user));
         }
         List<OpayMasterPupilAwardVo> list = inviteService.getTaskByOpayId(user.getOpayId());
         if(list.size()==2){
@@ -229,15 +239,26 @@ public class ActivityController {
         if(map.get(ActionOperate.operate_recharge.getOperate())!=null){
             return Result.error(CodeMsg.ILLEGAL_CODE_FIRST);
         }
+        //查询是否有首次充值
+
+
         int count =inviteService.getRelationCount(user.getOpayId());
         //计算用户所属阶段
         StepReward stepReward = inviteOperateService.getStepReward(count);
-        List<OpayMasterPupilAward>  list2 =inviteOperateService.getRechargeMasterPupilAward(relation.getMasterId(),user.getOpayId(),stepReward,relation.getMarkType());
+        List<OpayMasterPupilAward> list2 = null;
+        if(relation !=null) {
+            list2 = inviteOperateService.getRechargeMasterPupilAward(relation.getMasterId(), user.getOpayId(), stepReward, relation.getMarkType());
+        }else{
+            list2 = inviteOperateService.getRechargeMasterPupilAward(null, user.getOpayId(), stepReward,0);//默认普通
+        }
         OpayActiveCashback cashback = inviteService.getActivityCashbackByOpayId(user.getOpayId());
-        OpayActiveCashback masterCashback = inviteService.getActivityCashbackByOpayId(relation.getMasterId());
+
         List<OpayActiveCashback> cashbacklist = new ArrayList<>();
         cashbacklist.add(cashback);
-        cashbacklist.add(masterCashback);
+        if(relation !=null) {
+            OpayActiveCashback masterCashback = inviteService.getActivityCashbackByOpayId(relation.getMasterId());
+            cashbacklist.add(masterCashback);
+        }
         cashbacklist = inviteOperateService.getOpayCashback(list2,cashbacklist);
         inviteOperateService.saveRewardAndCashback(list2,cashbacklist);
         return Result.success();

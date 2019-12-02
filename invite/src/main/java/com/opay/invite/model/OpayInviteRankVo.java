@@ -1,5 +1,6 @@
 package com.opay.invite.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -16,8 +17,9 @@ import java.math.BigDecimal;
 @ApiModel(value = "邀请排行列表", description = "邀请排行列表")
 public class OpayInviteRankVo {
 
-    @ApiModelProperty(value = "邀请人")
-    private String masterId;
+    @JsonIgnore
+    @ApiModelProperty(value = "收益人",hidden = true)
+    private String opayId;
 
     @ApiModelProperty(value = "邀请人名称")
     private String name;
@@ -28,7 +30,8 @@ public class OpayInviteRankVo {
     @ApiModelProperty(value = "邀请人的总人数")
     private int totalNum;
 
-    @ApiModelProperty(value = "")
-    private String masterPhone;
+    @JsonIgnore
+    @ApiModelProperty(value = "手机号",hidden = true)
+    private String phone;
 
 }

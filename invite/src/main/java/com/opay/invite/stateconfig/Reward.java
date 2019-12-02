@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 @ApiModel(value = "阶梯奖励", description = "阶梯奖励")
 public class Reward {
 
+    @ApiModelProperty(value = "阶段顺序",hidden = true)
     private int orderId;//阶段顺序
     @ApiModelProperty(value = "最小人数")
     private int min;//最小人数
@@ -15,8 +16,10 @@ public class Reward {
     @ApiModelProperty(value = "最大人数")
     private int max;//最大人数
 
+    @ApiModelProperty(value = "充值奖励.师傅得到奖励",hidden = true)
     private BigDecimal walletReward;//充值奖励.师傅得到奖励
 
+    @ApiModelProperty(value = "注册码奖励",hidden = true)
     private BigDecimal regReward;//注册码奖励
 
     @ApiModelProperty(value = "阶梯总金额")

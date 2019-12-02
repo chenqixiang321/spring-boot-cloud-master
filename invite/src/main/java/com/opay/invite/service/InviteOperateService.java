@@ -73,13 +73,15 @@ public class InviteOperateService {
         Date date = new Date();
         int month = Integer.valueOf(DateFormatter.formatShortYMDate(new Date()));
         int day= Integer.valueOf(DateFormatter.formatShortYMDDate(new Date()));
-        OpayMasterPupilAward master = new OpayMasterPupilAward(masterId,stepReward.getWalletReward(),
-                date,1, ActionOperate.operate_recharge.getOperate(), BigDecimal.ZERO,markType,JSON.toJSONString(stepReward),
-                BigDecimal.ZERO,1,month,day);//师傅奖励
+        if(masterId!=null && !"".equals(masterId)) {
+            OpayMasterPupilAward master = new OpayMasterPupilAward(masterId, stepReward.getWalletReward(),
+                    date, 1, ActionOperate.operate_recharge.getOperate(), BigDecimal.ZERO, markType, JSON.toJSONString(stepReward),
+                    BigDecimal.ZERO, 1, month, day);//师傅奖励
+            list.add(master);
+        }
         OpayMasterPupilAward pupil = new OpayMasterPupilAward(pupilId,rewardConfig.getRechargeReward(),
                 date,1, ActionOperate.operate_recharge.getOperate(), BigDecimal.ZERO,markType,JSON.toJSONString(stepReward),
                 stepReward.getWalletReward(),0,month,day);//徒弟奖励
-        list.add(master);
         list.add(pupil);
         return list;
     }

@@ -14,13 +14,13 @@ import lombok.Setter;
 @ApiModel(value = "InviteRequest邀请关系", description = "InviteRequest邀请关系")
 public class InviteRequest {
 
-    @ApiModelProperty(value = "邀请码")
+    @ApiModelProperty(value = "邀请码,邀请关系绑定必传入")
     private String inviteCode;
 
-    @ApiModelProperty(value = "当前页码")
+    @ApiModelProperty(value = "当前页码,需要分页必传入")
     private int pageNum;
 
-    @ApiModelProperty(value = "当前页大小")
+    @ApiModelProperty(value = "当前页大小,需要分页必传入")
     private int pageSize;
 
 }

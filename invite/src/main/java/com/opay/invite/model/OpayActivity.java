@@ -39,7 +39,7 @@ public class OpayActivity {
     @ApiModelProperty(value = "任务完成数据,1代理徒弟展现和代理")
     private BigDecimal agentTaskReward;
 
-    @ApiModelProperty(value = "没有邀请朋友的文案")
+    @ApiModelProperty(value = "没有邀请朋友的文案和邀请")
     private String friendText;
 
 }

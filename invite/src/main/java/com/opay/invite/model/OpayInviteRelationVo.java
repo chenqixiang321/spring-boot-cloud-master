@@ -20,23 +20,23 @@ public class OpayInviteRelationVo {
     @ApiModelProperty(value = "邀请人")
     private String masterId;
 
-    @ApiModelProperty(value = "被要人")
+    @ApiModelProperty(value = "被要人",hidden = true)
     private String pupilId;
 
+    @ApiModelProperty(value = "邀请时间",hidden = true)
     @JsonIgnore
     private Date createAt;
 
     @ApiModelProperty(value = "邀请人得到奖励,及被邀人贡献")
     private Long masterReward;
 
-    @JsonIgnore
-    @ApiModelProperty(value = "徒弟电话号")
+    @ApiModelProperty(value = "徒弟电话号",hidden = true)
     private String pupilPhone;
 
     @ApiModelProperty(value = "名称")
     private String name;
 
-    @ApiModelProperty(value = "邀请时间")
+    @ApiModelProperty(value = "邀请时间,long类型到毫秒")
     private Long createTime;
 
 }
