@@ -219,13 +219,21 @@ public class ActivityController {
     @PostMapping("/saveRecharge")
     public Result saveRecharge(HttpServletRequest request) throws Exception {
         LoginUser user = inviteOperateService.getOpayInfo(request);
-        long mlis = System.currentTimeMillis();
-        Map<String,String> umap = rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());
-        String role = umap.get("role");
-        if(role!=null && "agent".equals(role)){
-            log.warn("当前用户是代理info:{},map:{}", JSON.toJSONString(user),JSON.toJSONString(umap));
+
+        //活动未开始结束不在执行
+        boolean f = false;
+        if(f){
+            log.warn("活动已结束,info{},"+JSON.toJSONString(user));
             return Result.success();
         }
+
+//        long mlis = System.currentTimeMillis();
+//        Map<String,String> umap = rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());
+//        String role = umap.get("role");
+//        if(role!=null && "agent".equals(role)){
+//            log.warn("当前用户是代理info:{},map:{}", JSON.toJSONString(user),JSON.toJSONString(umap));
+//            return Result.success();
+//        }
 
         OpayInviteRelation relation = inviteService.selectRelationMasterByMasterId(user.getOpayId());
         if(relation==null){//没有师徒关系

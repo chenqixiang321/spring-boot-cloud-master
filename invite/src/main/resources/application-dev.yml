@@ -62,6 +62,8 @@ activity:
     masterReward: 20
     rechargeReward: 100
     agentOpen: 0
+    startTime: 2019-11-12
+    endTime: 2019-12-22
     rewardList[0]:
       orderId: 1
       min: 1

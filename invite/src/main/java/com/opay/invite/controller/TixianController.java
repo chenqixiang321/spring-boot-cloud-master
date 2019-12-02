@@ -105,6 +105,15 @@ public class TixianController {
             if(tixianLimitConfig.getOpen()==1) {
                 boolean f = false;
                 List<TixianLimit> list = tixianLimitConfig.getList();
+
+                if(cashback.getAmount().compareTo(list.get(0).getMinAmount())<=0){
+                    return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN);
+                }
+
+                if(withdrawalRequest.getAmount().compareTo(cashback.getAmount().subtract(list.get(0).getMinAmount()))>0){
+                    return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN);
+                }
+
                 for(int i=0;i<list.size();i++){
                     TixianLimit tixian = list.get(i);
                     if(tixian.getMin()<=relationCount && tixian.getMax()>=relationCount){

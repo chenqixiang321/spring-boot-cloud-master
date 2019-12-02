@@ -27,4 +27,8 @@ public class RewardConfig {
 
     private List<AgentRoyaltyReward> royList;//代理提成
 
+    private String startTime;//活动开始时间
+
+    private String endTime;//活动结束时间
+
 }
