@@ -49,8 +49,4 @@ public class OpayInviteRelation {
     @ApiModelProperty(value = "邀请时间,long类型到毫秒")
     private Long createTime;
 
-    public void getCreateTime(){
-        this.createTime=this.getCreateAt().getTime();
-    }
-
 }

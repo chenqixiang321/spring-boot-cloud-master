@@ -2,6 +2,7 @@ package com.opay.invite.service;
 
 import com.opay.invite.model.*;
 
+import java.util.Date;
 import java.util.List;
 
 public interface InviteService {
@@ -28,13 +29,13 @@ public interface InviteService {
 
     OpayInviteCode getInviteCode(String opayId);
 
-    void saveInviteCode(String opayId, String code, String phone);
+    void saveInviteCode(String opayId, String code, String phone, Date time);
 
     OpayInviteCode getOpayIdByInviteCode(String inviteCode);
 
     OpayActiveCashback getActivityCashbackByOpayId(String opayId);
 
-    void saveCashback(String opayId, String phone);
+    void saveCashback(String opayId, String phone,Date time);
 
     void updateCashback(List<OpayActiveCashback> cashbacklist) throws Exception;
 

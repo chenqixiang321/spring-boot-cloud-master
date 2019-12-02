@@ -88,7 +88,7 @@ public class ActivityController {
         if(inviteCode==null || "".equals(inviteCode)) {
             String phone = user.getPhoneNumber().substring(user.getPhoneNumber().length()-10,user.getPhoneNumber().length());
             String code = InviteCode.createCode(Long.valueOf(phone));
-            inviteService.saveInviteCode(user.getOpayId(),code,user.getPhoneNumber());
+            inviteService.saveInviteCode(user.getOpayId(),code,user.getPhoneNumber(),new Date());
             activity.setInviteCode(code);
         }else{
             activity.setInviteCode(inviteCode.getInviteCode());
@@ -261,7 +261,7 @@ public class ActivityController {
         }
         OpayActiveCashback cashback = inviteService.getActivityCashbackByOpayId(user.getOpayId());
         if(cashback ==null){
-            inviteService.saveCashback(user.getOpayId(),user.getPhoneNumber());
+            inviteService.saveCashback(user.getOpayId(),user.getPhoneNumber(),new Date());
             cashback = new OpayActiveCashback();
             cashback.setOpayId(user.getOpayId());
             cashback.setVersion(0);

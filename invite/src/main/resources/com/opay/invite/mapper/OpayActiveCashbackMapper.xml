@@ -26,7 +26,7 @@
   <insert id="saveCashback">
     insert into opay_active_cashback (opay_id,phone,create_at)
     values
-     (#{opayId,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},now())
+     (#{opayId,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},#{time})
   </insert>
 
   <update id="updateCashback" parameterType="com.opay.invite.model.OpayActiveCashback">

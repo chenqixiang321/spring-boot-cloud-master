@@ -107,7 +107,7 @@ public class ApiController {
         List<OpayActiveCashback> cashbacklist = new ArrayList<>();
         OpayActiveCashback mastercashback = inviteService.getActivityCashbackByOpayId(masterId);//查询师傅存在钱包
         if(mastercashback ==null){
-            inviteService.saveCashback(masterId,inviteCode.getPhone());
+            inviteService.saveCashback(masterId,inviteCode.getPhone(),new Date());
             mastercashback = new OpayActiveCashback();
             mastercashback.setOpayId(masterId);
             mastercashback.setVersion(0);
@@ -115,7 +115,7 @@ public class ApiController {
         cashbacklist.add(mastercashback);
         OpayActiveCashback pupilcashback = inviteService.getActivityCashbackByOpayId(notifyInvite.getOpayId());//查询徒弟存在钱包
         if(pupilcashback ==null){
-            inviteService.saveCashback(notifyInvite.getOpayId(),notifyInvite.getPhone());
+            inviteService.saveCashback(notifyInvite.getOpayId(),notifyInvite.getPhone(),new Date());
             pupilcashback = new OpayActiveCashback();
             pupilcashback.setOpayId(notifyInvite.getOpayId());
             pupilcashback.setVersion(0);

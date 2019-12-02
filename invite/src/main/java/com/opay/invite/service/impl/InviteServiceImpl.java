@@ -102,8 +102,8 @@ public class InviteServiceImpl implements InviteService {
     }
 
     @Override
-    public void saveInviteCode(String opayId, String code,String phone) {
-        opayInviteCodeMapper.saveInviteCode(opayId,code,phone);
+    public void saveInviteCode(String opayId, String code,String phone,Date time) {
+        opayInviteCodeMapper.saveInviteCode(opayId,code,phone,time);
     }
 
     @Override
@@ -117,8 +117,8 @@ public class InviteServiceImpl implements InviteService {
     }
 
     @Override
-    public void saveCashback(String opayId, String phone) {
-        opayactiveCashbackMapper.saveCashback(opayId,phone);
+    public void saveCashback(String opayId, String phone,Date time) {
+        opayactiveCashbackMapper.saveCashback(opayId,phone,time);
     }
 
     @Transactional(rollbackFor=Exception.class)

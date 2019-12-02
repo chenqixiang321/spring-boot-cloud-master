@@ -17,7 +17,7 @@
     <insert id="saveInviteCode">
     insert into opay_invite_code (invite_code, opay_id,phone,create_at)
     values
-     (#{inviteCode,jdbcType=VARCHAR}, #{opayId,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},now())
+     (#{inviteCode,jdbcType=VARCHAR}, #{opayId,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},#{time})
   </insert>
 
     <select id="getOpayIdByInviteCode" resultMap="BaseResultMap">

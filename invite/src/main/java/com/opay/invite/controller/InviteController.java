@@ -60,7 +60,7 @@ public class InviteController {
             //String code = InviteCode.getCode(user.getOpayId(), key);
             String phone = user.getPhoneNumber().substring(user.getPhoneNumber().length()-10,user.getPhoneNumber().length());
             String code = InviteCode.createCode(Long.valueOf(phone));
-            inviteService.saveInviteCode(user.getOpayId(),code,user.getPhoneNumber());
+            inviteService.saveInviteCode(user.getOpayId(),code,user.getPhoneNumber(),new Date());
             return Result.success(code);
         }
         return Result.success(inviteCode.getInviteCode());
@@ -108,7 +108,7 @@ public class InviteController {
         List<OpayActiveCashback> cashbacklist = new ArrayList<>();
         OpayActiveCashback mastercashback = inviteService.getActivityCashbackByOpayId(masterId);//查询师傅存在钱包
         if(mastercashback ==null){
-            inviteService.saveCashback(masterId,inviteCode.getPhone());
+            inviteService.saveCashback(masterId,inviteCode.getPhone(),new Date());
             mastercashback = new OpayActiveCashback();
             mastercashback.setOpayId(masterId);
             mastercashback.setVersion(0);
@@ -116,7 +116,7 @@ public class InviteController {
         cashbacklist.add(mastercashback);
         OpayActiveCashback pupilcashback = inviteService.getActivityCashbackByOpayId(user.getOpayId());//查询徒弟存在钱包
         if(pupilcashback ==null){
-            inviteService.saveCashback(user.getOpayId(),user.getPhoneNumber());
+            inviteService.saveCashback(user.getOpayId(),user.getPhoneNumber(),new Date());
             pupilcashback = new OpayActiveCashback();
             pupilcashback.setOpayId(user.getOpayId());
             pupilcashback.setVersion(0);
