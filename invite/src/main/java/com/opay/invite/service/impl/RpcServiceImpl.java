@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -82,4 +83,27 @@ public class RpcServiceImpl implements RpcService {
         }
         return null;
     }
+
+    @Override
+    public Map<String, String> queryUserRecordByPhone(String phone, String startTime) {
+        Map<String,String> map = new HashMap<>();
+        map.put("phone",phone);
+        map.put("startTime",startTime);
+        String result = HttpClientUtil.postEntity(map,transferConfig.getDomain()+transferConfig.getUserRecordUrl());
+        if(result==null || "".equals(result) || "-1".equals(result)){
+            return null;
+        }
+        if(result!=null && !"".equals(result)){
+            Map<String,String> rMap = JSONObject.parseObject(result,Map.class);
+            String dataStr = rMap.get("data");
+            if("00000".equals(rMap.get("code"))) {
+                if (dataStr != null && !"".equals(dataStr)) {
+                    rMap = JSONObject.parseObject(dataStr, Map.class);
+                    return rMap;
+                }
+            }
+        }
+        return null;
+    }
+
 }

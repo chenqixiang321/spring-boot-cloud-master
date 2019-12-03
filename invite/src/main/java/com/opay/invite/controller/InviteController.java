@@ -50,6 +50,9 @@ public class InviteController {
     @Autowired
     private RewardConfig rewardConfig;
 
+    @Value("${spring.jackson.time-zone:''}")
+    private String zone;
+
     @ApiOperation(value = "生成邀请码", notes = "生成邀请码")
     @PostMapping("/getInviteCode")
     public Result<String> getInviteCode(HttpServletRequest request) {
@@ -85,18 +88,14 @@ public class InviteController {
         //当前用户是代理不能存在师傅
         long mlis = System.currentTimeMillis();
         Map<String,String> map = rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());
-        int isF7 =0;//未过七天
-        String role = map.get("role");
-        if(role!=null && "agent".equals(role)){
-            return Result.error(CodeMsg.ILLEGAL_CODE);
-        }
+//        String role = map.get("role");
+//        if(role!=null && "agent".equals(role)){
+//            return Result.error(CodeMsg.ILLEGAL_CODE);
+//        }
+
         String dateStr = map.get("createDate");
-        LocalDateTime date = LocalDateTime.parse(dateStr);
-        ZoneId zone = ZoneId.systemDefault();
-        Instant instant =date.atZone(zone).toInstant();
-        Date regDate = Date.from(instant);
-        Date date7 = DateFormatter.getDateAfter(regDate, 7);
-        if (date7.getTime() < new Date().getTime()) {
+        boolean f = inviteOperateService.isExpired(zone,dateStr);
+        if(f){
             return Result.error(CodeMsg.ILLEGAL_CODE_DAY);
         }
         //校验用户是否已经建立关系，或是不能互相邀请关系
@@ -125,8 +124,14 @@ public class InviteController {
         // 建立关系，增加金额奖励,同时充入账户，需要判断角色和用户邀请人数所属阶梯，奖励不同
         OpayInviteRelation vr = inviteService.selectRelationMasterByMasterId(masterId);
         //TODO 查询邀请账号，判断所属类型 mark_type
-        OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,user.getOpayId(),inviteCode.getPhone(),user.getPhoneNumber(),vr,1);
-        List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,user.getOpayId(),1);
+        Map<String, String> userMap = rpcService.getOpayUser(inviteCode.getPhone(), String.valueOf(mlis), transferConfig.getMerchantId());
+        int markType=0;
+        String role = userMap.get("role");
+        if(role!=null && "agent".equals(role)){
+            markType=1;
+        }
+        OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,user.getOpayId(),inviteCode.getPhone(),user.getPhoneNumber(),vr,markType);
+        List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,user.getOpayId(),markType);
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
         inviteOperateService.saveRelationAndRewardAndCashback(relation, list,cashbacklist);
         return Result.success();
@@ -166,12 +171,8 @@ public class InviteController {
         OpayInviteRelation relation = inviteService.selectRelationMasterByMasterId(user.getOpayId());
         if(relation==null){//没有师徒关系
             String dateStr = map.get("createDate");
-            LocalDateTime date = LocalDateTime.parse(dateStr);
-            ZoneId zone = ZoneId.systemDefault();
-            Instant instant =date.atZone(zone).toInstant();
-            Date regDate = Date.from(instant);
-            Date date7 = DateFormatter.getDateAfter(regDate, 7);
-            if (date7.getTime() < new Date().getTime()) {
+            boolean f = inviteOperateService.isExpired(zone,dateStr);
+            if(f){
                 return Result.success();
             }
             FinishTask task = new FinishTask();

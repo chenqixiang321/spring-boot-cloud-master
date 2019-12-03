@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -307,5 +310,20 @@ public class InviteOperateService {
     public void saveRewardAndCashback(List<OpayMasterPupilAward> list, List<OpayActiveCashback> cashbacklist) throws Exception {
         inviteService.saveReward(list);
         inviteService.updateCashback(cashbacklist);
+    }
+
+    public boolean isExpired(String zone1,String createDate){
+        LocalDateTime date = LocalDateTime.parse(createDate);
+        ZoneId zone = ZoneId.systemDefault();
+        Instant instant =date.atZone(zone).toInstant();
+        Date regDate = Date.from(instant);
+        Date date7 = DateFormatter.getDateAfter(regDate, 7);
+        Date nDate =  new Date();
+        String ntime = DateFormatter.formatDatetimeByZone(nDate,zone1);
+        Date formatDate = DateFormatter.parseDatetime(ntime);
+        if (date7.getTime() < formatDate.getTime()) {
+           return true;
+        }
+        return false;
     }
 }

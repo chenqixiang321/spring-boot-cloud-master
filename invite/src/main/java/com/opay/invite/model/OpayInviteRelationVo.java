@@ -1,5 +1,6 @@
 package com.opay.invite.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -25,6 +26,7 @@ public class OpayInviteRelationVo {
 
     @ApiModelProperty(value = "邀请时间",hidden = true)
     @JsonIgnore
+    @JsonFormat()
     private Date createAt;
 
     @ApiModelProperty(value = "邀请人得到奖励,及被邀人贡献")

@@ -63,8 +63,8 @@ activity:
     masterReward: 20
     rechargeReward: 100
     agentOpen: 0
-    startTime: 2019-11-12
-    endTime: 2019-12-22
+    startTime: 2019-11-12 00:00:01
+    endTime: 2019-12-22 23:59:59
     rewardList[0]:
       orderId: 1
       min: 1
@@ -130,6 +130,7 @@ transfer:
     url: /api/m/createOrder
     reference: IVE
     userUrl: /api/users/queryUserInfoByPhone
+    userRecordUrl: /api/im/queryUserRecordByPhone
 
 opay:
   settings:

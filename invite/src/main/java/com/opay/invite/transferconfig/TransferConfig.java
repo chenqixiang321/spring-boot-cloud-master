@@ -22,4 +22,11 @@ public class TransferConfig {
     private String reference;
 
     private String userUrl;
+
+    private String userRecordUrl;
+
+    private String userListUrl;
+
+    private String batchListUrl;
+
 }

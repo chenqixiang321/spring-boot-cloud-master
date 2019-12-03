@@ -50,6 +50,9 @@ public class ApiController {
     @Autowired
     private TransferConfig transferConfig;
 
+    @Value("${spring.jackson.time-zone:''}")
+    private String zone;
+
     @ApiOperation(value = "用户填入邀请码回调", notes = "用户填入邀请码回调")
     @PostMapping("/notifyInvite")
     public Result notifyInvite(HttpServletRequest request, @RequestBody NotifyInvite notifyInvite) throws Exception {
@@ -71,7 +74,10 @@ public class ApiController {
         try {
             Date regDate = DateFormatter.parseDate(notifyInvite.getCreateTime());
             Date date = DateFormatter.getDateAfter(regDate,7);
-            if(date.getTime()<new Date().getTime()){
+            Date nDate =  new Date();
+            String ntime = DateFormatter.formatDatetimeByZone(nDate,zone);
+            Date formatDate = DateFormatter.parseDatetime(ntime);
+            if(date.getTime()<formatDate.getTime()){
                 return Result.error(CodeMsg.ILLEGAL_CODE_DAY);
             }
         }catch (Exception e){

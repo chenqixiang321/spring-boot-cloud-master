@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,6 +58,9 @@ public class ActivityController {
     @Autowired
     private TransferConfig transferConfig;
 
+    @Value("${spring.jackson.time-zone:''}")
+    private String zone;
+
     @ApiOperation(value = "获取活动页内容", notes = "获取活动页内容")
     @PostMapping("/getActivity")
     public Result<OpayActivity> getActivity(HttpServletRequest request) throws Exception {
@@ -73,12 +77,8 @@ public class ActivityController {
             }
             if(activity.getIsAgent()==1) {
                 String dateStr = map.get("createDate");
-                LocalDateTime date = LocalDateTime.parse(dateStr);
-                ZoneId zone = ZoneId.systemDefault();
-                Instant instant =date.atZone(zone).toInstant();
-                Date regDate = Date.from(instant);
-                Date date7 = DateFormatter.getDateAfter(regDate, 7);
-                if (date7.getTime() < new Date().getTime()) {
+                boolean f = inviteOperateService.isExpired(zone,dateStr);
+                if(f){
                     isF7 =1;
                 }
             }
@@ -221,12 +221,11 @@ public class ActivityController {
         LoginUser user = inviteOperateService.getOpayInfo(request);
 
         //活动未开始结束不在执行
-        boolean f = false;
+        boolean f = checkTime();
         if(f){
-            log.warn("活动已结束,info{},"+JSON.toJSONString(user));
+            log.warn("活动未开始或已结束,info{},"+JSON.toJSONString(user));
             return Result.success();
         }
-
 //        long mlis = System.currentTimeMillis();
 //        Map<String,String> umap = rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());
 //        String role = umap.get("role");
@@ -248,8 +247,11 @@ public class ActivityController {
             return Result.error(CodeMsg.ILLEGAL_CODE_FIRST);
         }
         //查询是否有首次充值
-
-
+        Map<String,String> exsitMap = rpcService.queryUserRecordByPhone(user.getPhoneNumber(),rewardConfig.getStartTime());
+        String exists =exsitMap.get("exists");
+        if(!"Y".equals(exists)){
+            return Result.success();
+        }
         int count =inviteService.getRelationCount(user.getOpayId());
         //计算用户所属阶段
         StepReward stepReward = inviteOperateService.getStepReward(count);
@@ -275,6 +277,17 @@ public class ActivityController {
         cashbacklist = inviteOperateService.getOpayCashback(list2,cashbacklist);
         inviteOperateService.saveRewardAndCashback(list2,cashbacklist);
         return Result.success();
+    }
+
+    private boolean checkTime() {
+        Date startTime = DateFormatter.parseDatetime(rewardConfig.getStartTime());
+        Date endTime = DateFormatter.parseDatetime(rewardConfig.getEndTime());
+        String ntime = DateFormatter.formatDatetimeByZone(new Date(),zone);
+        Date nowTime = DateFormatter.parseDatetime(ntime);
+        if(nowTime.getTime()<startTime.getTime() || nowTime.getTime()>endTime.getTime()){
+            return true;
+        }
+       return false;
     }
 
 }

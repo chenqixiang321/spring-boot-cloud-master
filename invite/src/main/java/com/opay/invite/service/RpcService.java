@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.opay.invite.utils.AESUtil;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public interface RpcService {
@@ -43,4 +44,7 @@ public interface RpcService {
     Map<String,String> transfer(String requestId,String recieptId, String amount,String reference, String orderType,String payChannel) throws Exception;
 
     Map<String,String> getOpayUser(String phone,String requestId, String merchantId) throws Exception;
+
+    Map<String,String> queryUserRecordByPhone(String phone,String startTime);
+
 }

@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class DateFormatter {
     private static final ThreadLocal<SimpleDateFormat> DATE_TIME_FMT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
@@ -11,6 +12,7 @@ public class DateFormatter {
     private static final ThreadLocal<SimpleDateFormat> DATE_SHORT_FMT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMdd"));
 
     private static final ThreadLocal<SimpleDateFormat> DATE_SHORT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMM"));
+
 
     private DateFormatter() {
     }
@@ -53,6 +55,12 @@ public class DateFormatter {
         } catch (ParseException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public static String formatDatetimeByZone(Date date, String zone) {
+        SimpleDateFormat format= DATE_TIME_FMT.get();
+        format.setTimeZone(TimeZone.getTimeZone(zone));
+        return format.format(date);
     }
 
     /**
