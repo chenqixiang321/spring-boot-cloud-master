@@ -73,11 +73,11 @@
 --             group by a.master_id,a.master_phone
 --             )a
 --         order by a.totalReward desc
-       select * from (
-        select a.master_id opayId,b.phone,count(*) totalNum,sum(b.total_amount) totalReward
+    select * from (
+        select a.master_id opayId,a.master_phone phone,count(a.id) totalNum,sum(b.total_amount) totalReward
             from opay_invite_relation a
             left join opay_active_cashback b on a.master_id=b.opay_id
-            group by master_id
+            group by a.master_id,a.master_phone
         )a
         order by a.totalReward desc
 
