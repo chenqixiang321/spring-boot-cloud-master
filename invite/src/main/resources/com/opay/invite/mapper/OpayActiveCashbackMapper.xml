@@ -40,11 +40,12 @@
    ,update_at=#{updateAt}
    where opay_id=#{opayId,jdbcType=VARCHAR} and version=#{version}
   </update>
-    <select id="selectCashback" resultMap="BaseResultMap">
-<!--        select-->
-<!--        <include refid="Base_Column_List" />-->
-<!--        from opay_active_cashback where opay_id in(-->
-<!--            -->
-<!--        )-->
-    </select>
+    <update id="updateBatchCashback"  parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update opay_active_cashback
+            set amount=amount+#{item.amount},total_amount=total_amount+#{item.totalAmount},version=version+1
+            ,update_at=#{updateAt}
+            where opay_id=#{item.opayId,jdbcType=VARCHAR}
+        </foreach>
+    </update>
 </mapper>

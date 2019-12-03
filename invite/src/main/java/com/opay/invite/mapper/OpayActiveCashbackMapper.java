@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 @Mapper
 public interface OpayActiveCashbackMapper {
@@ -16,4 +17,6 @@ public interface OpayActiveCashbackMapper {
     int updateCashback(OpayActiveCashback cashback);
 
     int deductionCashback(OpayActiveCashback cashback);
+
+    void updateBatchCashback(List<OpayActiveCashback> list);
 }

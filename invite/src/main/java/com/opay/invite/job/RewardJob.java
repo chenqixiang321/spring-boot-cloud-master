@@ -1,17 +1,22 @@
 package com.opay.invite.job;
 
 
+import com.opay.invite.model.OpayActiveCashback;
+import com.opay.invite.model.OpayMasterPupilAward;
+import com.opay.invite.model.OpayUserOrder;
 import com.opay.invite.service.RewardJobService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  *
  */
 @Slf4j
 public class RewardJob extends OpayJob {
-    private static final int PAGE_SIZE = 20000;
+    private static final int PAGE_SIZE = 2000;
 
     @Autowired
     private RewardJobService rewardJobService;
@@ -35,6 +40,10 @@ public class RewardJob extends OpayJob {
 //            List<OpayActiveCashback> nlist = rewardJobService.getCashbackList(mplist);
 //            rewardJobService.saveAwardAndCashAndOrderStatus(nlist,mplist,list);
 //
+//            if (list.size() < PAGE_SIZE) {
+//                break;
+//            }
+//            start += PAGE_SIZE;
 //        }
     }
 

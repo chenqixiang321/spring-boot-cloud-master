@@ -1,6 +1,7 @@
 package com.opay.invite.service;
 
 import com.opay.invite.mapper.InviteMapper;
+import com.opay.invite.mapper.OpayActiveCashbackMapper;
 import com.opay.invite.mapper.RewardJobMapper;
 import com.opay.invite.model.OpayActiveCashback;
 import com.opay.invite.model.OpayMasterPupilAward;
@@ -32,6 +33,8 @@ public class RewardJobService {
 
     @Autowired
     private InviteMapper inviteMapper;
+
+    private OpayActiveCashbackMapper cashbackMapper;
 
     public List<OpayUserOrder> getOpayUserOrderList(Integer day, int start, int pageSize) {
         return rewardJobMapper.getOpayUserOrderList(day,start,pageSize);
@@ -69,6 +72,7 @@ public class RewardJobService {
             BigDecimal totalReward = palist.stream().map(OpayMasterPupilAward::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
             OpayActiveCashback cashback = new OpayActiveCashback();
             cashback.setAmount(totalReward);
+            cashback.setTotalAmount(totalReward);
             cashback.setOpayId(entry.getKey());
             list.add(cashback);
         });
@@ -79,5 +83,6 @@ public class RewardJobService {
     public void saveAwardAndCashAndOrderStatus(List<OpayActiveCashback> nlist, List<OpayMasterPupilAward> mplist, List<OpayUserOrder> list) {
         rewardJobMapper.updateOpayUserOrder(list);
         inviteMapper.saveInviteReward(mplist);
+        cashbackMapper.updateBatchCashback(nlist);
     }
 }
