@@ -31,4 +31,6 @@ public class RewardConfig {
 
     private String endTime;//活动结束时间
 
+    private int effectiveDay;//新注册用户有效期天数
+
 }

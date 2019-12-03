@@ -8,6 +8,7 @@ import com.opay.invite.resp.Result;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.service.RpcService;
+import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.transferconfig.TransferConfig;
 import com.opay.invite.utils.DateFormatter;
 import io.swagger.annotations.Api;
@@ -53,6 +54,9 @@ public class ApiController {
     @Value("${spring.jackson.time-zone:''}")
     private String zone;
 
+    @Autowired
+    private RewardConfig rewardConfig;
+
     @ApiOperation(value = "用户填入邀请码回调", notes = "用户填入邀请码回调")
     @PostMapping("/notifyInvite")
     public Result notifyInvite(HttpServletRequest request, @RequestBody NotifyInvite notifyInvite) throws Exception {
@@ -71,9 +75,14 @@ public class ApiController {
         if(notifyInvite.getSign()==null || "".equals(notifyInvite.getSign())){
             return Result.error(CodeMsg.ILLEGAL_PARAMETER);
         }
+        boolean f = inviteOperateService.checkTime(zone);
+        if(f){
+            log.warn("活动未开始或已结束,notifyInvite info{},"+JSON.toJSONString(notifyInvite));
+            return Result.success();
+        }
         try {
             Date regDate = DateFormatter.parseDate(notifyInvite.getCreateTime());
-            Date date = DateFormatter.getDateAfter(regDate,7);
+            Date date = DateFormatter.getDateAfter(regDate,rewardConfig.getEffectiveDay());
             Date nDate =  new Date();
             String ntime = DateFormatter.formatDatetimeByZone(nDate,zone);
             Date formatDate = DateFormatter.parseDatetime(ntime);
@@ -146,7 +155,7 @@ public class ApiController {
         }catch (Exception e){
             return Result.error(CodeMsg.CustomCodeMsg(500,"system error"));
         }
-        return Result.success();
+        return Result.success(rewardConfig.getRegisterReward());
     }
 
 

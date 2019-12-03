@@ -24,6 +24,8 @@ public class CodeMsg {
 
     public static final CodeMsg ILLEGAL_CODE_SIGN = new CodeMsg(1013, "Sign fail");
 
+    public static final CodeMsg ILLEGAL_CODE_ACTIVE = new CodeMsg(1014, "Activity ended");
+
     private int code;
     private String message;
 

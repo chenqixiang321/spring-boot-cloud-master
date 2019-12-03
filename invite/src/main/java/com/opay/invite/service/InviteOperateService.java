@@ -317,7 +317,7 @@ public class InviteOperateService {
         ZoneId zone = ZoneId.systemDefault();
         Instant instant =date.atZone(zone).toInstant();
         Date regDate = Date.from(instant);
-        Date date7 = DateFormatter.getDateAfter(regDate, 7);
+        Date date7 = DateFormatter.getDateAfter(regDate, rewardConfig.getEffectiveDay());
         Date nDate =  new Date();
         String ntime = DateFormatter.formatDatetimeByZone(nDate,zone1);
         Date formatDate = DateFormatter.parseDatetime(ntime);
@@ -326,4 +326,16 @@ public class InviteOperateService {
         }
         return false;
     }
+
+    public boolean checkTime(String zone) {
+        Date startTime = DateFormatter.parseDatetime(rewardConfig.getStartTime());
+        Date endTime = DateFormatter.parseDatetime(rewardConfig.getEndTime());
+        String ntime = DateFormatter.formatDatetimeByZone(new Date(),zone);
+        Date nowTime = DateFormatter.parseDatetime(ntime);
+        if(nowTime.getTime()<startTime.getTime() || nowTime.getTime()>endTime.getTime()){
+            return true;
+        }
+        return false;
+    }
+
 }

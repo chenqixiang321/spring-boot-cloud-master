@@ -1,5 +1,6 @@
 package com.opay.invite.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.opay.invite.model.*;
 import com.opay.invite.model.request.InviteRequest;
 import com.opay.invite.resp.CodeMsg;
@@ -14,6 +15,7 @@ import com.opay.invite.utils.DateFormatter;
 import com.opay.invite.utils.InviteCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,11 +24,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/invite")
 @Api(value = "邀请API")
@@ -70,10 +74,15 @@ public class InviteController {
     }
 
 
-    @ApiOperation(value = "插入邀请关系信息", notes = "插入邀请关系信息")
+    @ApiOperation(value = "插入邀请关系信息", notes = "插入邀请关系信息,data返回收益金额")
     @PostMapping("/save")
-    public Result save(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) throws Exception{
+    public Result<BigDecimal> save(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) throws Exception{
         //判断邀请码是否合法,和反作弊，不能建立师徒关系,当前用户已经过了7天不能填写邀请码
+        boolean eff = inviteOperateService.checkTime(zone);
+        if(eff){
+            log.warn("活动未开始或已结束,inviteRequest info{},"+ JSON.toJSONString(inviteRequest));
+            return Result.error(CodeMsg.ILLEGAL_CODE_ACTIVE);
+        }
         OpayInviteCode inviteCode = inviteService.getOpayIdByInviteCode(inviteRequest.getInviteCode());
         //获取code用户类型
         if(inviteCode==null){
@@ -134,7 +143,7 @@ public class InviteController {
         List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,user.getOpayId(),markType);
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
         inviteOperateService.saveRelationAndRewardAndCashback(relation, list,cashbacklist);
-        return Result.success();
+        return Result.success(rewardConfig.getRegisterReward());
     }
 
 

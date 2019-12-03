@@ -221,7 +221,7 @@ public class ActivityController {
         LoginUser user = inviteOperateService.getOpayInfo(request);
 
         //活动未开始结束不在执行
-        boolean f = checkTime();
+        boolean f = inviteOperateService.checkTime(zone);
         if(f){
             log.warn("活动未开始或已结束,info{},"+JSON.toJSONString(user));
             return Result.success();
@@ -277,17 +277,6 @@ public class ActivityController {
         cashbacklist = inviteOperateService.getOpayCashback(list2,cashbacklist);
         inviteOperateService.saveRewardAndCashback(list2,cashbacklist);
         return Result.success();
-    }
-
-    private boolean checkTime() {
-        Date startTime = DateFormatter.parseDatetime(rewardConfig.getStartTime());
-        Date endTime = DateFormatter.parseDatetime(rewardConfig.getEndTime());
-        String ntime = DateFormatter.formatDatetimeByZone(new Date(),zone);
-        Date nowTime = DateFormatter.parseDatetime(ntime);
-        if(nowTime.getTime()<startTime.getTime() || nowTime.getTime()>endTime.getTime()){
-            return true;
-        }
-       return false;
     }
 
 }
