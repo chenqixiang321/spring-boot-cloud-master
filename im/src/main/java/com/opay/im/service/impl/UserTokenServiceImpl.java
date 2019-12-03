@@ -1,19 +1,16 @@
 package com.opay.im.service.impl;
 
+import com.opay.im.mapper.UserTokenMapper;
+import com.opay.im.model.UserTokenModel;
 import com.opay.im.model.response.BlackListUserIdsResponse;
 import com.opay.im.service.RongCloudService;
+import com.opay.im.service.UserTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-
-import com.opay.im.model.UserTokenModel;
-import com.opay.im.mapper.UserTokenMapper;
-import com.opay.im.service.UserTokenService;
-
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class UserTokenServiceImpl implements UserTokenService {
@@ -22,7 +19,6 @@ public class UserTokenServiceImpl implements UserTokenService {
     private UserTokenMapper userTokenMapper;
     @Autowired
     private RongCloudService rongCloudService;
-
     @Override
     public int deleteByPrimaryKey(Long id) {
         return userTokenMapper.deleteByPrimaryKey(id);

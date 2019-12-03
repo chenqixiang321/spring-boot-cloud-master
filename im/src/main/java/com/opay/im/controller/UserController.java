@@ -1,5 +1,6 @@
 package com.opay.im.controller;
 
+import com.opay.im.model.request.OpayFriendsRequest;
 import com.opay.im.model.response.BlackListUserIdsResponse;
 import com.opay.im.model.response.ResultResponse;
 import com.opay.im.model.response.SuccessResponse;
@@ -11,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +28,8 @@ public class UserController {
     private HttpServletRequest request;
     @Autowired
     private UserTokenService userTokenService;
+    @Autowired
+    private com.opay.im.service.OpayFriends opayFriends;
 
     @ApiOperation(value = "获得融云token", notes = "从数据库里获取token,不存在则创建")
     @PostMapping("/token")
@@ -66,5 +70,13 @@ public class UserController {
     public ResultResponse<BlackListUserIdsResponse> getBlackList() throws Exception {
         String userId = String.valueOf(request.getAttribute("opayId"));
         return new ResultResponse<>(userTokenService.getBlackList(userId));
+    }
+
+    @ApiOperation(value = "根据通讯录获取opay好友", notes = "根据通讯录获取opay好友")
+    @PostMapping("/friends")
+    public SuccessResponse getFriends(@RequestBody OpayFriendsRequest opayFriendsRequest) {
+        System.out.println(opayFriendsRequest.getMobiles());
+        //System.out.println(opayFriends.batchQueryUserByPhone(String.join(",", opayFriendsRequest.getMobiles())));
+        return new SuccessResponse();
     }
 }
