@@ -1,10 +1,12 @@
 package com.opay.im.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opay.im.exception.ImException;
 import com.opay.im.model.OpayUserModel;
 import com.opay.im.model.request.BatchQueryUserRequest;
 import com.opay.im.model.request.GetRongCloudTokenRequest;
 import com.opay.im.model.request.OpayApiRequest;
+import com.opay.im.model.request.OpayFriendRequest;
 import com.opay.im.model.request.OpayFriendsRequest;
 import com.opay.im.model.request.QueryUserRequest;
 import com.opay.im.model.response.BlackListUserIdsResponse;
@@ -55,18 +57,14 @@ public class UserController {
     @Value("${config.opay.merchantId}")
     private String merchantId;
 
-    @ApiOperation(value = "获得融云token/激活融云", notes = "从数据库里获取token,不存在则创建,传OpayId和phone则激活该opay账户的融云,不传激活当前登录用户的")
+    @ApiOperation(value = "获得融云token", notes = "从数据库里获取token,不存在则创建")
     @PostMapping("/token")
-    public ResultResponse getToken(@RequestBody GetRongCloudTokenRequest getRongCloudTokenRequest) throws Exception {
+    public ResultResponse getToken() throws Exception {
         ResultResponse resultResponse = new ResultResponse();
         resultResponse.setCode(200);
         resultResponse.setMessage("success");
         Map<String, String> token = new HashMap<>();
-        if (StringUtils.isNotBlank(getRongCloudTokenRequest.getOpayId())) {
-            userTokenService.getRyToken(getRongCloudTokenRequest.getOpayId(), getRongCloudTokenRequest.getPhone());
-        } else {
-            token.put("token", userTokenService.getRyToken(String.valueOf(request.getAttribute("opayId")), String.valueOf(request.getAttribute("phoneNumber"))));
-        }
+        token.put("token", userTokenService.getRyToken(String.valueOf(request.getAttribute("opayId")), String.valueOf(request.getAttribute("phoneNumber"))));
         resultResponse.setData(token);
         return resultResponse;
     }
@@ -103,7 +101,7 @@ public class UserController {
     @ApiOperation(value = "根据通讯录获取opay好友", notes = "根据通讯录获取opay好友")
     @PostMapping("/friends")
     public ResultResponse<List<OpayUserModel>> getFriends(@RequestBody OpayFriendsRequest opayFriendsRequest) throws Exception {
-        mobileHandler(opayFriendsRequest);
+        mobilesHandler(opayFriendsRequest);
         List<OpayUserModel> resultList = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
@@ -112,29 +110,34 @@ public class UserController {
         batchQuery.setMerchantId(merchantId);
         batchQuery.setRequestId(incrKeyService.getIncrKey());
         batchQuery.setData(AESUtil.encrypt(mapper.writeValueAsString(batchQueryUserRequest), aesKey, iv));
-        OpayApiResponse resultResponse = opayFriends.batchQueryUserByPhone(batchQuery);
-        if (resultResponse == null || resultResponse.getData() == null) {
-            return new ResultResponse(resultList);
+        OpayApiResultResponse<String> opayApiResultResponse = opayFriends.batchQueryUserByPhone(batchQuery);
+        if (!"00000".equals(opayApiResultResponse.getCode())) {
+            throw new ImException(opayApiResultResponse.getMessage());
         }
-        String json = AESUtil.decrypt(resultResponse.getData(), aesKey, iv);
+        String json = AESUtil.decrypt(opayApiResultResponse.getData(), aesKey, iv);
         OpayApiQueryUserByPhoneResponse queryUserByPhoneResponse = mapper.readValue(json, OpayApiQueryUserByPhoneResponse.class);
         Map<String, OpayUserModel> userMap = new HashMap<>();
         for (OpayUserModel user : queryUserByPhoneResponse.getUsers()) {
+            user.setIsHasTrade(false);
             userMap.put(user.getUserId(), user);
         }
         if (opayFriendsRequest.isLoadTradePhone()) {
             String phoneNumber = String.valueOf(request.getAttribute("phoneNumber"));
             QueryUserRequest queryUserRequest = new QueryUserRequest();
-            queryUserRequest.setMobile(phoneNumber);
+            queryUserRequest.setMobile(mobileHandler(phoneNumber));
             queryUserRequest.setStartTime(opayFriendsRequest.getStartTime());
             batchQuery = new OpayApiRequest();
             batchQuery.setMerchantId(merchantId);
             batchQuery.setRequestId(incrKeyService.getIncrKey());
             batchQuery.setData(AESUtil.encrypt(mapper.writeValueAsString(queryUserRequest), aesKey, iv));
-            OpayApiResponse resultResponse2 = opayFriends.queryUserListByPhone(batchQuery);
+            OpayApiResultResponse<String> resultResponse2 = opayFriends.queryUserListByPhone(batchQuery);
+            if (!"00000".equals(resultResponse2.getCode())) {
+                throw new ImException(resultResponse2.getMessage());
+            }
             json = AESUtil.decrypt(resultResponse2.getData(), aesKey, iv);
             OpayApiQueryUserByPhoneResponse queryUserByPhoneResponse2 = mapper.readValue(json, OpayApiQueryUserByPhoneResponse.class);
             for (OpayUserModel user : queryUserByPhoneResponse2.getUsers()) {
+                user.setIsHasTrade(true);
                 userMap.put(user.getUserId(), user);
             }
         }
@@ -146,7 +149,32 @@ public class UserController {
         return new ResultResponse(resultList);
     }
 
-    private void mobileHandler(OpayFriendsRequest opayFriendsRequest) {
+    @ApiOperation(value = "获取单个好友信息,并激活融云", notes = "获取单个好友信息,并激活融云")
+    @PostMapping("/friend")
+    public ResultResponse<OpayUserModel> getFriendInfo(@RequestBody OpayFriendRequest opayFriendRequest) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
+        batchQueryUserRequest.setMobile(mobileHandler(opayFriendRequest.getMobile()));
+        OpayApiRequest batchQuery = new OpayApiRequest();
+        batchQuery.setMerchantId(merchantId);
+        batchQuery.setRequestId(incrKeyService.getIncrKey());
+        batchQuery.setData(AESUtil.encrypt(mapper.writeValueAsString(batchQueryUserRequest), aesKey, iv));
+        OpayApiResultResponse<String> opayApiResultResponse = opayFriends.batchQueryUserByPhone(batchQuery);
+        if (!"00000".equals(opayApiResultResponse.getCode())) {
+            throw new ImException(opayApiResultResponse.getMessage());
+        }
+        String json = AESUtil.decrypt(opayApiResultResponse.getData(), aesKey, iv);
+        OpayApiQueryUserByPhoneResponse queryUserByPhoneResponse = mapper.readValue(json, OpayApiQueryUserByPhoneResponse.class);
+        List<OpayUserModel> users = queryUserByPhoneResponse.getUsers();
+        if (users.isEmpty()) {
+            throw new ImException("opay user does not exist");
+        }
+        OpayUserModel user = users.get(0);
+        userTokenService.getRyToken(user.getUserId(), user.getMobile());
+        return new ResultResponse<>(queryUserByPhoneResponse.getUsers().get(0));
+    }
+
+    private void mobilesHandler(OpayFriendsRequest opayFriendsRequest) {
         List<String> mobiles = new ArrayList<>();
         for (String mobile : opayFriendsRequest.getMobiles()) {
             if (StringUtils.startsWith(mobile, "0")) {
@@ -160,5 +188,17 @@ public class UserController {
             }
         }
         opayFriendsRequest.setMobiles(mobiles);
+    }
+
+    private String mobileHandler(String mobile) {
+        if (StringUtils.startsWith(mobile, "0")) {
+            return "+234" + StringUtils.substringAfter(mobile, "0");
+        } else if (StringUtils.startsWith(mobile, "234")) {
+            return "+" + mobile;
+        } else if (StringUtils.startsWith(mobile, "+234")) {
+            return mobile;
+        } else {
+            return "+234" + mobile;
+        }
     }
 }

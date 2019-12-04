@@ -31,4 +31,6 @@ public class OpayUserModel {
     private String surname;
     @ApiModelProperty(value = "id")
     private String userId;
+    @ApiModelProperty(value = "是否过交易")
+    private Boolean isHasTrade;
 }
