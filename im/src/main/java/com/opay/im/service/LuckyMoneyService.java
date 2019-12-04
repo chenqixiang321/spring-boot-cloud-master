@@ -1,7 +1,9 @@
 package com.opay.im.service;
 
 import com.opay.im.model.LuckyMoneyModel;
+import com.opay.im.model.request.GrabLuckyMoneyRequest;
 import com.opay.im.model.request.LuckyMoneyRequest;
+import com.opay.im.model.response.GrabLuckyMoneyResponse;
 import com.opay.im.model.response.LuckyMoneyInfoResponse;
 import com.opay.im.model.response.LuckyMoneyResponse;
 
@@ -21,6 +23,8 @@ public interface LuckyMoneyService {
     int updateByPrimaryKey(LuckyMoneyModel record);
 
     LuckyMoneyResponse sendLuckyMoney(LuckyMoneyRequest luckyMoneyRequest) throws Exception;
+
+    GrabLuckyMoneyResponse grabLuckyMoney(GrabLuckyMoneyRequest grabLuckyMoneyRequest) throws Exception;
 
     LuckyMoneyInfoResponse selectLuckyMoneyEveryPerson(Long id) throws Exception;
 

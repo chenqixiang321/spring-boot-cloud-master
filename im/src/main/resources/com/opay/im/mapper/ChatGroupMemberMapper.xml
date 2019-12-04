@@ -171,4 +171,8 @@
     delete from chat_group_member
     where opay_id = #{opayId,jdbcType=BIGINT} and group_id=#{groupId}
   </delete>
+
+  <select id="selectGroupMember"  parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from chat_group_member where group_id=#{groupId}
+  </select>
 </mapper>

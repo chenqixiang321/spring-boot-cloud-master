@@ -3,6 +3,8 @@ package com.opay.im.mapper;
 import com.opay.im.model.LuckyMoneyRecordModel;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface LuckyMoneyRecordMapper {
     int deleteByPrimaryKey(Long id);
@@ -16,4 +18,6 @@ public interface LuckyMoneyRecordMapper {
     int updateByPrimaryKeySelective(LuckyMoneyRecordModel record);
 
     int updateByPrimaryKey(LuckyMoneyRecordModel record);
+
+    List<LuckyMoneyRecordModel> selectLuckyMoneyRecord(Long luckMoneyId);
 }

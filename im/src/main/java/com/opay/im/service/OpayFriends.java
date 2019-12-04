@@ -1,8 +1,7 @@
 package com.opay.im.service;
 
-import com.opay.im.model.request.BatchQueryUserRequest;
-import com.opay.im.model.request.QueryUserRequest;
-import com.opay.im.model.response.ResultResponse;
+import com.opay.im.model.request.OpayApiRequest;
+import com.opay.im.model.response.OpayApiResponse;
 import com.opos.feign.factory.OpayFeignFactory;
 import feign.Headers;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -17,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface OpayFriends {
     @PostMapping({"api/im/batchQueryUserByPhone"})
     @Headers({"ContentType:application/json"})
-    ResultResponse batchQueryUserByPhone(@RequestBody BatchQueryUserRequest batchQueryUserRequest);
+    OpayApiResponse batchQueryUserByPhone(@RequestBody OpayApiRequest opayApiRequest);
 
     @PostMapping({"api/im/queryUserListByPhone"})
     @Headers({"ContentType:application/json"})
-    ResultResponse queryUserListByPhone(@RequestBody QueryUserRequest queryUserRequest);
+    OpayApiResponse queryUserListByPhone(@RequestBody OpayApiRequest opayApiRequest);
 }

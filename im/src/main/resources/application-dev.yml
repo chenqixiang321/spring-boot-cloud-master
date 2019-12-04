@@ -7,7 +7,7 @@ logging:
 #app:
 #  id: opay-im-invite
 #apollo:
-#  meta: http://106.12.25.204:8080
+#  meta: http://10.52.184.230:8080
 #  cacheDir: ./config
 #  bootstrap:
 #    enabled: true
@@ -88,4 +88,7 @@ config:
 im:
   group:
     maxMember: 200
+  luckyMoney:
+    max: 500
+    expirationDays: 3
 

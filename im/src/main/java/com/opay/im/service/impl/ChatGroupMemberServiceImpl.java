@@ -1,12 +1,16 @@
 package com.opay.im.service.impl;
 
-import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
-import com.opay.im.model.ChatGroupMemberModel;
 import com.opay.im.mapper.ChatGroupMemberMapper;
+import com.opay.im.model.ChatGroupMemberModel;
 import com.opay.im.service.ChatGroupMemberService;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
+
 @Service
-public class ChatGroupMemberServiceImpl implements ChatGroupMemberService{
+public class ChatGroupMemberServiceImpl implements ChatGroupMemberService {
 
     @Resource
     private ChatGroupMemberMapper chatGroupMemberMapper;
@@ -39,6 +43,12 @@ public class ChatGroupMemberServiceImpl implements ChatGroupMemberService{
     @Override
     public int updateByPrimaryKey(ChatGroupMemberModel record) {
         return chatGroupMemberMapper.updateByPrimaryKey(record);
+    }
+
+    @Override
+    @Cacheable(value = "groupMemberList", key = "#groupId", unless = "#result == null")
+    public List<ChatGroupMemberModel> selectGroupMember(Long groupId) {
+        return chatGroupMemberMapper.selectGroupMember(groupId);
     }
 
 }

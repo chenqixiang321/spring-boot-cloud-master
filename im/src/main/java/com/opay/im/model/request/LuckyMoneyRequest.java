@@ -53,7 +53,7 @@ public class LuckyMoneyRequest {
      */
     @ApiModelProperty(value = "目标类型:0个人 1群")
     @NotNull
-    private Byte targetType;
+    private Integer targetType;
 
     /**
      * 红包说明Best Wishes!

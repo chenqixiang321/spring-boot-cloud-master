@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,7 +86,10 @@ public class ChatGroupServiceImpl implements ChatGroupService {
     }
 
     @Override
-    @CacheEvict(value = "groupInfo", key = "#joinGroupRequest.groupId")
+    @Caching(evict = {
+            @CacheEvict(value = "groupInfo", key = "#joinGroupRequest.groupId"),
+            @CacheEvict(value = "groupMemberList", key = "#joinGroupRequest.groupId")
+    })
     @Transactional(rollbackFor = Exception.class)
     public void joinGroup(JoinGroupRequest joinGroupRequest) throws Exception {
         Date date = new Date();
@@ -115,7 +119,10 @@ public class ChatGroupServiceImpl implements ChatGroupService {
     }
 
     @Override
-    @CacheEvict(value = "groupInfo", key = "#groupMemberQuitRequest.groupId")
+    @Caching(evict = {
+            @CacheEvict(value = "groupInfo", key = "#groupMemberQuitRequest.groupId"),
+            @CacheEvict(value = "groupMemberList", key = "#groupMemberQuitRequest.groupId")
+    })
     @Transactional(rollbackFor = Exception.class)
     public void leaveGroup(GroupMemberQuitRequest groupMemberQuitRequest) throws Exception {
         Date date = new Date();
@@ -146,7 +153,10 @@ public class ChatGroupServiceImpl implements ChatGroupService {
     }
 
     @Override
-    @CacheEvict(value = "groupInfo", key = "#removeGroupMemberRequest.groupId")
+    @Caching(evict = {
+            @CacheEvict(value = "groupInfo", key = "#removeGroupMemberRequest.groupId"),
+            @CacheEvict(value = "groupMemberList", key = "#removeGroupMemberRequest.groupId")
+    })
     @Transactional(rollbackFor = Exception.class)
     public void removeGroupMember(RemoveGroupMemberRequest removeGroupMemberRequest) throws Exception {
         Date date = new Date();

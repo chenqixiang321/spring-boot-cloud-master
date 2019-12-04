@@ -27,7 +27,7 @@ public class SwaggerConfig {
     public Docket createRestApi() {
         ParameterBuilder ticketPar = new ParameterBuilder();
         List<Parameter> pars = new ArrayList<>();
-        ticketPar.name("token").description("user token")
+        ticketPar.name("Authorization").description("Authorization 例如:Bearer xxxxxx")
                 .modelRef(new ModelRef("string")).parameterType("header")
                 .required(true).build();
         pars.add(ticketPar.build());

@@ -1,11 +1,23 @@
 package com.opay.im.service.impl;
 
+import com.opay.im.exception.ImException;
 import com.opay.im.mapper.LuckyMoneyRecordMapper;
+import com.opay.im.model.ChatGroupMemberModel;
 import com.opay.im.model.LuckyMoneyRecordModel;
+import com.opay.im.model.request.GrabLuckyMoneyRequest;
 import com.opay.im.model.request.LuckyMoneyRequest;
+import com.opay.im.model.response.GrabLuckyMoneyResponse;
+import com.opay.im.model.response.GrabLuckyMoneyResult;
 import com.opay.im.model.response.LuckyMoneyInfoResponse;
+import com.opay.im.model.response.LuckyMoneyRecordInfoResponse;
 import com.opay.im.model.response.LuckyMoneyResponse;
+import com.opay.im.service.ChatGroupMemberService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -17,9 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 @Service
 public class LuckyMoneyServiceImpl implements LuckyMoneyService {
@@ -28,6 +40,18 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     private LuckyMoneyMapper luckyMoneyMapper;
     @Resource
     private LuckyMoneyRecordMapper luckyMoneyRecordMapper;
+    @Resource(name = "sendLuckyMoney")
+    private DefaultRedisScript<Boolean> sendLuckyMoney;
+    @Resource(name = "grabLuckyMoney")
+    private DefaultRedisScript<GrabLuckyMoneyResult> grabLuckyMoney;
+    @Value("${im.luckyMoney.expirationDays}")
+    private int expirationDays;
+    @Value("${im.luckyMoney.max}")
+    private String max;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private ChatGroupMemberService chatGroupMemberService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -68,18 +92,31 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         luckyMoneyModel.setCreateTime(date);
         luckyMoneyMapper.insertSelective(luckyMoneyModel);
         BigDecimal minValue = new BigDecimal(String.valueOf(luckyMoneyRequest.getQuantity() * 0.01));
+        BigDecimal maxValue = new BigDecimal(max);
         if (luckyMoneyRequest.getAmount().compareTo(minValue) == -1) {
             throw new Exception("The amount is too small and must be larger than " + minValue);
+        }
+        if (luckyMoneyRequest.getAmount().compareTo(maxValue) == 1) {
+            throw new Exception("The amount is too large and must be smaller than " + maxValue);
         }
         LuckyMoneyRecordModel luckyMoneyRecordModel = null;
         RedPackage moneyPackage = new RedPackage();
         moneyPackage.remainMoney = luckyMoneyModel.getAmount();
         moneyPackage.remainSize = luckyMoneyModel.getQuantity();
+        List<String> amounts = new ArrayList<>();
+        List<String> amountIds = new ArrayList<>();
         while (moneyPackage.remainSize != 0) {
             luckyMoneyRecordModel = new LuckyMoneyRecordModel();
             luckyMoneyRecordModel.setLuckMoneyId(luckyMoneyModel.getId());
             luckyMoneyRecordModel.setAmount(getRandomMoney(moneyPackage));
             luckyMoneyRecordMapper.insertSelective(luckyMoneyRecordModel);
+            amounts.add(String.valueOf(luckyMoneyRecordModel.getAmount()));
+            amountIds.add(String.valueOf(luckyMoneyRecordModel.getId()));
+        }
+        List<String> keys = Arrays.asList(String.valueOf(luckyMoneyModel.getId()), String.valueOf(luckyMoneyModel.getTargetType()), luckyMoneyModel.getOpayId(), luckyMoneyModel.getTargetId());
+        Boolean sendLuckyMoneyResult = (Boolean) redisTemplate.execute(sendLuckyMoney, keys, String.join(",", amountIds), String.join(",", amounts), expirationDays * 24 * 3600);
+        if (!sendLuckyMoneyResult) {
+            throw new ImException("create lucky money error");
         }
         LuckyMoneyResponse luckyMoneyResponse = new LuckyMoneyResponse();
         BeanUtils.copyProperties(luckyMoneyModel, luckyMoneyResponse);
@@ -87,9 +124,56 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public LuckyMoneyInfoResponse selectLuckyMoneyEveryPerson(Long id) throws Exception {
-        LuckyMoneyModel luckyMoneyModel = luckyMoneyMapper.selectByPrimaryKey(id);
+    public GrabLuckyMoneyResponse grabLuckyMoney(GrabLuckyMoneyRequest grabLuckyMoneyRequest) throws Exception {
+        if (grabLuckyMoneyRequest.getTargetType() == 1) {
+            List<ChatGroupMemberModel> members = chatGroupMemberService.selectGroupMember(Long.parseLong(grabLuckyMoneyRequest.getTargetId()));
+            boolean isInGroup = false;
+            for (ChatGroupMemberModel member : members) {
+                if (member.getOpayId().equals(grabLuckyMoneyRequest.getOpayId())) {
+                    isInGroup = true;
+                }
+            }
+            if (!isInGroup) {
+                throw new ImException("You do not belong to this group");
+            }
+        }
+        List<String> keys = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getOpayId(), grabLuckyMoneyRequest.getTargetId());
+        GrabLuckyMoneyResult grabLuckyMoneyResult = (GrabLuckyMoneyResult) redisTemplate.execute(grabLuckyMoney, keys, grabLuckyMoneyRequest.getOpayId());
+        if (grabLuckyMoneyResult.getId() != 0) {
+            LuckyMoneyRecordModel luckyMoneyRecordModel = new LuckyMoneyRecordModel();
+            luckyMoneyRecordModel.setId(grabLuckyMoneyResult.getId());
+            luckyMoneyRecordModel.setOpayPhone(grabLuckyMoneyRequest.getOpayPhone());
+            luckyMoneyRecordModel.setOpayName(grabLuckyMoneyRequest.getOpayName());
+            luckyMoneyRecordModel.setOpayId(grabLuckyMoneyRequest.getOpayId());
+            luckyMoneyRecordModel.setGetTime(new Date());
+            luckyMoneyRecordMapper.updateByPrimaryKeySelective(luckyMoneyRecordModel);
+            GrabLuckyMoneyResponse grabLuckyMoneyResponse = new GrabLuckyMoneyResponse();
+            grabLuckyMoneyResponse.setAmount(grabLuckyMoneyResult.getAmount());
+            grabLuckyMoneyResponse.setId(grabLuckyMoneyResult.getId());
+            return grabLuckyMoneyResponse;
+        } else {
+            if (grabLuckyMoneyResult.getMessage() != null) {
+                throw new ImException(grabLuckyMoneyResult.getMessage());
+            }
+        }
         return null;
+    }
+
+    @Override
+    public LuckyMoneyInfoResponse selectLuckyMoneyEveryPerson(Long id) throws Exception {
+        LuckyMoneyInfoResponse luckyMoneyInfoResponse = new LuckyMoneyInfoResponse();
+        List<LuckyMoneyRecordInfoResponse> luckyMoneyRecordInfoResponses = new ArrayList<>();
+        LuckyMoneyModel luckyMoneyModel = luckyMoneyMapper.selectByPrimaryKey(id);
+        BeanUtils.copyProperties(luckyMoneyModel, luckyMoneyInfoResponse);
+        List<LuckyMoneyRecordModel> LuckyMoneyRecords = luckyMoneyRecordMapper.selectLuckyMoneyRecord(id);
+        LuckyMoneyRecordInfoResponse luckyMoneyRecordInfoResponse;
+        for (LuckyMoneyRecordModel luckyMoneyRecordModel : LuckyMoneyRecords) {
+            luckyMoneyRecordInfoResponse = new LuckyMoneyRecordInfoResponse();
+            BeanUtils.copyProperties(luckyMoneyRecordModel, luckyMoneyRecordInfoResponse);
+            luckyMoneyRecordInfoResponses.add(luckyMoneyRecordInfoResponse);
+        }
+        luckyMoneyInfoResponse.setLuckyMoneyRecordInfoResponses(luckyMoneyRecordInfoResponses);
+        return luckyMoneyInfoResponse;
     }
 
     public BigDecimal getRandomMoney(RedPackage _redPackage) {
@@ -114,7 +198,6 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
         _redPackage.remainSize--;
         _redPackage.remainMoney = _redPackage.remainMoney.subtract(money).setScale(2, BigDecimal.ROUND_DOWN);
-        ;
         return money;
     }
 

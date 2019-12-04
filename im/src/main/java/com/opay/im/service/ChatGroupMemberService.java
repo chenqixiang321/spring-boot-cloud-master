@@ -1,7 +1,10 @@
 package com.opay.im.service;
 
 import com.opay.im.model.ChatGroupMemberModel;
-public interface ChatGroupMemberService{
+
+import java.util.List;
+
+public interface ChatGroupMemberService {
 
 
     int deleteByPrimaryKey(Long id);
@@ -16,4 +19,5 @@ public interface ChatGroupMemberService{
 
     int updateByPrimaryKey(ChatGroupMemberModel record);
 
+    List<ChatGroupMemberModel> selectGroupMember(Long groupId);
 }
