@@ -48,4 +48,9 @@
             where opay_id=#{item.opayId,jdbcType=VARCHAR}
         </foreach>
     </update>
+    <update id="updateRollbackCashback" parameterType="com.opay.invite.model.OpayActiveCashback">
+   update opay_active_cashback set amount=amount+#{amount},version=version+1
+   ,update_at=#{updateAt}
+   where opay_id=#{opayId,jdbcType=VARCHAR} and version=#{version}
+  </update>
 </mapper>

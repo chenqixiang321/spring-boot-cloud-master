@@ -46,6 +46,7 @@ public class TixianController {
     @Autowired
     private TixianLimitConfig tixianLimitConfig;
 
+
     @ApiOperation(value = "提现申请", notes = "提现申请")
     @PostMapping("/withdrawal")
     public Result getInviteCode(HttpServletRequest request, @RequestBody WithdrawalRequest withdrawalRequest) throws Exception {
@@ -56,8 +57,9 @@ public class TixianController {
         int relationCount = inviteService.getRelationCount(user.getOpayId());
         Result rt = checkParam(withdrawalRequest,cashback,relationCount);
         if(rt !=null) return rt;
-        Integer day = Integer.valueOf(DateFormatter.formatShortYMDDate(new Date()));
-        Integer month = Integer.valueOf(DateFormatter.formatShortYMDate(new Date()));
+        Date date =new Date();
+        Integer day = Integer.valueOf(DateFormatter.formatShortYMDDate(date));
+        Integer month = Integer.valueOf(DateFormatter.formatShortYMDate(date));
         OpayActiveTixian tixian = withdrawalService.getTixianAmount(user.getOpayId(),day);
         if(tixian!=null && tixian.getAmount().compareTo(tixianLimitConfig.getPerDayAmount())>=0){
             return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN_LIMIT);
@@ -69,8 +71,8 @@ public class TixianController {
         saveTixian.setAmount(withdrawalRequest.getAmount());
         saveTixian.setOpayId(user.getOpayId());
         saveTixian.setType(withdrawalRequest.getType());
-        saveTixian.setCreateAt(new Date());
-        saveTixian.setDeviceId("1111");
+        saveTixian.setCreateAt(date);
+        saveTixian.setDeviceId(withdrawalRequest.getDeviceId());
         saveTixian.setIp(IpUtil.getLocalIp(request));
         saveTixian.setMonth(month);
         saveTixian.setDay(day);
@@ -79,13 +81,14 @@ public class TixianController {
         saveTixianLog.setAmount(withdrawalRequest.getAmount());
         saveTixianLog.setOpayId(user.getOpayId());
         saveTixianLog.setType(withdrawalRequest.getType());
-        saveTixianLog.setCreateAt(new Date());
-        saveTixianLog.setDeviceId("1111");
+        saveTixianLog.setCreateAt(date);
+        saveTixianLog.setDeviceId(withdrawalRequest.getDeviceId());
         saveTixianLog.setIp(IpUtil.getLocalIp(request));
         saveTixianLog.setMonth(month);
         saveTixianLog.setDay(day);
         boolean f =inviteOperateService.saveTixianAndLog(saveTixian,saveTixianLog,cashback);
         if(!f){
+            inviteOperateService.rollbackTixian(saveTixian);
             return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN_SYSTERM);
         }
         return Result.success();

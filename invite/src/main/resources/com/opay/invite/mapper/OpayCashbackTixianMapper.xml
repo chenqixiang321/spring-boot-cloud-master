@@ -42,7 +42,29 @@
   </insert>
 
   <update id="updateTixian">
-    update opay_active_tixian set trade_no=#{tradeNo},reference=#{reference},status=#{status}
+    update opay_active_tixian set trade_no=#{tradeNo},reference=#{reference},status=#{status},update_at=now()
     where id=#{id} and opay_id=#{opayId}
+    <if test="status==1 or status==2">
+      and status=0
+    </if>
+    <if test="status==3 or status==4">
+      and status=1
+    </if>
   </update>
+
+  <select id="withdrawalList" parameterType="com.opay.invite.model.request.WithdrawalListRequest" resultMap="BaseResultMap">
+    select
+    a.id, a.opay_id,a.amount,a.type,a.create_at,a.status,a.`month`,a.`day`,a.device_id,ip
+    from opay_active_tixian a
+    left join opay_active_cashback b on a.opay_id=b.opay_id
+    <where>
+      <if test="status!=null">
+        and a.status=#{status}
+      </if>
+      <if test="phone!=null and phone !='' ">
+        and b.phone=#{phone}
+      </if>
+    </where>
+    order by a.id desc
+  </select>
 </mapper>

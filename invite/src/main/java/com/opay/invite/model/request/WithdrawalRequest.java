@@ -21,4 +21,7 @@ public class WithdrawalRequest {
 
     @ApiModelProperty(value = "提现类型0:bonus,1:balance")
     private Integer type;//提现类型
+
+    @ApiModelProperty(value = "设备号")
+    private String deviceId;
 }

@@ -40,6 +40,18 @@ public class DateFormatter {
     public static String formatShortYMDate(Date date) {
         return DATE_SHORT.get().format(date);
     }
+    public static String formatShortYMDDateByZone(Date date,String zone) {
+        SimpleDateFormat format= DATE_SHORT_FMT.get();
+        format.setTimeZone(TimeZone.getTimeZone(zone));
+        return format.format(date);
+    }
+
+    public static String formatShortYMDateByZone(Date date,String zone) {
+        SimpleDateFormat format= DATE_SHORT.get();
+        format.setTimeZone(TimeZone.getTimeZone(zone));
+        return format.format(date);
+    }
+
 
     public static Date parseDate(String dateStr) {
         try {

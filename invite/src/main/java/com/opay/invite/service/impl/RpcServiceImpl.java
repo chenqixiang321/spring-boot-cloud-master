@@ -85,11 +85,19 @@ public class RpcServiceImpl implements RpcService {
     }
 
     @Override
-    public Map<String, String> queryUserRecordByPhone(String phone, String startTime) {
+    public Map<String, String> queryUserRecordByPhone(String phone, String startTime,String requestId, String merchantId) throws Exception {
+        if(merchantId==null || "".equals(merchantId)){
+            merchantId=transferConfig.getMerchantId();
+        }
         Map<String,String> map = new HashMap<>();
         map.put("phone",phone);
         map.put("startTime",startTime);
-        String result = HttpClientUtil.postEntity(map,transferConfig.getDomain()+transferConfig.getUserRecordUrl());
+        String str = getEncrypt(map,transferConfig.getAesKey());
+        Map<String,String> paramMap = new HashMap<>();
+        paramMap.put("requestId",requestId);
+        paramMap.put("merchantId",merchantId);
+        paramMap.put("data",str);
+        String result = HttpClientUtil.postEntity(paramMap,transferConfig.getDomain()+transferConfig.getUserRecordUrl());
         if(result==null || "".equals(result) || "-1".equals(result)){
             return null;
         }
@@ -98,7 +106,8 @@ public class RpcServiceImpl implements RpcService {
             String dataStr = rMap.get("data");
             if("00000".equals(rMap.get("code"))) {
                 if (dataStr != null && !"".equals(dataStr)) {
-                    rMap = JSONObject.parseObject(dataStr, Map.class);
+                    String resultStr = getDecrypt(dataStr, transferConfig.getAesKey());
+                    rMap = JSONObject.parseObject(resultStr, Map.class);
                     return rMap;
                 }
             }

@@ -6,6 +6,7 @@ import com.opay.invite.stateconfig.*;
 import com.opay.invite.transferconfig.OrderType;
 import com.opay.invite.transferconfig.TransferConfig;
 import com.opay.invite.utils.DateFormatter;
+import com.opay.invite.utils.IpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -267,15 +268,44 @@ public class InviteOperateService {
         saveTixianLog.setTixianId(saveTixian.getId());
         saveTixianLog.setMark(0);
         withdrawalService.saveTixianLog(saveTixianLog);
+        return true;
+    }
+
+    public void rollbackTixian(OpayActiveTixian saveTixian){
+        try {
+            OpayActiveCashback cashback2 = inviteService.getActivityCashbackByOpayId(saveTixian.getOpayId());
+            cashback2.setAmount(saveTixian.getAmount());//扣件金额
+            cashback2.setUpdateAt(new Date());
+            inviteService.updateRollbackCashback(cashback2);
+            log.info("rollbackTixian {},status:{},cashback2:{}",JSON.toJSONString(saveTixian),2,JSON.toJSONString(cashback2));
+
+            OpayActiveTixianLog saveTixianLog = new OpayActiveTixianLog();
+            saveTixianLog.setTixianId(saveTixian.getId());
+            saveTixianLog.setAmount(saveTixian.getAmount());
+            saveTixianLog.setOpayId(saveTixian.getOpayId());
+            saveTixianLog.setType(saveTixian.getType());
+            saveTixianLog.setCreateAt(new Date());
+            saveTixianLog.setDeviceId(saveTixian.getDeviceId());
+            saveTixianLog.setMonth(saveTixian.getMonth());
+            saveTixianLog.setDay(saveTixian.getDay());
+            saveTixianLog.setMark(1);//异常,退回提现金额日志
+            withdrawalService.saveTixianLog(saveTixianLog);
+            log.info("rollbackTixian {},status:{},cashback2:{}",JSON.toJSONString(saveTixian),4,JSON.toJSONString(cashback2));
+        }catch (Exception e){
+            log.warn("transter err {},status:{},err:{}",JSON.toJSONString(saveTixian),4,e.getMessage());
+        }
+    }
+
+    public void transfer(OpayActiveTixian saveTixian) throws Exception {
         String orderType = OrderType.bonusOffer.getOrderType();
         if(saveTixian.getType()==1){
             orderType = OrderType.MUAATransfer.getOrderType();
         }
-        String reference = transferConfig.getReference()+""+String.format("%10d", saveTixian.getId()).replace(" ", "0");;
-        Map<String,String> map = rpcService.transfer(reference,cashback.getOpayId(),saveTixian.getAmount().toString(),reference,orderType,"BalancePayment");
+        String reference = transferConfig.getReference()+""+String.format("%10d", saveTixian.getId()).replace(" ", "0");
+        Map<String,String> map = rpcService.transfer(reference,saveTixian.getOpayId(),saveTixian.getAmount().toString(),reference,orderType,"BalancePayment");
         if(map==null || map.size()==0){
             log.error("transfer err {}",JSON.toJSONString(saveTixian));
-            throw new Exception("transfer error");
+            return;
         }
         if(map!=null && map.size()>0){
             if("504".equals(map.get("code"))){
@@ -288,21 +318,10 @@ public class InviteOperateService {
                 }
             }else{
                 log.warn("transter err {},map:{}",JSON.toJSONString(saveTixian),JSON.toJSONString(map));
-                try {
-                    withdrawalService.updateTixian(saveTixian.getId(), saveTixian.getOpayId(), reference, map.get("orderNo"),4);
-                    saveTixianLog.setMark(1);//异常
-                    withdrawalService.saveTixianLog(saveTixianLog);
-                    OpayActiveCashback cashback2 = inviteService.getActivityCashbackByOpayId(saveTixian.getOpayId());
-                    cashback2.setAmount(saveTixian.getAmount());//扣件金额
-                    cashback2.setUpdateAt(new Date());
-                    inviteService.updateCashback(cashback2);
-                }catch (Exception e){
-                    log.warn("transter err {},map:{},status:{},err:{}",JSON.toJSONString(saveTixian),JSON.toJSONString(map),4,e.getMessage());
-                }
-                return false;
+                withdrawalService.updateTixian(saveTixian.getId(), saveTixian.getOpayId(), reference, map.get("orderNo"), 4);
+                rollbackTixian(saveTixian);
             }
         }
-        return true;
     }
 
     //保存邀请关系、各自收益、钱包更新

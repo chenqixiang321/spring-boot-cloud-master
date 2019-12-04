@@ -2,10 +2,14 @@ package com.opay.invite.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.opay.invite.mapper.InviteMapper;
 import com.opay.invite.mapper.OpayActiveCashbackMapper;
+import com.opay.invite.mapper.OpayCashbackTixianMapper;
 import com.opay.invite.mapper.OpayInviteCodeMapper;
 import com.opay.invite.model.*;
+import com.opay.invite.model.request.WithdrawalApproval;
+import com.opay.invite.model.request.WithdrawalListRequest;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.utils.DateFormatter;
@@ -32,6 +36,9 @@ public class InviteServiceImpl implements InviteService {
 
     @Autowired
     private OpayInviteCodeMapper opayInviteCodeMapper;
+
+    @Autowired
+    private OpayCashbackTixianMapper opayCashbackTixianMapper;
 
     @Override
     public int checkRelation(String masterId, String pupilId) {
@@ -138,6 +145,7 @@ public class InviteServiceImpl implements InviteService {
         return opayactiveCashbackMapper.deductionCashback(cashback);
     }
 
+    @Override
     public void updateCashback(OpayActiveCashback cashback){
         int num = opayactiveCashbackMapper.updateCashback(cashback);
     }
@@ -146,4 +154,10 @@ public class InviteServiceImpl implements InviteService {
     public void saveReward(List<OpayMasterPupilAward> list) {
         inviteMapper.saveInviteReward(list);
     }
+
+    @Override
+    public void updateRollbackCashback(OpayActiveCashback cashback) {
+        opayactiveCashbackMapper.updateRollbackCashback(cashback);
+    }
+
 }

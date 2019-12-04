@@ -19,4 +19,6 @@ public interface OpayActiveCashbackMapper {
     int deductionCashback(OpayActiveCashback cashback);
 
     void updateBatchCashback(List<OpayActiveCashback> list);
+
+    void updateRollbackCashback(OpayActiveCashback cashback);
 }

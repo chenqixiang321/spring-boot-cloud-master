@@ -1,6 +1,9 @@
 package com.opay.invite.service;
 
+import com.github.pagehelper.PageInfo;
 import com.opay.invite.model.*;
+import com.opay.invite.model.request.WithdrawalApproval;
+import com.opay.invite.model.request.WithdrawalListRequest;
 
 import java.util.Date;
 import java.util.List;
@@ -44,4 +47,6 @@ public interface InviteService {
     void updateCashback(OpayActiveCashback cashback);
 
     void saveReward(List<OpayMasterPupilAward> list);
+
+    void updateRollbackCashback(OpayActiveCashback cashback2);
 }

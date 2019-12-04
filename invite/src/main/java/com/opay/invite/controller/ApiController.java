@@ -1,13 +1,17 @@
 package com.opay.invite.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
 import com.opay.invite.model.*;
+import com.opay.invite.model.request.WithdrawalApproval;
+import com.opay.invite.model.request.WithdrawalListRequest;
 import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.resp.Result;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.service.RpcService;
+import com.opay.invite.service.WithdrawalService;
 import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.transferconfig.TransferConfig;
 import com.opay.invite.utils.DateFormatter;
@@ -25,10 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -56,6 +57,9 @@ public class ApiController {
 
     @Autowired
     private RewardConfig rewardConfig;
+
+    @Autowired
+    private WithdrawalService withdrawalService;
 
     @ApiOperation(value = "用户填入邀请码回调", notes = "用户填入邀请码回调")
     @PostMapping("/notifyInvite")
@@ -156,6 +160,66 @@ public class ApiController {
             return Result.error(CodeMsg.CustomCodeMsg(500,"system error"));
         }
         return Result.success(rewardConfig.getRegisterReward());
+    }
+
+    @ApiOperation(value = "提现列表", notes = "提现列表")
+    @PostMapping("/withdrawalList")
+    public Result<PageInfo> withdrawalList(HttpServletRequest request, @RequestBody WithdrawalListRequest withdrawalListRequest) throws Exception {
+       if(withdrawalListRequest.getTime()==null || "".equals(withdrawalListRequest.getTime())){
+           return Result.error(CodeMsg.ILLEGAL_PARAMETER);
+       }
+        if(withdrawalListRequest.getSign()==null || "".equals(withdrawalListRequest.getSign())){
+            return Result.error(CodeMsg.ILLEGAL_PARAMETER);
+        }
+        Map<String,Object> map = beanToMap(withdrawalListRequest);
+        String beforeStr = getBeforeStr(map)+"&key="+key;
+        String afterMd5Str = DigestUtils.md5DigestAsHex(beforeStr.getBytes());
+        if (!afterMd5Str.equalsIgnoreCase(withdrawalListRequest.getSign())){
+            return Result.error(CodeMsg.ILLEGAL_CODE_SIGN);
+        }
+        PageInfo<List<OpayActiveTixian>> pageInfo = withdrawalService.withdrawalList(withdrawalListRequest);
+       return Result.success(pageInfo);
+    }
+
+    @ApiOperation(value = "提现列表", notes = "提现列表")
+    @PostMapping("/withdrawalTransfer")
+    public Result withdrawalTransfer(HttpServletRequest request, @RequestBody WithdrawalApproval withdrawalApproval) throws Exception {
+        if(withdrawalApproval.getId()==null){
+            return Result.error(CodeMsg.ILLEGAL_PARAMETER);
+        }
+        if(withdrawalApproval.getOpayId()==null || "".equals(withdrawalApproval.getOpayId())){
+            return Result.error(CodeMsg.ILLEGAL_PARAMETER);
+        }
+        if(withdrawalApproval.getTime()==null || "".equals(withdrawalApproval.getTime())){
+            return Result.error(CodeMsg.ILLEGAL_PARAMETER);
+        }
+        if(withdrawalApproval.getStatus()==null || withdrawalApproval.getStatus()==0){
+            return Result.error(CodeMsg.ILLEGAL_PARAMETER);
+        }
+        if(withdrawalApproval.getStatus()<0 || withdrawalApproval.getStatus()>2){
+            return Result.error(CodeMsg.ILLEGAL_PARAMETER);
+        }
+        Map<String,Object> map = beanToMap(withdrawalApproval);
+        String beforeStr = getBeforeStr(map)+"&key="+key;
+        String afterMd5Str = DigestUtils.md5DigestAsHex(beforeStr.getBytes());
+        if (!afterMd5Str.equalsIgnoreCase(withdrawalApproval.getSign())){
+            return Result.error(CodeMsg.ILLEGAL_CODE_SIGN);
+        }
+        OpayActiveTixian tixian = withdrawalService.getWithdrawal(withdrawalApproval);
+        if(tixian==null){
+            return Result.error(CodeMsg.ILLEGAL_PARAMETER);
+        }
+        if(!tixian.getOpayId().equals(withdrawalApproval.getOpayId())){
+            return Result.error(CodeMsg.ILLEGAL_PARAMETER);
+        }
+        if(withdrawalApproval.getStatus()==2 && tixian.getStatus()==0){
+            withdrawalService.updateTixian(tixian.getId(),tixian.getOpayId(),null,null,withdrawalApproval.getStatus());
+            inviteOperateService.rollbackTixian(tixian);
+        }else if(withdrawalApproval.getStatus()==1 && tixian.getStatus()==0){
+            withdrawalService.updateTixian(tixian.getId(),tixian.getOpayId(),null,null,withdrawalApproval.getStatus());
+            inviteOperateService.transfer(tixian);
+        }
+        return Result.success();
     }
 
 

@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -60,6 +62,9 @@ public class ActivityController {
 
     @Value("${spring.jackson.time-zone:''}")
     private String zone;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @ApiOperation(value = "获取活动页内容", notes = "获取活动页内容")
     @PostMapping("/getActivity")
@@ -142,10 +147,18 @@ public class ActivityController {
             for(int i=0;i<list.size();i++){
                 OpayInviteRankVo vo = list.get(i);
                 long mlis = System.currentTimeMillis();
-                Map<String,String> map = rpcService.getOpayUser(vo.getPhone(),String.valueOf(mlis),transferConfig.getMerchantId());
-                if(map!=null && map.size()>0){
-                   String firstName = map.get("firstName");
-                    vo.setName(firstName+"***");
+                String nameJson = stringRedisTemplate.opsForValue().get(vo.getPhone());
+                if(nameJson==null || "".equals(nameJson)) {
+                    Map<String, String> map = rpcService.getOpayUser(vo.getPhone(), String.valueOf(mlis), transferConfig.getMerchantId());
+                    if (map != null && map.size() > 0) {
+                        String firstName = map.get("firstName");
+                        vo.setName(firstName + "***");
+                    }
+                    stringRedisTemplate.opsForValue().set(vo.getPhone(),JSON.toJSONString(map),1, TimeUnit.DAYS);
+                }else{
+                   Map<String,String> jsonMap = JSON.parseObject(nameJson,Map.class);
+                    String firstName = jsonMap.get("firstName");
+                    vo.setName(firstName + "***");
                 }
             }
         }
@@ -165,10 +178,18 @@ public class ActivityController {
         if(list!=null && list.size()>0){
             for(int i=0;i<list.size();i++){
                 OpayInviteRelationVo vo = list.get(i);
-                long mlis = System.currentTimeMillis();
-                Map<String,String> map = rpcService.getOpayUser(vo.getPupilPhone(),String.valueOf(mlis),transferConfig.getMerchantId());
-                if(map!=null && map.size()>0){
-                    vo.setName(map.get("firstName")+map.get("middleName")+map.get("surname"));
+                String nameJson = stringRedisTemplate.opsForValue().get(vo.getPupilPhone());
+                if(nameJson==null || "".equals(nameJson)) {
+                    long mlis = System.currentTimeMillis();
+                    Map<String, String> map = rpcService.getOpayUser(vo.getPupilPhone(), String.valueOf(mlis), transferConfig.getMerchantId());
+                    if (map != null && map.size() > 0) {
+                        vo.setName(map.get("firstName") + map.get("middleName") + map.get("surname"));
+                    }
+                    stringRedisTemplate.opsForValue().set(vo.getPupilPhone(),JSON.toJSONString(map),1, TimeUnit.DAYS);
+                }else{
+                    Map<String,String> jsonMap = JSON.parseObject(nameJson,Map.class);
+                    String firstName = jsonMap.get("firstName");
+                    vo.setName(jsonMap.get("firstName") + jsonMap.get("middleName") + jsonMap.get("surname"));
                 }
                 vo.setCreateTime(vo.getCreateAt().getTime());
             }
@@ -247,7 +268,8 @@ public class ActivityController {
             return Result.error(CodeMsg.ILLEGAL_CODE_FIRST);
         }
         //查询是否有首次充值
-        Map<String,String> exsitMap = rpcService.queryUserRecordByPhone(user.getPhoneNumber(),rewardConfig.getStartTime());
+        long mills = System.currentTimeMillis();
+        Map<String,String> exsitMap = rpcService.queryUserRecordByPhone(user.getPhoneNumber(),rewardConfig.getStartTime(),String.valueOf(mills),null);
         String exists =exsitMap.get("exists");
         if(!"Y".equals(exists)){
             return Result.success();
