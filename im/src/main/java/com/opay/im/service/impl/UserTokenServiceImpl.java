@@ -54,7 +54,7 @@ public class UserTokenServiceImpl implements UserTokenService {
     public String getRyToken(String opayId, String phone) throws Exception {
         UserTokenModel userToken = userTokenMapper.selectByUserId(opayId);
         if (userToken == null) {
-            String token = rongCloudService.register(opayId, phone);
+            String token = rongCloudService.register(opayId, opayId);
             if (token != null) {
                 userToken = new UserTokenModel();
                 userToken.setOpayId(opayId);

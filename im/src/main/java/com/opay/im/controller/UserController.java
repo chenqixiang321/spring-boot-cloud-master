@@ -3,6 +3,7 @@ package com.opay.im.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opay.im.model.OpayUserModel;
 import com.opay.im.model.request.BatchQueryUserRequest;
+import com.opay.im.model.request.GetRongCloudTokenRequest;
 import com.opay.im.model.request.OpayApiRequest;
 import com.opay.im.model.request.OpayFriendsRequest;
 import com.opay.im.model.request.QueryUserRequest;
@@ -54,14 +55,18 @@ public class UserController {
     @Value("${config.opay.merchantId}")
     private String merchantId;
 
-    @ApiOperation(value = "获得融云token", notes = "从数据库里获取token,不存在则创建")
+    @ApiOperation(value = "获得融云token/激活融云", notes = "从数据库里获取token,不存在则创建,传OpayId和phone则激活该opay账户的融云,不传激活当前登录用户的")
     @PostMapping("/token")
-    public ResultResponse getToken() throws Exception {
+    public ResultResponse getToken(@RequestBody GetRongCloudTokenRequest getRongCloudTokenRequest) throws Exception {
         ResultResponse resultResponse = new ResultResponse();
         resultResponse.setCode(200);
         resultResponse.setMessage("success");
         Map<String, String> token = new HashMap<>();
-        token.put("token", userTokenService.getRyToken(String.valueOf(request.getAttribute("opayId")), String.valueOf(request.getAttribute("phoneNumber"))));
+        if (StringUtils.isNotBlank(getRongCloudTokenRequest.getOpayId())) {
+            userTokenService.getRyToken(getRongCloudTokenRequest.getOpayId(), getRongCloudTokenRequest.getPhone());
+        } else {
+            token.put("token", userTokenService.getRyToken(String.valueOf(request.getAttribute("opayId")), String.valueOf(request.getAttribute("phoneNumber"))));
+        }
         resultResponse.setData(token);
         return resultResponse;
     }
