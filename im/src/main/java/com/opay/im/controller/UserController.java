@@ -1,17 +1,16 @@
 package com.opay.im.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opay.im.common.SystemCode;
 import com.opay.im.exception.ImException;
 import com.opay.im.model.OpayUserModel;
 import com.opay.im.model.request.BatchQueryUserRequest;
-import com.opay.im.model.request.GetRongCloudTokenRequest;
 import com.opay.im.model.request.OpayApiRequest;
 import com.opay.im.model.request.OpayFriendRequest;
 import com.opay.im.model.request.OpayFriendsRequest;
 import com.opay.im.model.request.QueryUserRequest;
 import com.opay.im.model.response.BlackListUserIdsResponse;
 import com.opay.im.model.response.OpayApiQueryUserByPhoneResponse;
-import com.opay.im.model.response.OpayApiResponse;
 import com.opay.im.model.response.OpayApiResultResponse;
 import com.opay.im.model.response.ResultResponse;
 import com.opay.im.model.response.SuccessResponse;
@@ -61,7 +60,7 @@ public class UserController {
     @PostMapping("/token")
     public ResultResponse getToken() throws Exception {
         ResultResponse resultResponse = new ResultResponse();
-        resultResponse.setCode(200);
+        resultResponse.setCode(SystemCode.SYS_API_SUCCESS.getCode());
         resultResponse.setMessage("success");
         Map<String, String> token = new HashMap<>();
         token.put("token", userTokenService.getRyToken(String.valueOf(request.getAttribute("opayId")), String.valueOf(request.getAttribute("phoneNumber"))));
@@ -111,14 +110,14 @@ public class UserController {
         batchQuery.setRequestId(incrKeyService.getIncrKey());
         batchQuery.setData(AESUtil.encrypt(mapper.writeValueAsString(batchQueryUserRequest), aesKey, iv));
         OpayApiResultResponse<String> opayApiResultResponse = opayFriends.batchQueryUserByPhone(batchQuery);
-        if (!"00000".equals(opayApiResultResponse.getCode())) {
+        if (!SystemCode.SYS_API_SUCCESS.getCode().equals(opayApiResultResponse.getCode())) {
             throw new ImException(opayApiResultResponse.getMessage());
         }
         String json = AESUtil.decrypt(opayApiResultResponse.getData(), aesKey, iv);
         OpayApiQueryUserByPhoneResponse queryUserByPhoneResponse = mapper.readValue(json, OpayApiQueryUserByPhoneResponse.class);
         Map<String, OpayUserModel> userMap = new HashMap<>();
         for (OpayUserModel user : queryUserByPhoneResponse.getUsers()) {
-            user.setIsHasTrade(false);
+            user.setIsOnlyTrade(false);
             userMap.put(user.getUserId(), user);
         }
         if (opayFriendsRequest.isLoadTradePhone()) {
@@ -131,13 +130,13 @@ public class UserController {
             batchQuery.setRequestId(incrKeyService.getIncrKey());
             batchQuery.setData(AESUtil.encrypt(mapper.writeValueAsString(queryUserRequest), aesKey, iv));
             OpayApiResultResponse<String> resultResponse2 = opayFriends.queryUserListByPhone(batchQuery);
-            if (!"00000".equals(resultResponse2.getCode())) {
+            if (!SystemCode.SYS_API_SUCCESS.getCode().equals(resultResponse2.getCode())) {
                 throw new ImException(resultResponse2.getMessage());
             }
             json = AESUtil.decrypt(resultResponse2.getData(), aesKey, iv);
             OpayApiQueryUserByPhoneResponse queryUserByPhoneResponse2 = mapper.readValue(json, OpayApiQueryUserByPhoneResponse.class);
             for (OpayUserModel user : queryUserByPhoneResponse2.getUsers()) {
-                user.setIsHasTrade(true);
+                user.setIsOnlyTrade(true);
                 userMap.put(user.getUserId(), user);
             }
         }
@@ -160,7 +159,7 @@ public class UserController {
         batchQuery.setRequestId(incrKeyService.getIncrKey());
         batchQuery.setData(AESUtil.encrypt(mapper.writeValueAsString(batchQueryUserRequest), aesKey, iv));
         OpayApiResultResponse<String> opayApiResultResponse = opayFriends.batchQueryUserByPhone(batchQuery);
-        if (!"00000".equals(opayApiResultResponse.getCode())) {
+        if (!SystemCode.SYS_API_SUCCESS.getCode().equals(opayApiResultResponse.getCode())) {
             throw new ImException(opayApiResultResponse.getMessage());
         }
         String json = AESUtil.decrypt(opayApiResultResponse.getData(), aesKey, iv);
@@ -177,28 +176,12 @@ public class UserController {
     private void mobilesHandler(OpayFriendsRequest opayFriendsRequest) {
         List<String> mobiles = new ArrayList<>();
         for (String mobile : opayFriendsRequest.getMobiles()) {
-            if (StringUtils.startsWith(mobile, "0")) {
-                mobiles.add("+234" + StringUtils.substringAfter(mobile, "0"));
-            } else if (StringUtils.startsWith(mobile, "234")) {
-                mobiles.add("+" + mobile);
-            } else if (StringUtils.startsWith(mobile, "+234")) {
-                mobiles.add(mobile);
-            } else {
-                mobiles.add("+234" + mobile);
-            }
+            mobiles.add("+234" + StringUtils.substring(mobile, -10));
         }
         opayFriendsRequest.setMobiles(mobiles);
     }
 
     private String mobileHandler(String mobile) {
-        if (StringUtils.startsWith(mobile, "0")) {
-            return "+234" + StringUtils.substringAfter(mobile, "0");
-        } else if (StringUtils.startsWith(mobile, "234")) {
-            return "+" + mobile;
-        } else if (StringUtils.startsWith(mobile, "+234")) {
-            return mobile;
-        } else {
-            return "+234" + mobile;
-        }
+        return "+234" + StringUtils.substring(mobile, -10);
     }
 }

@@ -38,6 +38,11 @@
             <artifactId>feign-httpclient</artifactId>
             <version>10.2.3</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.opay.opos.prometheus.client</groupId>-->
+<!--            <artifactId>prometheus-client-starter</artifactId>-->
+<!--            <version>1.0.1</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.opay.opos</groupId>
             <artifactId>opos-feign-opay</artifactId>

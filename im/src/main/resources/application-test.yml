@@ -81,7 +81,7 @@ rongyun:
   appSecret: 02hEdHbsDuB
 config:
   opay:
-    domain: http://api.test.opaydev.com:8081
+    domain: http://api.test.opaydev.com:8081/
     merchantId: 256619090900002
     aesKey: UxanhvcUC3aeiLRR
     iv: qazwert12345!@#$

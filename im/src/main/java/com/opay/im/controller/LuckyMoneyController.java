@@ -1,5 +1,6 @@
 package com.opay.im.controller;
 
+import com.opay.im.common.SystemCode;
 import com.opay.im.model.LuckyMoneyModel;
 import com.opay.im.model.request.GrabLuckyMoneyRequest;
 import com.opay.im.model.request.LuckyMoneyRequest;
@@ -57,7 +58,7 @@ public class LuckyMoneyController {
         if (grabLuckyMoneyResponse != null) {
             return new ResultResponse(grabLuckyMoneyResponse);
         } else {
-            return new ResultResponse(200, "The lucky money has been robbed");
+            return new ResultResponse(SystemCode.LUCKY_MONEY_ERROR.getCode(), SystemCode.LUCKY_MONEY_ERROR.getMessage());
         }
 
     }

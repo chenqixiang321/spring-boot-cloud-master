@@ -22,4 +22,8 @@ public interface OpayFriends {
     @PostMapping({"api/im/queryUserListByPhone"})
     @Headers({"ContentType:application/json"})
     OpayApiResultResponse queryUserListByPhone(@RequestBody OpayApiRequest opayApiRequest);
+
+    @PostMapping({"api/users/queryUserInfoByPhone"})
+    @Headers({"ContentType:application/json"})
+    OpayApiResultResponse queryUserInfoByPhone(@RequestBody OpayApiRequest opayApiRequest);
 }

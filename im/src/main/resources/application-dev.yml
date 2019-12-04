@@ -13,6 +13,8 @@ logging:
 #    enabled: true
 #    namespaces: application,FX.apollo,application.yml
 spring:
+  application:
+    name: opay-im
 #  datasource:
 #    url: jdbc:mysql://localhost:3306/opay_im?useSSL=false
 #    username: root
@@ -91,4 +93,3 @@ im:
   luckyMoney:
     max: 500
     expirationDays: 3
-
