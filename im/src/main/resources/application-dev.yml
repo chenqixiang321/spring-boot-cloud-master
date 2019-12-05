@@ -40,10 +40,11 @@ spring:
         jdbc-url: jdbc:mysql://localhost:3306/opay_im?useSSL=false
         username: root
         password: root
+        maximumPoolSize: 15
     sharding:
       tables:
         rong_cloud_message:
-          actual-data-nodes: master.rong_cloud_message_${19..22}_${1..12}
+          actual-data-nodes: master.rong_cloud_message_${2019..2022}_${1..12}
           table-strategy:
             standard:
               sharding-column: msg_timestamp

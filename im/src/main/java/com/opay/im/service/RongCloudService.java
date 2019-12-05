@@ -1,9 +1,28 @@
 package com.opay.im.service;
 
-import java.util.List;
+import com.opay.im.model.UserTokenModel;
+import com.opay.im.model.response.BlackListUserIdsResponse;
 
 public interface RongCloudService {
-    String register(String userId, String userName) throws Exception;
+    int deleteByPrimaryKey(Long id);
+
+    int insert(UserTokenModel record);
+
+    int insertSelective(UserTokenModel record);
+
+    UserTokenModel selectByPrimaryKey(Long id);
+
+    int updateByPrimaryKeySelective(UserTokenModel record);
+
+    int updateByPrimaryKey(UserTokenModel record);
+
+    String getRyToken(String opayId, String phone) throws Exception;
+
+    void addBlackList(String userId, String blackUserId) throws Exception;
+
+    void removeBlackList(String userId, String blackUserId) throws Exception;
+
+    BlackListUserIdsResponse getBlackList(String userId) throws Exception;
 
     void createGroup(String userId, String groupId, String groupName) throws Exception;
 
@@ -16,10 +35,4 @@ public interface RongCloudService {
     void blockMember(String userId, String groupId) throws Exception;
 
     void unblockMember(String userId, String groupId) throws Exception;
-
-    void addBlackList(String userId, String blackUserId) throws Exception;
-
-    void removeBlackList(String userId, String blackUserId) throws Exception;
-
-    List<String> getBlackList(String userId) throws Exception;
 }

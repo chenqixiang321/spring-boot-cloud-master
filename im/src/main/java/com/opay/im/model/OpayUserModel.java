@@ -1,5 +1,6 @@
 package com.opay.im.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,10 @@ public class OpayUserModel {
     private String surname;
     @ApiModelProperty(value = "id")
     private String userId;
-    @ApiModelProperty(value = "是否过交易")
-    private Boolean isOnlyTrade;
+    @ApiModelProperty(value = "是否有过交易")
+    @JsonProperty(value = "isOnlyTrade")
+    private boolean isOnlyTrade;
+    @ApiModelProperty(value = "该好友是否在黑名单中")
+    @JsonProperty(value = "isBlackList")
+    private boolean isBlackList;
 }

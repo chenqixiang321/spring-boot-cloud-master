@@ -1,5 +1,8 @@
 package com.opay.im.service.impl;
 
+import com.opay.im.mapper.UserTokenMapper;
+import com.opay.im.model.UserTokenModel;
+import com.opay.im.model.response.BlackListUserIdsResponse;
 import com.opay.im.service.RongCloudService;
 import io.rong.RongCloud;
 import io.rong.methods.conversation.Conversation;
@@ -17,10 +20,14 @@ import io.rong.models.response.TokenResult;
 import io.rong.models.user.UserModel;
 import io.rong.util.CodeUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -40,9 +47,67 @@ public class RongCloudServiceImpl implements RongCloudService {
         }
         return rongCloud;
     }
+    @Resource
+    private UserTokenMapper userTokenMapper;
+    @Autowired
+    private RongCloudService rongCloudService;
+    @Override
+    public int deleteByPrimaryKey(Long id) {
+        return userTokenMapper.deleteByPrimaryKey(id);
+    }
 
     @Override
-    public String register(String userId, String userName) throws Exception {
+    public int insert(UserTokenModel record) {
+        return userTokenMapper.insert(record);
+    }
+
+    @Override
+    public int insertSelective(UserTokenModel record) {
+        return userTokenMapper.insertSelective(record);
+    }
+
+    @Override
+    public UserTokenModel selectByPrimaryKey(Long id) {
+        return userTokenMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public int updateByPrimaryKeySelective(UserTokenModel record) {
+        return userTokenMapper.updateByPrimaryKeySelective(record);
+    }
+
+    @Override
+    public int updateByPrimaryKey(UserTokenModel record) {
+        return userTokenMapper.updateByPrimaryKey(record);
+    }
+
+    @Override
+    @Cacheable(value = "ryToken", key = "#opayId", unless = "#result == null")
+    public String getRyToken(String opayId, String phone) throws Exception {
+        UserTokenModel userToken = userTokenMapper.selectByUserId(opayId);
+        if (userToken == null) {
+            String token = register(opayId, opayId);
+            if (token != null) {
+                userToken = new UserTokenModel();
+                userToken.setOpayId(opayId);
+                userToken.setPhone(phone);
+                userToken.setToken(token);
+                userToken.setCreateTime(new Date());
+                userTokenMapper.insert(userToken);
+                return token;
+            }
+        } else {
+            return userToken.getToken();
+        }
+        return null;
+    }
+
+    @Override
+    public BlackListUserIdsResponse getBlackList(String userId) throws Exception {
+        return new BlackListUserIdsResponse(getRyBlackList(userId));
+    }
+
+    private String register(String userId, String userName) throws Exception {
         UserModel userModel = new UserModel()
                 .setId(userId)
                 .setName(userName)
@@ -184,8 +249,8 @@ public class RongCloudServiceImpl implements RongCloudService {
 
     }
 
-    @Override
-    public List<String> getBlackList(String userId) throws Exception {
+
+    private List<String> getRyBlackList(String userId) throws Exception {
         Blacklist blackListApi = getRongCloud().user.blackList;
         UserModel user = new UserModel().setId(userId);
         BlackListResult result = blackListApi.getList(user);
