@@ -24,6 +24,8 @@ public interface InviteService {
 
     int getRelationCount(String opayId);
 
+    Integer getCurrentRelationCount(String masterId, String pupilId);
+
     List<OpayMasterPupilAwardVo> getTaskByOpayId(String opayId);
 
     OpayInviteRankVo getInviteInfoByOpayId(String opayId);

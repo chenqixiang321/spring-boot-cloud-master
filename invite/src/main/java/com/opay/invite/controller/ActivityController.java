@@ -250,6 +250,7 @@ public class ActivityController {
         if(relation==null){//没有师徒关系
             log.warn("当前用户没有师徒关系info:{}", JSON.toJSONString(user));
         }
+
         List<OpayMasterPupilAwardVo> list = inviteService.getTaskByOpayId(user.getOpayId());
         if(list.size()==2){
             return Result.error(CodeMsg.ILLEGAL_CODE_FIRST);
@@ -269,7 +270,13 @@ public class ActivityController {
         if(!"Y".equals(afterIsExistOrder)){
             return Result.success();
         }
-        int count =inviteService.getRelationCount(user.getOpayId());
+        Integer count =0;
+        if(relation !=null) {
+            count = inviteService.getCurrentRelationCount(relation.getMasterId(),user.getOpayId());
+            if(count==null){
+                count =0;
+            }
+        }
         //计算用户所属阶段
         StepReward stepReward = inviteOperateService.getStepReward(count);
         List<OpayMasterPupilAward> list2 = null;

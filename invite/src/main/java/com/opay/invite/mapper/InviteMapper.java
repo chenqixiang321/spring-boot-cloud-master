@@ -26,6 +26,8 @@ public interface InviteMapper {
 
     int getRelationCount(@Param("opayId") String opayId);
 
+    Integer getCurrentRelationCount(@Param("masterId") String masterId,@Param("pupilId")  String pupilId);
+
     List<OpayMasterPupilAwardVo> getTaskByOpayId(@Param("opayId") String opayId);
 
     OpayInviteRankVo getInviteInfoByOpayId(@Param("opayId") String opayId);

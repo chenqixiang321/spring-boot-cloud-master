@@ -55,43 +55,73 @@ upperLimit:
 config:
   opay:
     domain: http://api.test.opaydev.com:8081
-    merchantId: 256619090900002
-    aesKey: UxanhvcUC3aeiLRR
+    merchantId: 256619120522011
+    aesKey: gepy7T6jTldRMq7A
     iv: qazwert12345!@#$
 
 activity:
   reward:
-    registerReward: 10
-    masterReward: 20
-    rechargeReward: 100
+    registerReward: 1
+    masterReward: 1
+    rechargeReward: 2
     agentOpen: 0
-    startTime: 2019-11-12 00:00:01
-    endTime: 2019-12-22 23:59:59
+    startTime: 2019-12-06 00:00:00
+    endTime: 2019-12-08 21:00:00
     effectiveDay: 7
     rewardList[0]:
       orderId: 1
       min: 1
       max: 5
-      walletReward: 300
-      totalReward: 1550
+      walletReward: 2
+      totalReward: 15
     rewardList[1]:
       orderId: 2
       min: 6
       max: 10
-      walletReward: 320
-      totalReward: 1650
+      walletReward: 3
+      totalReward: 20
     rewardList[2]:
       orderId: 3
       min: 11
       max: 20
-      walletReward: 340
-      totalReward: 3500
+      walletReward: 4
+      totalReward: 50
     rewardList[3]:
       orderId: 4
       min: 21
-      max: 1000
-      walletReward: 350
-      totalReward: 7500
+      max: 30
+      walletReward: 5
+      totalReward: 60
+    rewardList[4]:
+      orderId: 4
+      min: 31
+      max: 50
+      walletReward: 6
+      totalReward: 140
+    rewardList[5]:
+      orderId: 4
+      min: 51
+      max: 100
+      walletReward: 7
+      totalReward: 400
+    rewardList[6]:
+      orderId: 4
+      min: 101
+      max: 200
+      walletReward: 8
+      totalReward: 900
+    rewardList[7]:
+      orderId: 4
+      min: 201
+      max: 500
+      walletReward: 9
+      totalReward: 3000
+    rewardList[8]:
+      orderId: 4
+      min: 501
+      max: 2000
+      walletReward: 10
+      totalReward: 16500
     royList[0]:
       action: 3
       masterReward: 1
@@ -107,12 +137,12 @@ activity:
 tixian:
   limit:
     open: 1
-    perDayAmount: 3000
-    perAmount: 1000
+    perDayAmount: 5
+    perAmount: 2
     list[0]:
       min: 0
       max: 24
-      minAmount: 8000
+      minAmount: 10
 
 invite:
   code: opay9102c7uw27er4$!=

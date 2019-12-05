@@ -15,7 +15,7 @@ public class StepReward {
     @ApiModelProperty(value = "人数区间max")
     private int max;//最大人数
 
-    @ApiModelProperty(value = "阶段充值奖励")
+    @ApiModelProperty(value = "阶段充值奖励,师傅奖励")
     private BigDecimal walletReward;//充值奖励
 
     @ApiModelProperty(value = "注册码奖励",hidden = true)

@@ -89,6 +89,11 @@ public class InviteServiceImpl implements InviteService {
     }
 
     @Override
+    public Integer getCurrentRelationCount(String masterId, String pupilId) {
+        return inviteMapper.getCurrentRelationCount(masterId,pupilId);
+    }
+
+    @Override
     public List<OpayMasterPupilAwardVo> getTaskByOpayId(String opayId) {
         return inviteMapper.getTaskByOpayId(opayId);
     }
