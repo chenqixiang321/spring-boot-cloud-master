@@ -5,6 +5,8 @@ server:
 logging:
   config: classpath:log/logback.xml
 spring:
+  application:
+    name: opay-invite
   datasource:
     url: jdbc:mysql://localhost:3306/opay_invite_activitie?useSSL=false&useAffectedRows=true
     username: root
@@ -144,6 +146,19 @@ opay:
       fix-merchant-balance:
         expression: "*/2 * * * * ?"
         jobClass: "com.opay.invite.job.UserTradeJob"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:  '*'
+  metrics:
+    tags:
+      application: ${spring.application.name}
+prometheus:
+  client:
+    enabled: true
+    basePackage: com.opay.invite
 
 #prize-pool:
 #  count: 100000

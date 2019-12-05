@@ -3,6 +3,8 @@ server:
 logging:
   config: classpath:log/logback.xml
 spring:
+  application:
+    name: opay-invite
   datasource:
     url: jdbc:mysql://localhost:3306/opay_invite?useSSL=false&useAffectedRows=true
     username: root
@@ -60,7 +62,7 @@ config:
 activity:
   reward:
     registerReward: 10
-    masterReward: 20
+    masterReward: 10
     rechargeReward: 100
     agentOpen: 0
     startTime: 2019-11-12 00:00:01
@@ -88,8 +90,38 @@ activity:
       orderId: 4
       min: 21
       max: 1000
-      walletReward: 350
-      totalReward: 7500
+      walletReward: 360
+      totalReward: 3700
+    rewardList[4]:
+      orderId: 4
+      min: 31
+      max: 50
+      walletReward: 380
+      totalReward: 7800
+    rewardList[5]:
+      orderId: 4
+      min: 51
+      max: 100
+      walletReward: 400
+      totalReward: 20500
+    rewardList[6]:
+      orderId: 4
+      min: 101
+      max: 200
+      walletReward: 420
+      totalReward: 43000
+    rewardList[7]:
+      orderId: 4
+      min: 201
+      max: 500
+      walletReward: 440
+      totalReward: 135000
+    rewardList[8]:
+      orderId: 4
+      min: 501
+      max: 2000
+      walletReward: 460
+      totalReward: 705000
     royList[0]:
       action: 3
       masterReward: 1
@@ -132,6 +164,19 @@ opay:
       fix-merchant-balance:
         expression: "* * * * * ?"
         jobClass: "com.opay.invite.job.UserTradeJob"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:  '*'
+  metrics:
+    tags:
+      application: ${spring.application.name}
+prometheus:
+  client:
+    enabled: true
+    basePackage: com.opay.invite
 
 #prize-pool:
 #  count: 100000

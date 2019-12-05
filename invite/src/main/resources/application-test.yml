@@ -5,6 +5,8 @@ server:
 logging:
   config: classpath:log/logback.xml
 spring:
+  application:
+    name: opay-invite
   datasource:
     url: jdbc:mysql://localhost:3306/opay_invite?useSSL=false&useAffectedRows=true
     username: root
@@ -151,8 +153,8 @@ invite:
 transfer:
   opay:
     domain: http://api.test.opaydev.com:8081
-    merchantId: 256619090900002
-    aesKey: UxanhvcUC3aeiLRR
+    merchantId: 256619120522011
+    aesKey: gepy7T6jTldRMq7A
     url: /api/m/createOrder
     reference: IVE
     userUrl: /api/users/queryUserInfoByPhone
@@ -164,6 +166,19 @@ opay:
       fix-merchant-balance:
         expression: "*/2 * * * * ?"
         jobClass: "com.opay.invite.job.UserTradeJob"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:  '*'
+  metrics:
+    tags:
+      application: ${spring.application.name}
+prometheus:
+  client:
+    enabled: true
+    basePackage: com.opay.invite
 
 #prize-pool:
 #  count: 100000
