@@ -1,6 +1,5 @@
 package com.opay.im;
 
-import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import com.opay.im.service.OpayFriends;
 import com.opos.feign.OpayFeign;
 import org.mybatis.spring.annotation.MapperScan;
@@ -17,7 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableHystrix
 @EnableFeignClients(clients = {OpayFeign.class, OpayFriends.class})
 @MapperScan(basePackages = "com.opay.im.mapper")
-@EnableApolloConfig
+//@EnableApolloConfig
 public class ImApplication {
 
     public static void main(String[] args) {

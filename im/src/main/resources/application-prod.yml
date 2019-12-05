@@ -1,12 +1,75 @@
 swagger:
-  show: true
+  show: false
 server:
   port: 8082
-app:
-  id: opay-im
-apollo:
-  meta: http://10.52.105.56
-  cacheDir: ./config
-  bootstrap:
+#app:
+#  id: opay-im
+#apollo:
+#  meta: http://10.52.105.56
+#  cacheDir: ./config
+#  bootstrap:
+#    enabled: true
+#    namespaces: application,FX.apollo,application.yml
+spring:
+  application:
+    name: opay-im
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    timeout: 20000
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: 1
+        max-idle: 8
+        min-idle: 0
+  cache:
+    type: redis
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+1
+
+  shardingsphere:
+    datasource:
+      names: master
+      master:
+        driver-class-name: com.mysql.jdbc.Driver
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://localhost:3306/opay_im?useSSL=false
+        username: root
+        password: 04cdf9719ba61283
+    sharding:
+      tables:
+        rong_cloud_message:
+          actual-data-nodes: master.rong_cloud_message_${19..22}_${1..12}
+          table-strategy:
+            standard:
+              sharding-column: msg_timestamp
+              precise-algorithm-class-name: com.opay.im.config.MessagePreciseShardingAlgorithm
+rongyun:
+  appKey: k51hidwqk4icb
+  appSecret: 02hEdHbsDuB
+config:
+  opay:
+    domain: https://api.operapay.com/
+    merchantId: 256619090900002
+    aesKey: UxanhvcUC3aeiLRR
+    iv: qazwert12345!@#$
+im:
+  group:
+    maxMember: 200
+  luckyMoney:
+    max: 500
+    expirationDays: 3
+management:
+  endpoints:
+    web:
+      exposure:
+        include:  '*'
+  metrics:
+    tags:
+      application: ${spring.application.name}
+prometheus:
+  client:
     enabled: true
-    namespaces: application,FX.apollo,application.yml
+    basePackage: com.opay.im
