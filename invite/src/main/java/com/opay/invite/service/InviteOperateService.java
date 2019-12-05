@@ -2,12 +2,15 @@ package com.opay.invite.service;
 
 import com.alibaba.fastjson.JSON;
 import com.opay.invite.model.*;
+import com.opay.invite.resp.CodeMsg;
+import com.opay.invite.resp.Result;
 import com.opay.invite.stateconfig.*;
 import com.opay.invite.transferconfig.OrderType;
 import com.opay.invite.transferconfig.TransferConfig;
 import com.opay.invite.utils.DateFormatter;
 import com.opay.invite.utils.IpUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -144,45 +147,48 @@ public class InviteOperateService {
         return tmp_stepReward;
     }
 
-    public List<OpayMasterPupilAwardVo> getActivityTask(List<OpayMasterPupilAwardVo> task, OpayInviteRelation ir,int isF7) {
-        if(task!=null && task.size()>0){
-            List<OpayMasterPupilAwardVo> list = new ArrayList<>();
-            if(task.size()==1){
+    public List<OpayMasterPupilAwardVo> getActivityTask(List<OpayMasterPupilAwardVo> task, OpayInviteRelation ir,int isF7,int isAgent) {
+        List<OpayMasterPupilAwardVo> list = new ArrayList<>();
+        if (task == null || task.size() == 0) {
+            if (isF7 == 0) {//已经过了七天，新用户，老用户自动过滤
+                OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
+                vo.setAction(1);
+                vo.setReward(rewardConfig.getRegisterReward());
+            }
+            OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
+            vo.setAction(2);
+            vo.setReward(rewardConfig.getRechargeReward());
+            list.add(vo);
+        } else {
+            Map<Integer, OpayMasterPupilAwardVo> map = task.stream().collect(Collectors.toMap(OpayMasterPupilAwardVo::getAction, Function.identity()));
+            if(map.get(ActionOperate.operate_register.getOperate())==null){
+                if (isF7 == 0) {//已经过了七天，新用户，老用户自动过滤
+                    OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
+                    vo.setAction(1);
+                    vo.setReward(rewardConfig.getRegisterReward());
+                }
+            }
+            if(map.get(ActionOperate.operate_recharge.getOperate())==null){
                 OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
                 vo.setAction(2);
                 vo.setReward(rewardConfig.getRechargeReward());
                 list.add(vo);
             }
-            //区分当前用户师傅是否是代理
-           if(rewardConfig.getAgentOpen()==1) {
-               if (ir != null) {
-                   if (ir.getMarkType() == 2) {//如果代理存在降级或是不存在情况?
-                       for (AgentRoyaltyReward rr : rewardConfig.getRoyList()) {
-                           OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
-                           vo.setAction(rr.getAction());
-                           vo.setReward(rr.getPupilReward());
-                           list.add(vo);
-                       }
-                   }
-               }
-           }
-            return list;
-        }else{
-            if(isF7==1){//用户已经超过七天，
-                return null;
-            }
-            List<OpayMasterPupilAwardVo> list = new ArrayList<>();
-            OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
-            vo.setAction(1);
-            vo.setReward(rewardConfig.getRegisterReward());
-            list.add(vo);
-            OpayMasterPupilAwardVo vo2 = new OpayMasterPupilAwardVo();
-            vo2.setAction(2);
-            vo2.setReward(rewardConfig.getRechargeReward());
-            list.add(vo2);
-            return list;
         }
+        //区分当前用户师傅是否是代理
+        if(rewardConfig.getAgentOpen()==1) {
+            if ((ir != null && ir.getMarkType() == 1) || isAgent==1) {
+                for (AgentRoyaltyReward rr : rewardConfig.getRoyList()) {
+                    OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
+                    vo.setAction(rr.getAction());
+                    vo.setReward(rr.getPupilReward());
+                    list.add(vo);
+                }
+            }
+        }
+        return list;
     }
+
 
     public List<AgentRoyaltyReward> getAgentRule() {
         List<AgentRoyaltyReward> list = rewardConfig.getRoyList();
@@ -227,9 +233,20 @@ public class InviteOperateService {
         }
         Object phoneNumber = request.getAttribute("phoneNumber");
         if(phoneNumber !=null){
-            user.setPhoneNumber((String)phoneNumber);
+            user.setPhoneNumber(mobileHandler((String)phoneNumber));
         }
         return user;
+    }
+    private String mobileHandler(String mobile) {
+        if (org.apache.commons.lang3.StringUtils.startsWith(mobile, "0")) {
+            return "+234" + org.apache.commons.lang3.StringUtils.substringAfter(mobile, "0");
+        } else if (org.apache.commons.lang3.StringUtils.startsWith(mobile, "234")) {
+            return "+" + mobile;
+        } else if (org.apache.commons.lang3.StringUtils.startsWith(mobile, "+234")) {
+            return mobile;
+        } else {
+            return "+234" + mobile;
+        }
     }
     //组拼钱包数据
     public List<OpayActiveCashback> getOpayCashback(List<OpayMasterPupilAward> list, List<OpayActiveCashback> cashbacklist) {
@@ -296,7 +313,7 @@ public class InviteOperateService {
         }
     }
 
-    public void transfer(OpayActiveTixian saveTixian) throws Exception {
+    public boolean transfer(OpayActiveTixian saveTixian) throws Exception {
         String orderType = OrderType.bonusOffer.getOrderType();
         if(saveTixian.getType()==1){
             orderType = OrderType.MUAATransfer.getOrderType();
@@ -305,7 +322,7 @@ public class InviteOperateService {
         Map<String,String> map = rpcService.transfer(reference,saveTixian.getOpayId(),saveTixian.getAmount().toString(),reference,orderType,"BalancePayment");
         if(map==null || map.size()==0){
             log.error("transfer err {}",JSON.toJSONString(saveTixian));
-            return;
+            return false;
         }
         if(map!=null && map.size()>0){
             if("504".equals(map.get("code"))){
@@ -320,8 +337,10 @@ public class InviteOperateService {
                 log.warn("transter err {},map:{}",JSON.toJSONString(saveTixian),JSON.toJSONString(map));
                 withdrawalService.updateTixian(saveTixian.getId(), saveTixian.getOpayId(), reference, map.get("orderNo"), 4);
                 rollbackTixian(saveTixian);
+                return false;
             }
         }
+        return true;
     }
 
     //保存邀请关系、各自收益、钱包更新
@@ -356,5 +375,4 @@ public class InviteOperateService {
         }
         return false;
     }
-
 }

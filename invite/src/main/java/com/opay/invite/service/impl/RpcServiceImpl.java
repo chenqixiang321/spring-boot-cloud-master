@@ -85,13 +85,14 @@ public class RpcServiceImpl implements RpcService {
     }
 
     @Override
-    public Map<String, String> queryUserRecordByPhone(String phone, String startTime,String requestId, String merchantId) throws Exception {
+    public Map<String, String> queryUserRecordByPhone(String phone, String startTime,String requestId, String merchantId,String serviceType) throws Exception {
         if(merchantId==null || "".equals(merchantId)){
             merchantId=transferConfig.getMerchantId();
         }
         Map<String,String> map = new HashMap<>();
-        map.put("phone",phone);
+        map.put("mobile",phone);
         map.put("startTime",startTime);
+        map.put("serviceType",serviceType);
         String str = getEncrypt(map,transferConfig.getAesKey());
         Map<String,String> paramMap = new HashMap<>();
         paramMap.put("requestId",requestId);
@@ -107,8 +108,9 @@ public class RpcServiceImpl implements RpcService {
             if("00000".equals(rMap.get("code"))) {
                 if (dataStr != null && !"".equals(dataStr)) {
                     String resultStr = getDecrypt(dataStr, transferConfig.getAesKey());
-                    rMap = JSONObject.parseObject(resultStr, Map.class);
-                    return rMap;
+                    JSONObject jsonObjectMap = JSONObject.parseObject(resultStr);
+                     Map or =jsonObjectMap.getObject("records",Map.class);
+                    return or;
                 }
             }
         }

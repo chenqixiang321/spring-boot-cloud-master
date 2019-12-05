@@ -31,7 +31,7 @@ public class OpayInviteRelation {
     @ApiModelProperty(value = "邀请人的邀请人")
     private String masterParentId;
 
-    @ApiModelProperty(value = "0:普通新用户，1:老用户 2:代理")
+    @ApiModelProperty(value = "0:普通新用户 1:代理")
     private int markType;
 
     @ApiModelProperty(value = "年月201911")

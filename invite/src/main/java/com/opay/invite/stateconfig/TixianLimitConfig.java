@@ -20,6 +20,6 @@ public class TixianLimitConfig {
 
     private List<TixianLimit> list;
 
-
+    private BigDecimal perAmount;
 
 }

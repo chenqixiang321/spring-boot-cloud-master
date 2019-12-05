@@ -41,4 +41,7 @@ public class OpayInviteRelationVo {
     @ApiModelProperty(value = "邀请时间,long类型到毫秒")
     private Long createTime;
 
+    @ApiModelProperty(value = "性别")
+    private String gender;
+
 }

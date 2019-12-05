@@ -82,7 +82,7 @@ public class ActivityController {
             }
             if(activity.getIsAgent()==1) {
                 String dateStr = map.get("createDate");
-                boolean f = inviteOperateService.isExpired(zone,dateStr);
+                boolean f = false;//inviteOperateService.isExpired(zone,dateStr);
                 if(f){
                     isF7 =1;
                 }
@@ -125,15 +125,10 @@ public class ActivityController {
             }
             activity.setFriendText(MsgConst.friend+rd.toString());
         }
-        if(activity.getIsAgent()==0){//普通用户
-            List<OpayMasterPupilAwardVo> task = inviteService.getTaskByOpayId(user.getOpayId());//获取注册任务和充值任务
-            OpayInviteRelation ir = inviteService.selectRelationMasterByMasterId(user.getOpayId());
-            List<OpayMasterPupilAwardVo> noTask =inviteOperateService.getActivityTask(task,ir,isF7);
-            activity.setTask(noTask);
-        }else if(activity.getIsAgent()==1){//代理
-            inviteOperateService.getAgentTask(activity);
-        }
-
+        List<OpayMasterPupilAwardVo> task = inviteService.getTaskByOpayId(user.getOpayId());//获取注册任务和充值任务
+        OpayInviteRelation ir = inviteService.selectRelationMasterByMasterId(user.getOpayId());
+        List<OpayMasterPupilAwardVo> noTask =inviteOperateService.getActivityTask(task,ir,isF7,activity.getIsAgent());
+        activity.setTask(noTask);
         return Result.success(activity);
     }
 
@@ -184,12 +179,15 @@ public class ActivityController {
                     Map<String, String> map = rpcService.getOpayUser(vo.getPupilPhone(), String.valueOf(mlis), transferConfig.getMerchantId());
                     if (map != null && map.size() > 0) {
                         vo.setName(map.get("firstName") + map.get("middleName") + map.get("surname"));
+                        vo.setGender(map.get("gender"));
+                        stringRedisTemplate.opsForValue().set(vo.getPupilPhone(),JSON.toJSONString(map),1, TimeUnit.DAYS);
                     }
-                    stringRedisTemplate.opsForValue().set(vo.getPupilPhone(),JSON.toJSONString(map),1, TimeUnit.DAYS);
+
                 }else{
                     Map<String,String> jsonMap = JSON.parseObject(nameJson,Map.class);
                     String firstName = jsonMap.get("firstName");
                     vo.setName(jsonMap.get("firstName") + jsonMap.get("middleName") + jsonMap.get("surname"));
+                    vo.setGender(jsonMap.get("gender"));
                 }
                 vo.setCreateTime(vo.getCreateAt().getTime());
             }
@@ -247,13 +245,6 @@ public class ActivityController {
             log.warn("活动未开始或已结束,info{},"+JSON.toJSONString(user));
             return Result.success();
         }
-//        long mlis = System.currentTimeMillis();
-//        Map<String,String> umap = rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());
-//        String role = umap.get("role");
-//        if(role!=null && "agent".equals(role)){
-//            log.warn("当前用户是代理info:{},map:{}", JSON.toJSONString(user),JSON.toJSONString(umap));
-//            return Result.success();
-//        }
 
         OpayInviteRelation relation = inviteService.selectRelationMasterByMasterId(user.getOpayId());
         if(relation==null){//没有师徒关系
@@ -269,9 +260,13 @@ public class ActivityController {
         }
         //查询是否有首次充值
         long mills = System.currentTimeMillis();
-        Map<String,String> exsitMap = rpcService.queryUserRecordByPhone(user.getPhoneNumber(),rewardConfig.getStartTime(),String.valueOf(mills),null);
-        String exists =exsitMap.get("exists");
-        if(!"Y".equals(exists)){
+        Map<String,String> exsitMap = rpcService.queryUserRecordByPhone(user.getPhoneNumber(),rewardConfig.getStartTime(),String.valueOf(mills),null,"TopupWithCard");
+        String beforeIsExistOrder =exsitMap.get("beforeIsExistOrder");
+        if("Y".equals(beforeIsExistOrder)){//活动开始前已有充值
+            return Result.success();
+        }
+        String afterIsExistOrder =exsitMap.get("afterIsExistOrder");
+        if(!"Y".equals(afterIsExistOrder)){
             return Result.success();
         }
         int count =inviteService.getRelationCount(user.getOpayId());

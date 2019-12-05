@@ -76,7 +76,7 @@ public class TixianController {
         saveTixian.setIp(IpUtil.getLocalIp(request));
         saveTixian.setMonth(month);
         saveTixian.setDay(day);
-        saveTixian.setStatus(1);//没有审核功能，直接审核通过
+        saveTixian.setStatus(0);//没有审核功能，直接审核通过
         OpayActiveTixianLog saveTixianLog = new OpayActiveTixianLog();
         saveTixianLog.setAmount(withdrawalRequest.getAmount());
         saveTixianLog.setOpayId(user.getOpayId());
@@ -86,10 +86,15 @@ public class TixianController {
         saveTixianLog.setIp(IpUtil.getLocalIp(request));
         saveTixianLog.setMonth(month);
         saveTixianLog.setDay(day);
-        boolean f =inviteOperateService.saveTixianAndLog(saveTixian,saveTixianLog,cashback);
-        if(!f){
-            inviteOperateService.rollbackTixian(saveTixian);
-            return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN_SYSTERM);
+        if(saveTixian.getAmount().compareTo(tixianLimitConfig.getPerAmount())>=0) {//需要审核
+            inviteOperateService.saveTixianAndLog(saveTixian, saveTixianLog, cashback);
+        }else{
+            saveTixian.setStatus(1);//无需审核
+            inviteOperateService.saveTixianAndLog(saveTixian, saveTixianLog, cashback);
+            boolean f =inviteOperateService.transfer(saveTixian);
+            if (!f) {
+                return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN_SYSTERM);
+            }
         }
         return Result.success();
     }
@@ -104,39 +109,42 @@ public class TixianController {
         if(withdrawalRequest.getAmount()==null || withdrawalRequest.getAmount().compareTo(BigDecimal.ZERO)<=0){
             return Result.error(CodeMsg.ILLEGAL_PARAMETER);
         }
+        if(withdrawalRequest.getAmount()==null || withdrawalRequest.getAmount().compareTo(tixianLimitConfig.getPerDayAmount())>0){
+            return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN_LIMIT);
+        }
         if(withdrawalRequest.getType()==1){//用户balance提现
             if(tixianLimitConfig.getOpen()==1) {
                 boolean f = false;
                 List<TixianLimit> list = tixianLimitConfig.getList();
 
-                if(cashback.getAmount().compareTo(list.get(0).getMinAmount())<=0){
+                if(cashback.getTotalAmount().compareTo(list.get(0).getMinAmount())<=0){//总额达到8000,有提现权限
                     return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN);
                 }
 
-                if(withdrawalRequest.getAmount().compareTo(cashback.getAmount().subtract(list.get(0).getMinAmount()))>0){
-                    return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN);
-                }
-
-                for(int i=0;i<list.size();i++){
-                    TixianLimit tixian = list.get(i);
-                    if(tixian.getMin()<=relationCount && tixian.getMax()>=relationCount){
-                        if (withdrawalRequest.getAmount().compareTo(tixian.getMinAmount()) < 0) {
-                            f = true;
-                            break;
-                        }
-                    }
-                    if (i==list.size()-1){
-                        if(relationCount>tixian.getMax()) {
-                            if (withdrawalRequest.getAmount().compareTo(tixian.getMinAmount()) < 0) {
-                                f = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (f){
-                    return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN);
-                }
+//                if(withdrawalRequest.getAmount().compareTo(cashback.getAmount().subtract(list.get(0).getMinAmount()))>0){
+//                    return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN);
+//                }
+//
+//                for(int i=0;i<list.size();i++){
+//                    TixianLimit tixian = list.get(i);
+//                    if(tixian.getMin()<=relationCount && tixian.getMax()>=relationCount){
+//                        if (withdrawalRequest.getAmount().compareTo(tixian.getMinAmount()) < 0) {
+//                            f = true;
+//                            break;
+//                        }
+//                    }
+//                    if (i==list.size()-1){
+//                        if(relationCount>tixian.getMax()) {
+//                            if (withdrawalRequest.getAmount().compareTo(tixian.getMinAmount()) < 0) {
+//                                f = true;
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//                if (f){
+//                    return Result.error(CodeMsg.ILLEGAL_CODE_TIXIAN);
+//                }
             }
         }
         if(cashback.getAmount().compareTo(withdrawalRequest.getAmount())<0){

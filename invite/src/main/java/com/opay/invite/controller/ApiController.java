@@ -159,7 +159,9 @@ public class ApiController {
         }catch (Exception e){
             return Result.error(CodeMsg.CustomCodeMsg(500,"system error"));
         }
-        return Result.success(rewardConfig.getRegisterReward());
+        Map<String,Object> rmap = new HashMap<>();
+        rmap.put("reward",rewardConfig.getRegisterReward());
+        return Result.success(rmap);
     }
 
     @ApiOperation(value = "提现列表", notes = "提现列表")

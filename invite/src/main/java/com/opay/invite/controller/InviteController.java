@@ -29,6 +29,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -64,7 +66,6 @@ public class InviteController {
         LoginUser user = inviteOperateService.getOpayInfo(request);
         OpayInviteCode inviteCode = inviteService.getInviteCode(user.getOpayId());
         if(inviteCode==null || "".equals(inviteCode)) {
-            //String code = InviteCode.getCode(user.getOpayId(), key);
             String phone = user.getPhoneNumber().substring(user.getPhoneNumber().length()-10,user.getPhoneNumber().length());
             String code = InviteCode.createCode(Long.valueOf(phone));
             inviteService.saveInviteCode(user.getOpayId(),code,user.getPhoneNumber(),new Date());
@@ -76,7 +77,7 @@ public class InviteController {
 
     @ApiOperation(value = "插入邀请关系信息", notes = "插入邀请关系信息,data返回收益金额")
     @PostMapping("/save")
-    public Result<BigDecimal> save(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) throws Exception{
+    public Result<Map> save(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) throws Exception{
         //判断邀请码是否合法,和反作弊，不能建立师徒关系,当前用户已经过了7天不能填写邀请码
         boolean eff = inviteOperateService.checkTime(zone);
         if(eff){
@@ -97,10 +98,6 @@ public class InviteController {
         //当前用户是代理不能存在师傅
         long mlis = System.currentTimeMillis();
         Map<String,String> map = rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());
-//        String role = map.get("role");
-//        if(role!=null && "agent".equals(role)){
-//            return Result.error(CodeMsg.ILLEGAL_CODE);
-//        }
 
         String dateStr = map.get("createDate");
         boolean f = inviteOperateService.isExpired(zone,dateStr);
@@ -143,7 +140,9 @@ public class InviteController {
         List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,user.getOpayId(),markType);
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
         inviteOperateService.saveRelationAndRewardAndCashback(relation, list,cashbacklist);
-        return Result.success(rewardConfig.getRegisterReward());
+        Map<String,Object> rmap = new HashMap<>();
+        rmap.put("reward",rewardConfig.getRegisterReward());
+        return Result.success(rmap);
     }
 
 
@@ -173,30 +172,28 @@ public class InviteController {
         if(map==null){
             return Result.success();
         }
-        if(map.get("role")!=null && "agent".equals(map.get("role"))){
-            return Result.success();
+        String dateStr = map.get("createDate");
+        List<OpayMasterPupilAwardVo> list = inviteService.getTaskByOpayId(user.getOpayId());
+        if(list==null || list.size()==0) {
+            list = new ArrayList<>();
         }
-
-        OpayInviteRelation relation = inviteService.selectRelationMasterByMasterId(user.getOpayId());
-        if(relation==null){//没有师徒关系
-            String dateStr = map.get("createDate");
+        Map<Integer, OpayMasterPupilAwardVo> map2 = list.stream().collect(Collectors.toMap(OpayMasterPupilAwardVo::getAction, Function.identity()));
+        if(map2.get(ActionOperate.operate_register.getOperate())==null){
             boolean f = inviteOperateService.isExpired(zone,dateStr);
-            if(f){
-                return Result.success();
+            if (!f) {//已经过了七天，新用户，老用户自动过滤
+                FinishTask task = new FinishTask();
+                task.setType(ActionOperate.operate_register.getOperate());
+                task.setReward(rewardConfig.getRegisterReward());
+                return Result.success(task);
             }
+        }
+        if(map.get(ActionOperate.operate_recharge.getOperate())==null){
             FinishTask task = new FinishTask();
-            task.setType(ActionOperate.operate_register.getOperate());
-            task.setReward(rewardConfig.getRegisterReward());
+            task.setType(ActionOperate.operate_recharge.getOperate());
+            task.setReward(rewardConfig.getRechargeReward());
             return Result.success(task);
         }
-        List<OpayMasterPupilAwardVo> list = inviteService.getTaskByOpayId(user.getOpayId());
-        if(list.size()==2){
-            return Result.success();
-        }
-        FinishTask task = new FinishTask();
-        task.setType(ActionOperate.operate_recharge.getOperate());
-        task.setReward(rewardConfig.getRechargeReward());
-        return Result.success(task);
+        return Result.success();
     }
 
 }

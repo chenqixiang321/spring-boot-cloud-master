@@ -66,13 +66,6 @@
     </insert>
 
     <select id="getRankList" resultType="com.opay.invite.model.OpayInviteRankVo">
---        select * from (
---             select a.master_id opayId,a.master_phone phone,SUM(b.master_reward) totalReward,count(DISTINCT a.pupil_id) totalNum from opay_invite_relation a
---             left join opay_master_pupil_award b on a.pupil_id=b.opay_id
---             where b.master_type=0
---             group by a.master_id,a.master_phone
---             )a
---         order by a.totalReward desc
     select * from (
         select a.master_id opayId,a.master_phone phone,count(a.id) totalNum,sum(b.total_amount) totalReward
             from opay_invite_relation a
@@ -84,7 +77,7 @@
     </select>
 
     <select id="getDetailList" resultType="com.opay.invite.model.OpayMasterPupilAwardVo">
-            select reward,`action`,create_at
+            select reward,`action`,create_at createAt
             from opay_master_pupil_award
             where opay_id=#{opayId,jdbcType=VARCHAR}
              <![CDATA[
@@ -101,7 +94,7 @@
     </select>
     
    <select id="getTaskByOpayId" resultType="com.opay.invite.model.OpayMasterPupilAwardVo">
-        select reward,`action`,create_at
+        select reward,`action`,create_at createAt
          from opay_master_pupil_award
         where opay_id=#{opayId,jdbcType=VARCHAR} and mark_type in(1,2) and master_type=0
    </select>

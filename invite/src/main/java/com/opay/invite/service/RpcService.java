@@ -45,6 +45,6 @@ public interface RpcService {
 
     Map<String,String> getOpayUser(String phone,String requestId, String merchantId) throws Exception;
 
-    Map<String,String> queryUserRecordByPhone(String phone,String startTime,String requestId, String merchantId) throws Exception;
+    Map<String,String> queryUserRecordByPhone(String phone,String startTime,String requestId, String merchantId,String serviceType) throws Exception;
 
 }

@@ -106,21 +106,14 @@ tixian:
   limit:
     open: 1
     perDayAmount: 3000
+    perAmount: 1000
     list[0]:
       min: 0
       max: 24
       minAmount: 8000
-    list[1]:
-      min: 25
-      max: 42
-      minAmount: 15000
-    list[2]:
-      min: 43
-      max: 79
-      minAmount: 30000
 
 invite:
-  code: opay9102c7uw27er4$!=
+  code: opay9102c7uw27er4uxg63h$!=
   productKey: opay9102codec7uw27er4$!=
 
 transfer:
