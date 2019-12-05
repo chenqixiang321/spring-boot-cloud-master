@@ -16,6 +16,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OpayUserModel {
+    @ApiModelProperty(value = "备注名")
+    private String remarkName;
     @ApiModelProperty(value = "名")
     private String firstName;
     @ApiModelProperty(value = "性别")
