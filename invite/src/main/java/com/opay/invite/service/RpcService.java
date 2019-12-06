@@ -1,6 +1,7 @@
 package com.opay.invite.service;
 
 import com.alibaba.fastjson.JSON;
+import com.opay.invite.transferconfig.OrderType;
 import com.opay.invite.utils.AESUtil;
 
 import java.util.HashMap;
@@ -27,6 +28,9 @@ public interface RpcService {
         map.put("orderType",orderType);
         map.put("callBackURL",callBackURL);
         map.put("payChannel",payChannel);
+        if(orderType.equals(OrderType.bonusOffer)){
+            map.put("activityType",OrderType.CASHBACK.getOrderType());
+        }
         return map;
     }
     default String getEncrypt(Map<String,String> map,String key) throws Exception{

@@ -66,13 +66,13 @@
     </insert>
 
     <select id="getRankList" resultType="com.opay.invite.model.OpayInviteRankVo">
-    select * from (
-        select a.master_id opayId,a.master_phone phone,count(a.id) totalNum,sum(b.total_amount) totalReward
+    select a.*,b.total_amount totalReward from (
+        select a.master_id opayId,a.master_phone phone,count(a.id) totalNum
             from opay_invite_relation a
-            left join opay_active_cashback b on a.master_id=b.opay_id
             group by a.master_id,a.master_phone
         )a
-        order by a.totalReward desc
+  left join opay_active_cashback b on a.opayId=b.opay_id
+        order by b.total_amount desc
 
     </select>
 

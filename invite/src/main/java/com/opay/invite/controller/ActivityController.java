@@ -110,21 +110,21 @@ public class ActivityController {
 
         //计算用户所属阶段
         List<StepReward> stepList = inviteOperateService.getStepList(count);
+        BigDecimal rd = BigDecimal.ZERO;
+        for(int i=0;i<stepList.size();i++){
+            StepReward stepReward = stepList.get(i);
+            stepReward.setWalletReward(stepReward.getWalletReward().add(rewardConfig.getMasterReward()));
+            if(stepReward.getStep()==1){
+                rd = stepReward.getWalletReward();
+            }
+        }
         activity.setStep(stepList);
         //邀请人数
         if(count==0){
             activity.setIsFriend(0);
             StepReward stepReward =stepList.get(0);
-            activity.setFriendText(MsgConst.noFriend+rewardConfig.getRegisterReward().add(stepReward.getWalletReward()));
+            activity.setFriendText(MsgConst.noFriend+stepReward.getWalletReward());
         }else {//有徒弟，并且有对应阶段
-           BigDecimal rd = BigDecimal.ZERO;
-            for(int i=0;i<stepList.size();i++){
-                StepReward stepReward = stepList.get(i);
-                if(stepReward.getStep()==1){
-                    rd = stepReward.getWalletReward();
-                    break;
-                }
-            }
             activity.setFriendText(MsgConst.friend+rd.toString());
             activity.setIsFriend(1);
         }
