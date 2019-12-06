@@ -106,7 +106,7 @@
    <select id="getTaskByOpayId" resultType="com.opay.invite.model.OpayMasterPupilAwardVo">
         select reward,`action`,create_at createAt
          from opay_master_pupil_award
-        where opay_id=#{opayId,jdbcType=VARCHAR} and master_type=0
+        where opay_id=#{opayId,jdbcType=VARCHAR} and `action` in(1,2) and master_type=0
    </select>
 
     <select id="getInviteInfoByOpayId" resultType="com.opay.invite.model.OpayInviteRankVo">
