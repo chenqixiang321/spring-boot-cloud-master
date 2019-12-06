@@ -42,4 +42,7 @@ public class OpayActivity {
     @ApiModelProperty(value = "没有邀请朋友的文案和邀请")
     private String friendText;
 
+    @ApiModelProperty(value = "活动是否开始：0未开始，1:开始")
+    private Integer isStart;
+
 }

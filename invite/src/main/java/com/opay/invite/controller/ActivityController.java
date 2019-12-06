@@ -129,6 +129,8 @@ public class ActivityController {
         OpayInviteRelation ir = inviteService.selectRelationMasterByMasterId(user.getOpayId());
         List<OpayMasterPupilAwardVo> noTask =inviteOperateService.getActivityTask(task,ir,isF7,activity.getIsAgent());
         activity.setTask(noTask);
+        int isStart = inviteOperateService.checkActiveTime(zone);
+        activity.setIsStart(isStart);
         return Result.success(activity);
     }
 

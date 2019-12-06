@@ -375,4 +375,17 @@ public class InviteOperateService {
         }
         return false;
     }
+
+    public int checkActiveTime(String zone) {
+        Date startTime = DateFormatter.parseDatetime(rewardConfig.getStartTime());
+        Date endTime = DateFormatter.parseDatetime(rewardConfig.getEndTime());
+        String ntime = DateFormatter.formatDatetimeByZone(new Date(),zone);
+        Date nowTime = DateFormatter.parseDatetime(ntime);
+        if(nowTime.getTime()<startTime.getTime()){
+            return 0;//活动未开始
+        }else if(nowTime.getTime()>endTime.getTime()){
+            return 2;//活动已开始
+        }
+        return 1;
+    }
 }
