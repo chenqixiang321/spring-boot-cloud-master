@@ -131,6 +131,8 @@ public class ActivityController {
         activity.setTask(noTask);
         int isStart = inviteOperateService.checkActiveTime(zone);
         activity.setIsStart(isStart);
+        activity.setStartTime(rewardConfig.getStartTime());
+        activity.setEndTime(rewardConfig.getEndTime());
         return Result.success(activity);
     }
 

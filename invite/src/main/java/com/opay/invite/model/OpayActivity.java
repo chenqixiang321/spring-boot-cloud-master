@@ -45,4 +45,9 @@ public class OpayActivity {
     @ApiModelProperty(value = "活动是否开始：0未开始，1:开始")
     private Integer isStart;
 
+    @ApiModelProperty(value = "开始时间")
+    private String startTime;
+
+    @ApiModelProperty(value = "结束时间")
+    private String endTime;
 }
