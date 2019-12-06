@@ -24,7 +24,7 @@ public class OpayMasterPupilAward {
     private String opayId;
 
     @ApiModelProperty(value = "奖励金额")
-    private BigDecimal reward;
+    private BigDecimal reward=BigDecimal.ZERO;
 
     @ApiModelProperty(value = "收益时间")
     private Date createAt;
@@ -36,7 +36,7 @@ public class OpayMasterPupilAward {
     private int action;
 
     @ApiModelProperty(value = "充值时等操作，实际金额")
-    private BigDecimal amount;
+    private BigDecimal amount=BigDecimal.ZERO;
 
     @ApiModelProperty(value = "邀请人账号类型0:普通新用户，1:老用户 2:代理")
     private int markType;
@@ -45,7 +45,7 @@ public class OpayMasterPupilAward {
     private String stepJson;
 
     @ApiModelProperty(value = "当前用户为徒弟,master收益")
-    private BigDecimal masterReward;
+    private BigDecimal masterReward=BigDecimal.ZERO;
 
     @ApiModelProperty(value = "0:徒弟 1:师傅")
     private int masterType;

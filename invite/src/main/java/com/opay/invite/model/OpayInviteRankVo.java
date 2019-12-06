@@ -25,7 +25,7 @@ public class OpayInviteRankVo {
     private String name;
 
     @ApiModelProperty(value = "邀请人得到奖励")
-    private BigDecimal totalReward;
+    private BigDecimal totalReward=BigDecimal.ZERO;
 
     @ApiModelProperty(value = "邀请人的总人数")
     private int totalNum;

@@ -103,6 +103,8 @@ public class ActivityController {
         if(cashback==null){
             cashback = new OpayActiveCashback();
             activity.setAmount(BigDecimal.ZERO);
+        }else {
+            activity.setAmount(cashback.getAmount());
         }
         int count =inviteService.getRelationCount(user.getOpayId());
 

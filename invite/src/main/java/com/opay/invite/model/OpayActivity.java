@@ -22,7 +22,7 @@ public class OpayActivity {
     private int isFriend;
 
     @ApiModelProperty(value = "用户钱包总额")
-    private BigDecimal amount;
+    private BigDecimal amount=BigDecimal.ZERO;
 
     @ApiModelProperty(value = "阶段数据")
     private List<StepReward> step;
@@ -37,7 +37,7 @@ public class OpayActivity {
     private int isAgent;
 
     @ApiModelProperty(value = "任务完成数据,1代理徒弟展现和代理")
-    private BigDecimal agentTaskReward;
+    private BigDecimal agentTaskReward=BigDecimal.ZERO;
 
     @ApiModelProperty(value = "没有邀请朋友的文案和邀请")
     private String friendText;

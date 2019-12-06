@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -30,7 +31,7 @@ public class OpayInviteRelationVo {
     private Date createAt;
 
     @ApiModelProperty(value = "邀请人得到奖励,及被邀人贡献")
-    private Long masterReward;
+    private BigDecimal masterReward=BigDecimal.ZERO;
 
     @ApiModelProperty(value = "徒弟电话号",hidden = true)
     private String pupilPhone;

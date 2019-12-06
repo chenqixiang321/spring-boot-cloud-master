@@ -22,7 +22,7 @@ public class OpayMasterPupilAwardVo {
     private Long id;
 
     @ApiModelProperty(value = "奖励金额")
-    private BigDecimal reward;
+    private BigDecimal reward=BigDecimal.ZERO;
 
     @ApiModelProperty(value = "收益时间",hidden = true)
     @JsonFormat()
