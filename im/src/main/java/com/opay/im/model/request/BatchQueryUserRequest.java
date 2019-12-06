@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class BatchQueryUserRequest {
     private String mobile;
-    private String phoneNumber;
+    private String userId;
 }

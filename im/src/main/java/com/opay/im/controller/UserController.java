@@ -16,13 +16,11 @@ import com.opay.im.model.response.ResultResponse;
 import com.opay.im.model.response.SuccessResponse;
 import com.opay.im.service.IncrKeyService;
 import com.opay.im.service.RongCloudService;
-import com.opay.im.service.impl.RongCloudServiceImpl;
 import com.opay.im.utils.AESUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -149,14 +147,14 @@ public class UserController {
         return new ResultResponse(resultList);
     }
 
-    @ApiOperation(value = "获取单个好友信息,并激活融云", notes = "获取单个好友信息,并激活融云")
+    @ApiOperation(value = "获取单个好友信息", notes = "获取单个好友信息")
     @PostMapping("/friend")
     public ResultResponse<OpayUserModel> getFriendInfo(@RequestBody OpayFriendRequest opayFriendRequest) throws Exception {
         String userId = String.valueOf(request.getAttribute("opayId"));
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> userIdMap = rongCloudService.getBlackListMap(userId);
         BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
-        batchQueryUserRequest.setMobile(mobileHandler(opayFriendRequest.getMobile()));
+        batchQueryUserRequest.setUserId(opayFriendRequest.getOpayId());
         OpayApiResultResponse<String> opayApiResultResponse = opayFriends.batchQueryUserByPhone(getOpayApiRequest(batchQueryUserRequest));
         String json = opayApiResultResponseHandler(opayApiResultResponse);
         OpayApiQueryUserByPhoneResponse queryUserByPhoneResponse = mapper.readValue(json, OpayApiQueryUserByPhoneResponse.class);

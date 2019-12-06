@@ -14,6 +14,6 @@ import lombok.Setter;
 @ApiModel(value = "好友信息", description = "获取opay好友信息所需参数")
 public class OpayFriendRequest {
 
-    @ApiModelProperty(value = "用户手机号数 格式必须+234开头", required = true)
-    private String mobile;
+    @ApiModelProperty(value = "用户的opayId", required = true)
+    private String opayId;
 }
