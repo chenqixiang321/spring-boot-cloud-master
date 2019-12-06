@@ -126,6 +126,7 @@ public class ActivityController {
                 }
             }
             activity.setFriendText(MsgConst.friend+rd.toString());
+            activity.setIsFriend(1);
         }
         List<OpayMasterPupilAwardVo> task = inviteService.getTaskByOpayId(user.getOpayId());//获取注册任务和充值任务
         OpayInviteRelation ir = inviteService.selectRelationMasterByMasterId(user.getOpayId());
