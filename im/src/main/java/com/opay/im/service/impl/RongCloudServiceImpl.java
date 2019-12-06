@@ -28,7 +28,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -47,10 +49,12 @@ public class RongCloudServiceImpl implements RongCloudService {
         }
         return rongCloud;
     }
+
     @Resource
     private UserTokenMapper userTokenMapper;
     @Autowired
     private RongCloudService rongCloudService;
+
     @Override
     public int deleteByPrimaryKey(Long id) {
         return userTokenMapper.deleteByPrimaryKey(id);
@@ -105,6 +109,17 @@ public class RongCloudServiceImpl implements RongCloudService {
     @Override
     public BlackListUserIdsResponse getBlackList(String userId) throws Exception {
         return new BlackListUserIdsResponse(getRyBlackList(userId));
+    }
+
+    @Override
+    public Map<String, String> getBlackListMap(String userId) throws Exception {
+        List<String> userIds = getRyBlackList(userId);
+        int capacity = (int) (userIds.size() / 0.75 + 1);
+        Map<String, String> map = new HashMap<>(capacity);
+        for (String uId : userIds) {
+            map.put(uId,uId);
+        }
+        return map;
     }
 
     private String register(String userId, String userName) throws Exception {

@@ -48,9 +48,12 @@ spring:
             standard:
               sharding-column: msg_timestamp
               precise-algorithm-class-name: com.opay.im.config.MessagePreciseShardingAlgorithm
+#rongyun:
+#  appKey: k51hidwqk4icb
+#  appSecret: 02hEdHbsDuB
 rongyun:
-  appKey: k51hidwqk4icb
-  appSecret: 02hEdHbsDuB
+  appKey: tdrvipkstyix5
+  appSecret: lpTLXADqO4I3W
 config:
   opay:
     domain: http://api.test.opaydev.com:8081/

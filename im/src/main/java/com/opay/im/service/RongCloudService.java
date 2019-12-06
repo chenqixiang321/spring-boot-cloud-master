@@ -3,6 +3,8 @@ package com.opay.im.service;
 import com.opay.im.model.UserTokenModel;
 import com.opay.im.model.response.BlackListUserIdsResponse;
 
+import java.util.Map;
+
 public interface RongCloudService {
     int deleteByPrimaryKey(Long id);
 
@@ -23,6 +25,8 @@ public interface RongCloudService {
     void removeBlackList(String userId, String blackUserId) throws Exception;
 
     BlackListUserIdsResponse getBlackList(String userId) throws Exception;
+
+    Map<String, String> getBlackListMap(String userId) throws Exception;
 
     void createGroup(String userId, String groupId, String groupName) throws Exception;
 

@@ -108,17 +108,17 @@ public class UserController {
         ObjectMapper mapper = new ObjectMapper();
         BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
         batchQueryUserRequest.setMobile(String.join(",", opayFriendsRequest.getMobiles()));
-        BlackListUserIdsResponse blackListUserIdsResponse = rongCloudService.getBlackList(userId);
-        List<String> blackUserIds = blackListUserIdsResponse.getUserIds();
+        Map<String, String> userIdMap = rongCloudService.getBlackListMap(userId);
         OpayApiResultResponse<String> opayApiResultResponse = opayFriends.batchQueryUserByPhone(getOpayApiRequest(batchQueryUserRequest));
         String json = opayApiResultResponseHandler(opayApiResultResponse);
         OpayApiQueryUserByPhoneResponse queryUserByPhoneResponse = mapper.readValue(json, OpayApiQueryUserByPhoneResponse.class);
         Map<String, OpayUserModel> userMap = new HashMap<>();
         for (OpayUserModel user : queryUserByPhoneResponse.getUsers()) {
             user.setOnlyTrade(false);
-            user.setBlackList(false);
             userMap.put(user.getUserId(), user);
-            if (blackUserIds.contains(user.getUserId())) {
+            if (userIdMap.get(user.getUserId()) == null) {
+                user.setBlackList(false);
+            } else {
                 user.setBlackList(true);
             }
         }
@@ -134,7 +134,9 @@ public class UserController {
                 user.setOnlyTrade(true);
                 user.setBlackList(false);
                 userMap.put(user.getUserId(), user);
-                if (blackUserIds.contains(user.getUserId())) {
+                if (userIdMap.get(user.getUserId()) == null) {
+                    user.setBlackList(false);
+                } else {
                     user.setBlackList(true);
                 }
             }
@@ -152,8 +154,7 @@ public class UserController {
     public ResultResponse<OpayUserModel> getFriendInfo(@RequestBody OpayFriendRequest opayFriendRequest) throws Exception {
         String userId = String.valueOf(request.getAttribute("opayId"));
         ObjectMapper mapper = new ObjectMapper();
-        BlackListUserIdsResponse blackListUserIdsResponse = rongCloudService.getBlackList(userId);
-        List<String> blackUserIds = blackListUserIdsResponse.getUserIds();
+        Map<String, String> userIdMap = rongCloudService.getBlackListMap(userId);
         BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
         batchQueryUserRequest.setMobile(mobileHandler(opayFriendRequest.getMobile()));
         OpayApiResultResponse<String> opayApiResultResponse = opayFriends.batchQueryUserByPhone(getOpayApiRequest(batchQueryUserRequest));
@@ -165,7 +166,9 @@ public class UserController {
         }
         OpayUserModel user = users.get(0);
         user.setBlackList(false);
-        if (blackUserIds.contains(user.getUserId())) {
+        if (userIdMap.get(user.getUserId()) == null) {
+            user.setBlackList(false);
+        } else {
             user.setBlackList(true);
         }
         return new ResultResponse<>(user);
