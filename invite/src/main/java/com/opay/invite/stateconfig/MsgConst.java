@@ -2,9 +2,9 @@ package com.opay.invite.stateconfig;
 
 public class MsgConst {
 
-     public static String noFriend ="Invite your first friend,Get ₦ ";
+     public static String noFriend ="Refer your first friend,Get ₦ ";
 
-     public static String friend ="Invite your friend,Get ₦ ";
+     public static String friend ="Refer your friend,Get ₦ ";
 
      public static String airtime ="Bouns on invitees using Airtime";
 
@@ -16,7 +16,7 @@ public class MsgConst {
 
      public static String inviteFriendlist ="I have made ₦ d% in Opay, come and make money together！！！";
 
-     public static String inviteNoFriendlist = "You haven't invited anyone yet.Invite your first friend to Get ₦ ";
+     public static String inviteNoFriendlist = "You haven't invited anyone yet.Refer your first friend to Get ₦ ";
 
 
      public static String task1 ="Redeem";
@@ -29,6 +29,6 @@ public class MsgConst {
 
      public static String task5 ="Use Oride";
 
-     public static String tixian1="Insufficient balance! Invite friends to earn more! Invite";
+     public static String tixian1="Insufficient balance! Refer friends to earn more! Invite";
 
 }

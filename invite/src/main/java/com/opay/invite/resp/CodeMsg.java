@@ -10,13 +10,13 @@ public class CodeMsg {
     public static final CodeMsg NEED_AUTHORIZATION = new CodeMsg(2005, "you need to be authorization");
 
     //
-    public static final CodeMsg ILLEGAL_CODE = new CodeMsg(1006, "Invalid invitation code, please confirm.");
-    public static final CodeMsg ILLEGAL_CODE_RELATION = new CodeMsg(1007, "Invalid invitation code, please confirm.");
+    public static final CodeMsg ILLEGAL_CODE = new CodeMsg(1006, "Invalid referral code, please confirm.");
+    public static final CodeMsg ILLEGAL_CODE_RELATION = new CodeMsg(1007, "Invalid referral code, please confirm.");
 
     public static final CodeMsg ILLEGAL_CODE_DAY = new CodeMsg(1008, "Oops, something went wrong, you're not rewarded");
 
 
-    public static final CodeMsg ILLEGAL_CODE_TIXIAN = new CodeMsg(1009, "Insufficient balance! Invite friends to earn more! ");
+    public static final CodeMsg ILLEGAL_CODE_TIXIAN = new CodeMsg(1009, "Insufficient balance! Refer friends to earn more! ");
     public static final CodeMsg ILLEGAL_CODE_TIXIAN_LIMIT = new CodeMsg(1010, "The withdrawal limit available today has been exhausted. Please withdraw your money tomorrow.");
     public static final CodeMsg ILLEGAL_CODE_TIXIAN_SYSTERM = new CodeMsg(1011, "The withdrawal fail. Please withdraw again.");
 

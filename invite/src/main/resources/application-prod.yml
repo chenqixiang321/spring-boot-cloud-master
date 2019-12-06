@@ -162,7 +162,7 @@ opay:
   settings:
     jobs:
       fix-merchant-balance:
-        expression: "* * * * * ?"
+        expression: "0 15 10 * * ? 2999"
         jobClass: "com.opay.invite.job.UserTradeJob"
 
 management:
