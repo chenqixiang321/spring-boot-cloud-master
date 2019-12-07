@@ -48,7 +48,6 @@ public class OpayMasterPupilAwardVo {
     private String gender;
 
     @ApiModelProperty(value = "0:徒弟 1:师傅")
-    @JsonIgnore
     private Integer masterType;
 
     @ApiModelProperty(value = "徒弟电话号",hidden = true)
