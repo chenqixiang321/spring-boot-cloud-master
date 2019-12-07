@@ -1,6 +1,7 @@
 package com.opay.invite.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -47,8 +48,10 @@ public class OpayMasterPupilAwardVo {
     private String gender;
 
     @ApiModelProperty(value = "0:徒弟 1:师傅")
+    @JsonIgnore
     private Integer masterType;
 
     @ApiModelProperty(value = "徒弟电话号",hidden = true)
+    @JsonIgnore
     private String pupilPhone;
 }
