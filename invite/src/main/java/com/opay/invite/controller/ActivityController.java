@@ -82,7 +82,7 @@ public class ActivityController {
             }
             if(activity.getIsAgent()==1) {
                 String dateStr = map.get("createDate");
-                boolean f = false;//inviteOperateService.isExpired(zone,dateStr);
+                boolean f = inviteOperateService.isExpired(zone,dateStr);
                 if(f){
                     isF7 =1;
                 }
@@ -130,7 +130,7 @@ public class ActivityController {
         }
         List<OpayMasterPupilAwardVo> task = inviteService.getTaskByOpayId(user.getOpayId());//获取注册任务和充值任务
         OpayInviteRelation ir = inviteService.selectRelationMasterByMasterId(user.getOpayId());
-        List<OpayMasterPupilAwardVo> noTask =inviteOperateService.getActivityTask(task,ir,isF7,activity.getIsAgent());
+        List<OpayMasterPupilAwardVo> noTask =inviteOperateService.getActivityTask(task,ir,isF7,activity.getIsAgent(),user.getPhoneNumber());
         activity.setTask(noTask);
         int isStart = inviteOperateService.checkActiveTime(zone);
         activity.setIsStart(isStart);
@@ -185,15 +185,14 @@ public class ActivityController {
                     long mlis = System.currentTimeMillis();
                     Map<String, String> map = rpcService.getOpayUser(vo.getPupilPhone(), String.valueOf(mlis), transferConfig.getMerchantId());
                     if (map != null && map.size() > 0) {
-                        vo.setName(map.get("firstName") + map.get("middleName") + map.get("surname"));
+                        vo.setName(map.get("firstName")+" "+ map.get("middleName")+" " + map.get("surname"));
                         vo.setGender(map.get("gender"));
                         stringRedisTemplate.opsForValue().set(vo.getPupilPhone(),JSON.toJSONString(map),1, TimeUnit.DAYS);
                     }
 
                 }else{
                     Map<String,String> jsonMap = JSON.parseObject(nameJson,Map.class);
-                    String firstName = jsonMap.get("firstName");
-                    vo.setName(jsonMap.get("firstName") + jsonMap.get("middleName") + jsonMap.get("surname"));
+                    vo.setName(jsonMap.get("firstName") +" "+ jsonMap.get("middleName")+" " + jsonMap.get("surname"));
                     vo.setGender(jsonMap.get("gender"));
                 }
                 vo.setCreateTime(vo.getCreateAt().getTime());

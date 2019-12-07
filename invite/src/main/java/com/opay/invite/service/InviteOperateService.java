@@ -147,34 +147,43 @@ public class InviteOperateService {
         return tmp_stepReward;
     }
 
-    public List<OpayMasterPupilAwardVo> getActivityTask(List<OpayMasterPupilAwardVo> task, OpayInviteRelation ir,int isF7,int isAgent) {
+    public List<OpayMasterPupilAwardVo> getActivityTask(List<OpayMasterPupilAwardVo> task, OpayInviteRelation ir,int isF7,int isAgent,String phone) throws Exception {
         List<OpayMasterPupilAwardVo> list = new ArrayList<>();
         if (task == null || task.size() == 0) {
+            task = new ArrayList<>();
+        }
+        Map<Integer, OpayMasterPupilAwardVo> map = task.stream().collect(Collectors.toMap(OpayMasterPupilAwardVo::getAction, Function.identity()));
+        if(map.get(ActionOperate.operate_register.getOperate())==null){
             if (isF7 == 0) {//已经过了七天，新用户，老用户自动过滤
                 OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
                 vo.setAction(1);
                 vo.setReward(rewardConfig.getRegisterReward());
             }
-            OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
-            vo.setAction(2);
-            vo.setReward(rewardConfig.getRechargeReward());
-            list.add(vo);
-        } else {
-            Map<Integer, OpayMasterPupilAwardVo> map = task.stream().collect(Collectors.toMap(OpayMasterPupilAwardVo::getAction, Function.identity()));
-            if(map.get(ActionOperate.operate_register.getOperate())==null){
-                if (isF7 == 0) {//已经过了七天，新用户，老用户自动过滤
-                    OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
-                    vo.setAction(1);
-                    vo.setReward(rewardConfig.getRegisterReward());
-                }
-            }
-            if(map.get(ActionOperate.operate_recharge.getOperate())==null){
+        }
+        if(map.get(ActionOperate.operate_recharge.getOperate())==null){
+            long mills = System.currentTimeMillis();
+            Map<String,String> exsitMap = rpcService.queryUserRecordByPhone(phone,rewardConfig.getStartTime(),String.valueOf(mills),null,"TopupWithCard");
+            String beforeIsExistOrder =exsitMap.get("beforeIsExistOrder");
+            if(!"Y".equals(beforeIsExistOrder)){//活动开始前已有充值
                 OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
                 vo.setAction(2);
                 vo.setReward(rewardConfig.getRechargeReward());
                 list.add(vo);
             }
         }
+//        if (task == null || task.size() == 0) {
+//            if (isF7 == 0) {//已经过了七天，新用户，老用户自动过滤
+//                OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
+//                vo.setAction(1);
+//                vo.setReward(rewardConfig.getRegisterReward());
+//            }
+//            OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
+//            vo.setAction(2);
+//            vo.setReward(rewardConfig.getRechargeReward());
+//            list.add(vo);
+//        } else {
+//
+//        }
         //区分当前用户师傅是否是代理
         if(rewardConfig.getAgentOpen()==1) {
             if ((ir != null && ir.getMarkType() == 1) || isAgent==1) {

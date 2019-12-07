@@ -188,6 +188,12 @@ public class InviteController {
             }
         }
         if(map.get(ActionOperate.operate_recharge.getOperate())==null){
+            long mills = System.currentTimeMillis();
+            Map<String,String> exsitMap = rpcService.queryUserRecordByPhone(user.getPhoneNumber(),rewardConfig.getStartTime(),String.valueOf(mills),null,"TopupWithCard");
+            String beforeIsExistOrder =exsitMap.get("beforeIsExistOrder");
+            if("Y".equals(beforeIsExistOrder)){//活动开始前已有充值
+                return Result.success();
+            }
             FinishTask task = new FinishTask();
             task.setType(ActionOperate.operate_recharge.getOperate());
             task.setReward(rewardConfig.getRechargeReward());
