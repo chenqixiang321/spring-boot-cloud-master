@@ -59,6 +59,9 @@ public class OpayMasterPupilAward {
     @ApiModelProperty(value = "外部订单ID")
     private Long orderId;
 
+    @ApiModelProperty(value = "徒弟ID")
+    private String pupilId;
+
     public OpayMasterPupilAward(
             String opayId, BigDecimal reward, Date createAt, int status,
              int action, BigDecimal amount,int markType, String stepJson,

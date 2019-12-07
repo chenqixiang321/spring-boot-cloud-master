@@ -212,7 +212,7 @@ public class ActivityController {
 
     @ApiOperation(value = "My cashback获取奖励明细列表", notes = "获取奖励明细列表")
     @PostMapping("/detailList")
-    public Result<CashbackDetailList> getDetailList(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) {
+    public Result<CashbackDetailList> getDetailList(HttpServletRequest request, @RequestBody InviteRequest inviteRequest) throws Exception {
 
         //获取列表,默认最近30天
         LoginUser user = inviteOperateService.getOpayInfo(request);

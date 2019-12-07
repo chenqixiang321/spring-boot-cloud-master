@@ -5,7 +5,7 @@ public enum OrderType {
     bonusOffer("bonusOffer","奖励金发放,将OPOS现金余额转至用户奖励金账户"),
     MAcquiring("MAcquiring","商家收单,用户余额向商户转账"),
     MUAATransfer("MUAATransfer","商户余额向用户转账"),
-    CASHBACK("cashback", "返现"),
+    CASHBACK("CASHBACK", "返现"),
     ;
 
     private OrderType(String orderType,String msg){

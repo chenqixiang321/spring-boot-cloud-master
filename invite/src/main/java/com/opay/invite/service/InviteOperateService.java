@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,6 +45,9 @@ public class InviteOperateService {
 
     @Autowired
     private TransferConfig transferConfig;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     public OpayInviteRelation getInviteRelation(String masterId, String pupilId, String masterPhone, String pupilPhone, OpayInviteRelation vr, int markType) {
         OpayInviteRelation relation = new OpayInviteRelation();
@@ -68,9 +73,11 @@ public class InviteOperateService {
         OpayMasterPupilAward master = new OpayMasterPupilAward(masterId,rewardConfig.getMasterReward(),
                 date,1, ActionOperate.operate_register.getOperate(), BigDecimal.ZERO,markType,null,
                 BigDecimal.ZERO,1,month,day);//师傅奖励
+        master.setPupilId(pupilId);
         OpayMasterPupilAward pupil = new OpayMasterPupilAward(pupilId,rewardConfig.getRegisterReward(),
                 date,1, ActionOperate.operate_register.getOperate(), BigDecimal.ZERO,markType,null,
                 rewardConfig.getMasterReward(),0,month,day);//徒弟奖励
+        pupil.setPupilId(pupilId);
         list.add(master);
         list.add(pupil);
         return list;
@@ -84,11 +91,13 @@ public class InviteOperateService {
             OpayMasterPupilAward master = new OpayMasterPupilAward(masterId, stepReward.getWalletReward(),
                     date, 1, ActionOperate.operate_recharge.getOperate(), BigDecimal.ZERO, markType, JSON.toJSONString(stepReward),
                     BigDecimal.ZERO, 1, month, day);//师傅奖励
+            master.setPupilId(pupilId);
             list.add(master);
         }
         OpayMasterPupilAward pupil = new OpayMasterPupilAward(pupilId,rewardConfig.getRechargeReward(),
                 date,1, ActionOperate.operate_recharge.getOperate(), BigDecimal.ZERO,markType,JSON.toJSONString(stepReward),
                 stepReward.getWalletReward(),0,month,day);//徒弟奖励
+        pupil.setPupilId(pupilId);
         list.add(pupil);
         return list;
     }
@@ -158,6 +167,7 @@ public class InviteOperateService {
                 OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
                 vo.setAction(1);
                 vo.setReward(rewardConfig.getRegisterReward());
+                list.add(vo);
             }
         }
         if(map.get(ActionOperate.operate_recharge.getOperate())==null){
@@ -222,10 +232,28 @@ public class InviteOperateService {
     }
 
     //填充行为名称
-    public List<OpayMasterPupilAwardVo> getDetailList(List<OpayMasterPupilAwardVo> list) {
+    public List<OpayMasterPupilAwardVo> getDetailList(List<OpayMasterPupilAwardVo> list) throws Exception {
         List<OpayMasterPupilAwardVo> nlist = new ArrayList<>();
         for(int i=0;i<list.size();i++){
             OpayMasterPupilAwardVo vo = list.get(i);
+            if(vo.getMasterType()==1) {//作为师傅
+                String nameJson = stringRedisTemplate.opsForValue().get(vo.getPupilPhone());
+                if (nameJson == null || "".equals(nameJson)) {
+                    long mlis = System.currentTimeMillis();
+                    Map<String, String> map = rpcService.getOpayUser(vo.getPupilPhone(), String.valueOf(mlis), transferConfig.getMerchantId());
+                    if (map != null && map.size() > 0) {
+                        vo.setName(map.get("firstName") + " " + map.get("middleName") + " " + map.get("surname"));
+                        vo.setGender(map.get("gender"));
+                        stringRedisTemplate.opsForValue().set(vo.getPupilPhone(), JSON.toJSONString(map), 1, TimeUnit.DAYS);
+                    }
+
+                } else {
+                    Map<String, String> jsonMap = JSON.parseObject(nameJson, Map.class);
+                    vo.setName(jsonMap.get("firstName") + " " + jsonMap.get("middleName") + " " + jsonMap.get("surname"));
+                    vo.setGender(jsonMap.get("gender"));
+                }
+            }
+            vo.setCreateTime(vo.getCreateAt().getTime());
             String msg = ActionOperate.getMsgEn(vo.getAction());
             vo.setActionName(msg);
             vo.setCreateTime(vo.getCreateAt().getTime());

@@ -40,5 +40,15 @@ public class OpayMasterPupilAwardVo {
     @ApiModelProperty(value = "收益时间，long类型，到毫秒")
     private Long createTime;
 
+    @ApiModelProperty(value = "名称")
+    private String name;
 
+    @ApiModelProperty(value = "性别")
+    private String gender;
+
+    @ApiModelProperty(value = "0:徒弟 1:师傅")
+    private Integer masterType;
+
+    @ApiModelProperty(value = "徒弟电话号",hidden = true)
+    private String pupilPhone;
 }

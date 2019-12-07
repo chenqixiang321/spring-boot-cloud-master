@@ -56,12 +56,12 @@
     </select>
 
     <insert id="saveInviteReward" parameterType="java.util.List">
-        insert into opay_master_pupil_award (opay_id, reward,create_at,status,`action`,amount,`mark_type`,step_json,master_reward,master_type,`month`,`day`,order_id)
+        insert into opay_master_pupil_award (opay_id, reward,create_at,status,`action`,amount,`mark_type`,step_json,master_reward,master_type,`month`,`day`,order_id,pupil_id)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.opayId,jdbcType=VARCHAR}, #{item.reward,jdbcType=BIGINT},#{item.createAt,jdbcType=BIGINT},#{item.status,jdbcType=INTEGER},
             #{item.action,jdbcType=INTEGER},#{item.amount,jdbcType=BIGINT},#{item.markType,jdbcType=INTEGER},#{item.stepJson,jdbcType=VARCHAR}
-            ,#{item.masterReward,jdbcType=BIGINT},#{item.masterType,jdbcType=INTEGER},#{item.month,jdbcType=INTEGER}, #{item.day,jdbcType=INTEGER}, #{item.orderId,jdbcType=INTEGER})
+            ,#{item.masterReward,jdbcType=BIGINT},#{item.masterType,jdbcType=INTEGER},#{item.month,jdbcType=INTEGER}, #{item.day,jdbcType=INTEGER}, #{item.orderId,jdbcType=INTEGER}, #{item.pupilId,jdbcType=VARCHAR})
         </foreach>
     </insert>
 
@@ -77,16 +77,17 @@
     </select>
 
     <select id="getDetailList" resultType="com.opay.invite.model.OpayMasterPupilAwardVo">
-            select reward,`action`,create_at createAt
-            from opay_master_pupil_award
-            where opay_id=#{opayId,jdbcType=VARCHAR}
+            select a.reward,a.`action`,a.create_at createAt,a.master_type masterType,b.phone pupilPhone
+            from opay_master_pupil_award a
+            left join opay_active_cashback b on a.pupil_id=b.opay_id
+            where a.opay_id=#{opayId,jdbcType=VARCHAR}
              <![CDATA[
-                and `day` >= #{startYmd}
+                and a.`day` >= #{startYmd}
             ]]>
             <![CDATA[
-                and `day` <= #{endYmd}
+                and a.`day` <= #{endYmd}
             ]]>
-            order by id desc
+            order by a.id desc
     </select>
     
     <select id="getRelationCount" resultType="java.lang.Integer">
