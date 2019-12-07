@@ -44,7 +44,8 @@ public class RpcServiceImpl implements RpcService {
             String dataStr = rMap.get("data");
             if(dataStr!=null && !"".equals(dataStr)) {
                 String resultStr = getDecrypt(dataStr, transferConfig.getAesKey());
-                rMap.put("data",dataStr);
+                Map<String,String> aMap = JSONObject.parseObject(resultStr,Map.class);
+                rMap.putAll(aMap);
             }
             return rMap;
         }

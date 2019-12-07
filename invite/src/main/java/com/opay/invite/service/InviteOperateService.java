@@ -363,10 +363,13 @@ public class InviteOperateService {
             log.error("transfer err {}",JSON.toJSONString(saveTixian));
             return false;
         }
+        log.info("transfer::::{}",JSON.toJSONString(map));
         if(map!=null && map.size()>0){
             if("504".equals(map.get("code"))){
                 log.error("timeout err {}",JSON.toJSONString(saveTixian));
-            }else if("00000".equals(map.get("code")) && "SUCCESS".equals(map.get("status"))){
+            }else if("00000".equals(map.get("code")) &&
+                    ("SUCCESS".equals(map.get("status"))||"PENDING".equals(map.get("status")))
+            ){
                 try {
                     withdrawalService.updateTixian(saveTixian.getId(), saveTixian.getOpayId(), reference, map.get("orderNo"),3);
                 }catch (Exception e){
@@ -400,6 +403,10 @@ public class InviteOperateService {
         Date formatDate = DateFormatter.parseDatetime(ntime);
         if (date7.getTime() < formatDate.getTime()) {
            return true;
+        }
+        Date startTime = DateFormatter.parseDatetime(rewardConfig.getStartTime());
+        if(regDate.getTime()<startTime.getTime()){
+            return true;
         }
         return false;
     }

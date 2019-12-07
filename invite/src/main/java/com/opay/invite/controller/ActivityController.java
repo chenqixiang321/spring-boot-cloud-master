@@ -80,12 +80,10 @@ public class ActivityController {
             if(role!=null && "agent".equals(role)){
                 activity.setIsAgent(1);//是否为代理
             }
-            if(activity.getIsAgent()==1) {
-                String dateStr = map.get("createDate");
-                boolean f = inviteOperateService.isExpired(zone,dateStr);
-                if(f){
-                    isF7 =1;
-                }
+            String dateStr = map.get("createDate");
+            boolean f = inviteOperateService.isExpired(zone,dateStr);
+            if(f){
+                isF7 =1;
             }
         }
 
