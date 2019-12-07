@@ -124,7 +124,9 @@ public class ActivityController {
                         rd= stepReward.getWalletReward();
                         break;
                     }else{
+                        stepReward.setStep(0);
                         rd= stepList.get(i+1).getWalletReward();
+                        stepList.get(i+1).setStep(1);
                         break;
                     }
                 }
