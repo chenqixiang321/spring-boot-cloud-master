@@ -157,6 +157,7 @@ transfer:
     reference: IVE
     userUrl: /api/users/queryUserInfoByPhone
     userRecordUrl: /api/im/queryUserRecordByPhone
+    transferNotify: http://api.iminvite.pos.operapay.com/invite/api/transferNotify
 
 opay:
   settings:

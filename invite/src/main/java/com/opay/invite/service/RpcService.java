@@ -26,7 +26,9 @@ public interface RpcService {
         map.put("country",country);
         map.put("reference",reference);
         map.put("orderType",orderType);
-        map.put("callBackURL",callBackURL);
+        if(callBackURL!=null && !"".equals(callBackURL)){
+            map.put("callBackURL",callBackURL);
+        }
         map.put("payChannel",payChannel);
         if(orderType.equals(OrderType.bonusOffer.getOrderType())){
             map.put("activityType",OrderType.CASHBACK.getOrderType());

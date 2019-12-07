@@ -114,8 +114,22 @@ public class ActivityController {
         for(int i=0;i<stepList.size();i++){
             StepReward stepReward = stepList.get(i);
             stepReward.setWalletReward(stepReward.getWalletReward().add(rewardConfig.getMasterReward()));
-            if(stepReward.getStep()==1){
-                rd = stepReward.getWalletReward();
+        }
+        for(int i=0;i<stepList.size();i++){
+            StepReward stepReward = stepList.get(i);
+            if(stepList.size()==1 || (stepReward.getStep()==1 && i==stepList.size()-1)){
+                rd= stepReward.getWalletReward();
+                break;
+            }else{
+                if(stepReward.getStep()==1){
+                    if(stepReward.getMax()>count){
+                        rd= stepReward.getWalletReward();
+                        break;
+                    }else{
+                        rd= stepList.get(i+1).getWalletReward();
+                        break;
+                    }
+                }
             }
         }
         activity.setStep(stepList);

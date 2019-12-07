@@ -29,4 +29,6 @@ public class TransferConfig {
 
     private String batchListUrl;
 
+    private String transferNotify;
+
 }

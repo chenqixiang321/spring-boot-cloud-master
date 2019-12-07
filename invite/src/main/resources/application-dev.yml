@@ -137,7 +137,7 @@ transfer:
     reference: IVE
     userUrl: /api/users/queryUserInfoByPhone
     userRecordUrl: /api/im/queryUserRecordByPhone
-    userListUrl: /api/im/queryUserListByPhone
+    transferNotify: http://t-api.iminvite.pos.operapay.com/invite/api/transferNotify
     batchListUrl: /api/im/batchQueryUserByPhone
 
 opay:

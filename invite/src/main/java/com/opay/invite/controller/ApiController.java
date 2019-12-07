@@ -255,5 +255,9 @@ public class ApiController {
         }
         return s;
     }
+    @PostMapping("/transferNotify")
+    public void transferNotify(@RequestBody Map map){
+        log.warn("transferNotify:{}",JSON.toJSONString(map));
+    }
 
 }

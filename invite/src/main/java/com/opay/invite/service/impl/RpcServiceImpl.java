@@ -24,6 +24,9 @@ public class RpcServiceImpl implements RpcService {
     public Map<String,String> transfer(String requestId, String merchantId, String senderId, String recieptId,
                                        String amount, String currency, String country, String reference,
                                        String orderType, String callBackURL,String payChannel) throws Exception{
+        if(callBackURL==null || "".equals(callBackURL)){
+            callBackURL=transferConfig.getTransferNotify();
+        }
         Map<String,String> map = getParamMap(senderId,recieptId,amount, currency, country, reference, orderType, callBackURL,payChannel);
         String str = getEncrypt(map,transferConfig.getAesKey());
         Map<String,String> paramMap = new HashMap<>();
