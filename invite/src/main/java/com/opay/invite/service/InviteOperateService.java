@@ -106,25 +106,21 @@ public class InviteOperateService {
         List<Reward> list = rewardConfig.getRewardList();
         Collections.sort(list, Comparator.comparing(Reward::getOrderId));
         List<StepReward> slist = new ArrayList<>();
-        StepReward tmp_stepReward=null;
         for(int i=0;i<list.size();i++){
             Reward reward =list.get(i);
             StepReward stepReward = new StepReward();
             BeanUtils.copyProperties(reward,stepReward);
+            stepReward.setWalletReward(stepReward.getWalletReward().add(rewardConfig.getMasterReward()));
             if(stepReward.getMin()<=count && count<=stepReward.getMax()){
                 stepReward.setStep(1);
-            }
-            if(i==0){
-                if(count==0){
-                    stepReward.setStep(1);
-                }
-            }else if(i==list.size()-1){
-                if(stepReward.getMin()<=count){
-                    stepReward.setStep(1);
-                }
+            }else if(i==0 && count==0){
+                stepReward.setStep(1);
+            }else if(i==list.size()-1 && count>=stepReward.getMin()){
+                stepReward.setStep(1);
             }
             slist.add(stepReward);
         }
+
         return slist;
     }
     public StepReward getStepReward(int count) {
@@ -138,15 +134,10 @@ public class InviteOperateService {
             BeanUtils.copyProperties(reward,stepReward);
             if(stepReward.getMin()<=count && count<=stepReward.getMax()){
                 stepReward.setStep(1);
-            }
-            if(i==0){
-                if(count==0){
-                    stepReward.setStep(1);
-                }
-            }else if(i==list.size()-1){
-                if(stepReward.getMin()<=count){
-                    stepReward.setStep(1);
-                }
+            }else if(i==0 && count==0){
+                stepReward.setStep(1);
+            }else if(i==list.size()-1 && count>=stepReward.getMin()){
+                stepReward.setStep(1);
             }
             if(stepReward.getStep()==1){
                 tmp_stepReward = stepReward;

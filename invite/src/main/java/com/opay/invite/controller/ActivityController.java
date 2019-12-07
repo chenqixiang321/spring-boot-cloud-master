@@ -111,10 +111,6 @@ public class ActivityController {
         BigDecimal rd = BigDecimal.ZERO;
         for(int i=0;i<stepList.size();i++){
             StepReward stepReward = stepList.get(i);
-            stepReward.setWalletReward(stepReward.getWalletReward().add(rewardConfig.getMasterReward()));
-        }
-        for(int i=0;i<stepList.size();i++){
-            StepReward stepReward = stepList.get(i);
             if(stepList.size()==1 || (stepReward.getStep()==1 && i==stepList.size()-1)){
                 rd= stepReward.getWalletReward();
                 break;
