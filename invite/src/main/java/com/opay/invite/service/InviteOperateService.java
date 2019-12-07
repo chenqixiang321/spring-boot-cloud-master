@@ -234,31 +234,35 @@ public class InviteOperateService {
     //填充行为名称
     public List<OpayMasterPupilAwardVo> getDetailList(List<OpayMasterPupilAwardVo> list) throws Exception {
         List<OpayMasterPupilAwardVo> nlist = new ArrayList<>();
-        for(int i=0;i<list.size();i++){
-            OpayMasterPupilAwardVo vo = list.get(i);
-            if(vo.getMasterType()==1) {//作为师傅
-                String nameJson = stringRedisTemplate.opsForValue().get(vo.getPupilPhone());
-                if (nameJson == null || "".equals(nameJson)) {
-                    if(vo.getPupilPhone()!=null && !"".equals(vo.getPupilPhone())) {
-                        long mlis = System.currentTimeMillis();
-                        Map<String, String> map = rpcService.getOpayUser(vo.getPupilPhone(), String.valueOf(mlis), transferConfig.getMerchantId());
-                        if (map != null && map.size() > 0) {
-                            vo.setName(map.get("firstName") + " " + map.get("middleName") + " " + map.get("surname"));
-                            vo.setGender(map.get("gender"));
-                            stringRedisTemplate.opsForValue().set(vo.getPupilPhone(), JSON.toJSONString(map), 1, TimeUnit.DAYS);
+        try {
+            for (int i = 0; i < list.size(); i++) {
+                OpayMasterPupilAwardVo vo = list.get(i);
+                if (vo.getMasterType() == 1) {//作为师傅
+                    String nameJson = stringRedisTemplate.opsForValue().get(vo.getPupilPhone());
+                    if (nameJson == null || "".equals(nameJson)) {
+                        if (vo.getPupilPhone() != null && !"".equals(vo.getPupilPhone())) {
+                            long mlis = System.currentTimeMillis();
+                            Map<String, String> map = rpcService.getOpayUser(vo.getPupilPhone(), String.valueOf(mlis), transferConfig.getMerchantId());
+                            if (map != null && map.size() > 0) {
+                                vo.setName(map.get("firstName") + " " + map.get("middleName") + " " + map.get("surname"));
+                                vo.setGender(map.get("gender"));
+                                stringRedisTemplate.opsForValue().set(vo.getPupilPhone(), JSON.toJSONString(map), 1, TimeUnit.DAYS);
+                            }
                         }
+                    } else {
+                        Map<String, String> jsonMap = JSON.parseObject(nameJson, Map.class);
+                        vo.setName(jsonMap.get("firstName") + " " + jsonMap.get("middleName") + " " + jsonMap.get("surname"));
+                        vo.setGender(jsonMap.get("gender"));
                     }
-                } else {
-                    Map<String, String> jsonMap = JSON.parseObject(nameJson, Map.class);
-                    vo.setName(jsonMap.get("firstName") + " " + jsonMap.get("middleName") + " " + jsonMap.get("surname"));
-                    vo.setGender(jsonMap.get("gender"));
                 }
+                vo.setCreateTime(vo.getCreateAt().getTime());
+                String msg = ActionOperate.getMsgEn(vo.getAction());
+                vo.setActionName(msg);
+                vo.setCreateTime(vo.getCreateAt().getTime());
+                nlist.add(vo);
             }
-            vo.setCreateTime(vo.getCreateAt().getTime());
-            String msg = ActionOperate.getMsgEn(vo.getAction());
-            vo.setActionName(msg);
-            vo.setCreateTime(vo.getCreateAt().getTime());
-            nlist.add(vo);
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return nlist;
     }
