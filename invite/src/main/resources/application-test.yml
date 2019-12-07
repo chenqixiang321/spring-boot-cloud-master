@@ -67,7 +67,7 @@ activity:
     masterReward: 1
     rechargeReward: 2
     agentOpen: 0
-    startTime: 2019-12-10 00:00:00
+    startTime: 2019-11-23 00:00:00
     endTime: 2019-12-18 21:00:00
     effectiveDay: 7
     rewardList[0]:
