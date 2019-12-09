@@ -2,6 +2,8 @@ swagger:
   show: false
 server:
   port: 8082
+logging:
+  config: classpath:log/logback.xml
 #app:
 #  id: opay-im
 #apollo:
@@ -14,7 +16,7 @@ spring:
   application:
     name: opay-im
   redis:
-    host: opay-im.csr0wl.ng.0001.euw1.cache.amazonaws.com
+    host: opayim.csr0wl.ng.0001.euw1.cache.amazonaws.com #从opayim-ro.csr0wl.ng.0001.euw1.cache.amazonaws.com
     port: 6379
     timeout: 20000
     lettuce:

@@ -31,19 +31,10 @@ public class TokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object obj) throws Exception {
-        System.out.println("getContextPath:" + request.getContextPath());
-        System.out.println("getServletPath:" + request.getServletPath());
-        System.out.println("getRequestURI:" + request.getRequestURI());
-        System.out.println("getRequestURL:" + request.getRequestURL());
-        System.out.println("getRealPath:" + request.getSession().getServletContext().getRealPath("image"));
-        System.out.println("Authorization:" + request.getHeader("Authorization"));
         OpayUser opayUser = opayService.parseToken(request.getHeader("Authorization"));
         request.setAttribute("opayId", opayUser.getId());
         request.setAttribute("phoneNumber", opayUser.getPhoneNumber());
         request.setAttribute("opayName", opayUser.getFirstName());
-//        request.setAttribute("opayId", "1");
-//        request.setAttribute("phoneNumber", "12345678");
-//        request.setAttribute("opayName", "haha");
         return true;
     }
 
