@@ -55,8 +55,8 @@ upperLimit:
 config:
   opay:
     domain: http://api.operapay.com
-    merchantId: 256619090900002
-    aesKey: UxanhvcUC3aeiLRR
+    merchantId: 256619120756000
+    aesKey: f0utFRLpio5ltjH7
     iv: qazwert12345!@#$
 
 activity:
@@ -65,7 +65,7 @@ activity:
     masterReward: 10
     rechargeReward: 100
     agentOpen: 0
-    startTime: 2020-06-12 00:00:01
+    startTime: 2020-06-09 04:40:01
     endTime: 2020-12-22 23:59:59
     effectiveDay: 7
     rewardList[0]:
@@ -151,8 +151,8 @@ invite:
 transfer:
   opay:
     domain: http://api.operapay.com
-    merchantId: 256619112712004
-    aesKey: p2LfpyyoKkrv1mjr
+    merchantId: 256619120756000
+    aesKey: f0utFRLpio5ltjH7
     url: /api/m/createOrder
     reference: IVE
     userUrl: /api/users/queryUserInfoByPhone
