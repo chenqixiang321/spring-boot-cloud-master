@@ -28,7 +28,9 @@ public class JobConfiguration {
     @PostConstruct
     public void init() throws Exception {
         Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.groupEquals(OpayJob.DEFAULT_GROUP));
-
+        if(jobProperties.getJobs()==null || jobProperties.getJobs().size()==0){
+            return;
+        }
         Iterator<Map.Entry<String, JobProperties.JobItem>> iterator = jobProperties.getJobs().entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, JobProperties.JobItem> next = iterator.next();

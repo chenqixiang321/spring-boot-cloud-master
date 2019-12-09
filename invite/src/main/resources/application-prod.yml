@@ -161,10 +161,6 @@ transfer:
 
 opay:
   settings:
-    jobs:
-      fix-merchant-balance:
-        expression: "0 15 10 * * ? 2999"
-        jobClass: "com.opay.invite.job.UserTradeJob"
 
 management:
   endpoints:
