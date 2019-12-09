@@ -36,7 +36,7 @@ spring:
             delete-allow: false
             drop-table-allow: false
   redis:
-    host: opay-im.csr0wl.ng.0001.euw1.cache.amazonaws.com
+    host: opayim.csr0wl.ng.0001.euw1.cache.amazonaws.com
     port: 6379
     timeout: 2000
     lettuce:
