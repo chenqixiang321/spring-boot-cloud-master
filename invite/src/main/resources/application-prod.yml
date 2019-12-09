@@ -54,7 +54,7 @@ upperLimit:
 
 config:
   opay:
-    domain: http://api.operapay.com
+    domain: https://api.operapay.com
     merchantId: 256619120756000
     aesKey: f0utFRLpio5ltjH7
     iv: qazwert12345!@#$
@@ -150,7 +150,7 @@ invite:
 
 transfer:
   opay:
-    domain: http://api.operapay.com
+    domain: https://api.operapay.com
     merchantId: 256619120756000
     aesKey: f0utFRLpio5ltjH7
     url: /api/m/createOrder
