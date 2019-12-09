@@ -6,8 +6,8 @@ public class ImException extends Exception {
         super(message);
     }
 
-    @Override
-    public synchronized Throwable fillInStackTrace() {
-        return this;
-    }
+//    @Override
+//    public synchronized Throwable fillInStackTrace() {
+//        return this;
+//    }
 }

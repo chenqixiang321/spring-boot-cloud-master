@@ -53,7 +53,7 @@ rongyun:
   appSecret: lpTLXADqO4I3W
 config:
   opay:
-    domain: https://api.operapay.com/
+    domain: internal-campaignapiinternal-1831570749.eu-west-1.elb.amazonaws.com #https://api.operapay.com/
     merchantId: 256619090900002
     aesKey: UxanhvcUC3aeiLRR
     iv: qazwert12345!@#$
