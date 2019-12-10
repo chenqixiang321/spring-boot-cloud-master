@@ -40,20 +40,25 @@ public class RongCloudServiceImpl implements RongCloudService {
     private String appKey;
     @Value("${rongyun.appSecret}")
     private String appSecret;
+    @Value("${rongyun.api:}")
+    private String api;
     private final String groupIdPrefix = "GROUP_";
     private RongCloud rongCloud = null;
 
     private RongCloud getRongCloud() {
         if (rongCloud == null) {
-            rongCloud = RongCloud.getInstance(appKey, appSecret);
+            if ("".equals(api)) {
+                rongCloud = RongCloud.getInstance(appKey, appSecret);
+            } else {
+                rongCloud = RongCloud.getInstance(appKey, appSecret, api);
+            }
+
         }
         return rongCloud;
     }
 
     @Resource
     private UserTokenMapper userTokenMapper;
-    @Autowired
-    private RongCloudService rongCloudService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -117,7 +122,7 @@ public class RongCloudServiceImpl implements RongCloudService {
         int capacity = (int) (userIds.size() / 0.75 + 1);
         Map<String, String> map = new HashMap<>(capacity);
         for (String uId : userIds) {
-            map.put(uId,uId);
+            map.put(uId, uId);
         }
         return map;
     }

@@ -51,6 +51,7 @@ spring:
 rongyun:
   appKey: tdrvipkstyix5
   appSecret: lpTLXADqO4I3W
+  api: http://api-sg01.ronghub.com
 config:
   opay:
     domain: https://api.operapay.com/
