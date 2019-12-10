@@ -54,7 +54,7 @@ upperLimit:
 
 config:
   opay:
-    domain: https://api.operapay.com
+    domain: http://internal-campaignapiinternal-1831570749.eu-west-1.elb.amazonaws.com
     merchantId: 256619120756000
     aesKey: f0utFRLpio5ltjH7
     iv: qazwert12345!@#$
@@ -150,7 +150,7 @@ invite:
 
 transfer:
   opay:
-    domain: https://api.operapay.com
+    domain: http://internal-campaignapiinternal-1831570749.eu-west-1.elb.amazonaws.com
     merchantId: 256619120756000
     aesKey: f0utFRLpio5ltjH7
     url: /api/m/createOrder
