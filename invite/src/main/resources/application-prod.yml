@@ -65,8 +65,8 @@ activity:
     masterReward: 10
     rechargeReward: 100
     agentOpen: 0
-    startTime: 2019-12-10 01:50:00
-    endTime: 2019-12-22 23:59:59
+    startTime: 2020-12-10 01:50:00
+    endTime: 2020-12-22 23:59:59
     effectiveDay: 7
     rewardList[0]:
       orderId: 1
@@ -157,7 +157,7 @@ transfer:
     reference: IVE
     userUrl: /api/users/queryUserInfoByPhone
     userRecordUrl: /api/im/queryUserRecordByPhone
-    transferNotify: http://api.iminvite.pos.operapay.com/invite/api/transferNotify
+    transferNotify: https://api.iminvite.pos.operapay.com/invite/api/transferNotify
 
 opay:
   settings:
