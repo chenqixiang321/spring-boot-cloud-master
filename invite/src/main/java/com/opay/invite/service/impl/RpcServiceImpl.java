@@ -1,5 +1,6 @@
 package com.opay.invite.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.opay.invite.service.RpcService;
 import com.opay.invite.transferconfig.TransferConfig;
@@ -28,6 +29,7 @@ public class RpcServiceImpl implements RpcService {
             callBackURL=transferConfig.getTransferNotify();
         }
         Map<String,String> map = getParamMap(senderId,recieptId,amount, currency, country, reference, orderType, callBackURL,payChannel);
+        log.info("transfer:{}", JSON.toJSONString(map));
         String str = getEncrypt(map,transferConfig.getAesKey());
         Map<String,String> paramMap = new HashMap<>();
         paramMap.put("requestId",requestId);

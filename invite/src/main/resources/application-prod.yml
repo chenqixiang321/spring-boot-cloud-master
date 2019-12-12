@@ -6,7 +6,7 @@ spring:
   application:
     name: opay-invite
   datasource:
-    url: jdbc:mysql://opay-im.c7vkdm90b2v9.eu-west-1.rds.amazonaws.com:3306/opay_invite?useSSL=false&useAffectedRows=true
+    url: jdbc:mysql://opay-im.c7vkdm90b2v9.eu-west-1.rds.amazonaws.com:3306/opay_invite?useSSL=false&useAffectedRows=true&allowMultiQueries=true
     username: root
     password: ff3NKWQpY5hEq7xzOLuX
     driver-class-name: com.mysql.jdbc.Driver
@@ -68,6 +68,8 @@ activity:
     startTime: 2020-12-10 01:50:00
     endTime: 2020-12-22 23:59:59
     effectiveDay: 7
+    turntableStart: 2019-12-06 00:00:01
+    turntableEnd: 2019-12-26 00:00:01
     rewardList[0]:
       orderId: 1
       min: 1
@@ -153,6 +155,7 @@ transfer:
     domain: http://internal-campaignapiinternal-1831570749.eu-west-1.elb.amazonaws.com
     merchantId: 256619120756000
     aesKey: f0utFRLpio5ltjH7
+    iv: qazwert12345!@#$
     url: /api/m/createOrder
     reference: IVE
     userUrl: /api/users/queryUserInfoByPhone

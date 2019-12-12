@@ -31,4 +31,5 @@ public class TransferConfig {
 
     private String transferNotify;
 
+    private String iv;
 }

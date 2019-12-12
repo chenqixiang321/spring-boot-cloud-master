@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,9 @@ public class InviteOperateService {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private InviteCountService inviteCountService;
 
     public OpayInviteRelation getInviteRelation(String masterId, String pupilId, String masterPhone, String pupilPhone, OpayInviteRelation vr, int markType) {
         OpayInviteRelation relation = new OpayInviteRelation();
@@ -187,11 +191,20 @@ public class InviteOperateService {
 //        }
         //区分当前用户师傅是否是代理
         if(rewardConfig.getAgentOpen()==1) {
-            if ((ir != null && ir.getMarkType() == 1) || isAgent==1) {
+            if ((ir != null && ir.getMarkType() == 1)) {
                 for (AgentRoyaltyReward rr : rewardConfig.getRoyList()) {
                     OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
                     vo.setAction(rr.getAction());
                     vo.setReward(rr.getPupilReward());
+                    list.add(vo);
+                }
+            }else{
+                List<AgentRoyaltyReward> rr = rewardConfig.getRoyList();
+                rr.sort(Comparator.comparing(AgentRoyaltyReward::getMasterReward).reversed());
+                if(isAgent==1){
+                    OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
+                    vo.setAction(6);
+                    vo.setReward(rr.get(0).getMasterReward());
                     list.add(vo);
                 }
             }
@@ -413,9 +426,9 @@ public class InviteOperateService {
         return false;
     }
 
-    public int checkActiveTime(String zone) {
-        Date startTime = DateFormatter.parseDatetime(rewardConfig.getStartTime());
-        Date endTime = DateFormatter.parseDatetime(rewardConfig.getEndTime());
+    public int checkActiveStatusTime(String zone,String start,String end) {
+        Date startTime = DateFormatter.parseDatetime(start);
+        Date endTime = DateFormatter.parseDatetime(end);
         String ntime = DateFormatter.formatDatetimeByZone(new Date(),zone);
         Date nowTime = DateFormatter.parseDatetime(ntime);
         if(nowTime.getTime()<startTime.getTime()){
@@ -424,5 +437,24 @@ public class InviteOperateService {
             return 2;//活动已开始
         }
         return 1;
+    }
+    public int checkActiveStatusTime(Date nowTime,String start,String end) {
+        Date startTime = DateFormatter.parseDatetime(start);
+        Date endTime = DateFormatter.parseDatetime(end);
+        if(nowTime.getTime()<startTime.getTime()){
+            return 0;//活动未开始
+        }else if(nowTime.getTime()>endTime.getTime()){
+            return 2;//活动已开始
+        }
+        return 1;
+    }
+
+    @Async
+    public void updateInviteCount(String masterId){
+        try {
+            inviteCountService.updateInviteCount(masterId,null,null);
+        } catch (Exception e) {
+            log.error("updateInviteCount masterId:{}",masterId);
+        }
     }
 }

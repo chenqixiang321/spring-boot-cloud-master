@@ -59,9 +59,9 @@
         insert into opay_master_pupil_award (opay_id, reward,create_at,status,`action`,amount,`mark_type`,step_json,master_reward,master_type,`month`,`day`,order_id,pupil_id)
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.opayId,jdbcType=VARCHAR}, #{item.reward,jdbcType=BIGINT},#{item.createAt,jdbcType=BIGINT},#{item.status,jdbcType=INTEGER},
-            #{item.action,jdbcType=INTEGER},#{item.amount,jdbcType=BIGINT},#{item.markType,jdbcType=INTEGER},#{item.stepJson,jdbcType=VARCHAR}
-            ,#{item.masterReward,jdbcType=BIGINT},#{item.masterType,jdbcType=INTEGER},#{item.month,jdbcType=INTEGER}, #{item.day,jdbcType=INTEGER}, #{item.orderId,jdbcType=INTEGER}, #{item.pupilId,jdbcType=VARCHAR})
+            (#{item.opayId,jdbcType=VARCHAR}, #{item.reward},#{item.createAt},#{item.status,jdbcType=INTEGER},
+            #{item.action,jdbcType=INTEGER},#{item.amount},#{item.markType,jdbcType=INTEGER},#{item.stepJson,jdbcType=VARCHAR}
+            ,#{item.masterReward},#{item.masterType,jdbcType=INTEGER},#{item.month,jdbcType=INTEGER}, #{item.day,jdbcType=INTEGER}, #{item.orderId,jdbcType=VARCHAR}, #{item.pupilId,jdbcType=VARCHAR})
         </foreach>
     </insert>
 
@@ -122,5 +122,4 @@
              from opay_master_pupil_award a
             where a.opay_id = #{opayId,jdbcType=VARCHAR}
     </select>
-    
 </mapper>

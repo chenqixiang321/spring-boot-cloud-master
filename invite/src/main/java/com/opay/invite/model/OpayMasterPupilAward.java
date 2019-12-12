@@ -57,7 +57,7 @@ public class OpayMasterPupilAward {
     private int day;
 
     @ApiModelProperty(value = "外部订单ID")
-    private Long orderId;
+    private String orderId;
 
     @ApiModelProperty(value = "徒弟ID")
     private String pupilId;

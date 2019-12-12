@@ -8,7 +8,7 @@ spring:
   application:
     name: opay-invite
   datasource:
-    url: jdbc:mysql://localhost:3306/opay_invite?useSSL=false&useAffectedRows=true
+    url: jdbc:mysql://localhost:3306/opay_invite?useSSL=false&useAffectedRows=true&allowMultiQueries=true
     username: root
     password: 04cdf9719ba61283
     driver-class-name: com.mysql.jdbc.Driver
@@ -70,6 +70,8 @@ activity:
     startTime: 2019-11-23 00:00:00
     endTime: 2019-12-18 21:00:00
     effectiveDay: 7
+    turntableStart: 2019-12-06 00:00:01
+    turntableEnd: 2019-12-26 00:00:01
     rewardList[0]:
       orderId: 1
       min: 1
@@ -155,6 +157,7 @@ transfer:
     domain: http://api.test.opaydev.com:8081
     merchantId: 256619120522011
     aesKey: gepy7T6jTldRMq7A
+    iv: qazwert12345!@#$
     url: /api/m/createOrder
     reference: IVE
     userUrl: /api/users/queryUserInfoByPhone

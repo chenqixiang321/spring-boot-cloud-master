@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -17,26 +18,33 @@ public class OpayUserOrder {
     private Long id;
 
     @ApiModelProperty(value = "订单号")
-    private Long order_id;
+    private String orderId;
 
     @ApiModelProperty(value = "折扣前总金额")
     private BigDecimal amount;
 
     @ApiModelProperty(value = "收益状态")
-    private BigDecimal discountAmount;
+    private BigDecimal actualAmount;
 
     @ApiModelProperty(value = "订单时间")
-    private int orderTime;
+    private String orderTime;
 
     @ApiModelProperty(value = "交易用户")
     private String opayId;
 
-    @ApiModelProperty(value = "充值类型:0:充值钱包 1:购买充值卡，2:博彩 3:打车")
+    @ApiModelProperty(value = "2:徒弟首次充值到钱包 3:购买话费或其它小额支付 4:博彩 5:打车")
     private int type;
 
-    @ApiModelProperty(value = "师傅")
+    private Date createAt;
+
+    private int status;
+
     private String masterOpayId;
 
-    @ApiModelProperty(value = "邀请人账号类型0:普通用户， 1:代理")
     private int markType;
+
+    private int month;
+
+    private int day;
+
 }

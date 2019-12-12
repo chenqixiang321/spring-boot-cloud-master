@@ -6,22 +6,68 @@
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="order_id" jdbcType="BIGINT" property="orderId" />
         <result column="amount" jdbcType="DECIMAL" property="amount" />
-        <result column="discount_amount" jdbcType="DECIMAL" property="discountAmount" />
+        <result column="actual_amount" jdbcType="DECIMAL" property="actualAmount" />
         <result column="order_time" property="orderTime" />
         <result column="opay_id" jdbcType="VARCHAR" property="opayId" />
         <result column="type" jdbcType="INTEGER" property="type" />
         <result column="status" jdbcType="INTEGER" property="status" />
         <result column="master_id" jdbcType="INTEGER" property="masterOpayId" />
         <result column="mark_type" jdbcType="INTEGER" property="markType" />
+        <result column="month" jdbcType="INTEGER" property="month" />
+        <result column="day" jdbcType="INTEGER" property="day" />
+    </resultMap>
+    <resultMap id="BaseRelationResultMap" type="com.opay.invite.model.OpayInviteRelation">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="master_id" jdbcType="VARCHAR" property="masterId" />
+        <result column="pupil_id" jdbcType="VARCHAR" property="pupilId" />
+        <result column="pupil_phone" jdbcType="VARCHAR" property="pupilPhone" />
+        <result column="master_phone" jdbcType="VARCHAR" property="masterPhone" />
+        <result column="create_at" property="createAt" />
+        <result column="master_parent_id" jdbcType="VARCHAR" property="masterParentId" />
+        <result column="mark_type" jdbcType="INTEGER" property="markType" />
+        <result column="month" jdbcType="INTEGER" property="month" />
+        <result column="day" jdbcType="INTEGER" property="day" />
     </resultMap>
 
     <select id="getOpayUserOrderList" resultMap="BaseResultMap">
-        select a.id,a.order_id,a.amount,a.discount_amount,a.order_time,a.opay_id,a.type,status,b.master_id,b.mark_type
+        select a.id,a.order_id,a.amount,a.actual_amount,a.order_time,a.opay_id,a.type,a.status,b.master_id,b.mark_type,a.month,a.day
         from opay_user_order a
         left join opay_invite_relation b on a.opay_id=b.pupil_id
-        where day=#{day} and status=0
-        order by order_id asc
+        where  <![CDATA[ a.day <= #{day}  ]]> and a.status=0
+        order by id asc
         limit #{start},#{pageSize}
     </select>
 
+    <insert id="saveOpayUserOrder" parameterType="java.util.List">
+        insert into opay_user_order (order_id, amount,actual_amount,create_at,order_time,opay_id,`type`,status,`month`,`day`)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.orderId,jdbcType=VARCHAR}, #{item.amount},#{item.actualAmount},#{item.createAt},
+            #{item.orderTime,jdbcType=VARCHAR},#{item.opayId,jdbcType=VARCHAR},#{item.type,jdbcType=INTEGER},#{item.status,jdbcType=INTEGER},#{item.month,jdbcType=INTEGER}, #{item.day,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <insert id="saveUserTask" parameterType="java.util.List">
+        insert into opay_user_task (opay_id,type,day)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.opayId,jdbcType=VARCHAR},#{item.type,jdbcType=INTEGER}, #{item.day,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <select id="getTaskRelationList" resultMap="BaseRelationResultMap">
+       select a.id, a.master_id, a.pupil_id,pupil_phone,a.master_phone,a.create_at,a.master_parent_id,a.mark_type
+        from opay_invite_relation a
+        left join opay_user_task b on a.pupil_id=b.opay_id and b.day=#{day} and b.type=#{type}
+        where b.id is null
+        order by id asc
+        limit #{start},#{pageSize}
+    </select>
+    <update id="updateOpayUserOrder" parameterType="java.util.List">
+        update opay_user_order set status=1
+        where id in
+        <foreach collection="list" open="(" close=")" item="item" index="index" separator=",">
+            #{item.id}
+        </foreach>
+    </update>
 </mapper>

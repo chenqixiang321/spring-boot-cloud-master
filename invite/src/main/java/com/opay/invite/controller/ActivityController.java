@@ -142,10 +142,12 @@ public class ActivityController {
         OpayInviteRelation ir = inviteService.selectRelationMasterByMasterId(user.getOpayId());
         List<OpayMasterPupilAwardVo> noTask =inviteOperateService.getActivityTask(task,ir,isF7,activity.getIsAgent(),user.getPhoneNumber());
         activity.setTask(noTask);
-        int isStart = inviteOperateService.checkActiveTime(zone);
+        int isStart = inviteOperateService.checkActiveStatusTime(zone,rewardConfig.getStartTime(),rewardConfig.getEndTime());
         activity.setIsStart(isStart);
         activity.setStartTime(rewardConfig.getStartTime());
         activity.setEndTime(rewardConfig.getEndTime());
+        int isTurn = inviteOperateService.checkActiveStatusTime(zone,rewardConfig.getTurntableStart(),rewardConfig.getTurntableEnd());
+        activity.setIsTurntable(isTurn);
         return Result.success(activity);
     }
 

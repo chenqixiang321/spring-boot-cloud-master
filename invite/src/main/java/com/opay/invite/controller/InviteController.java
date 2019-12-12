@@ -142,6 +142,7 @@ public class InviteController {
         inviteOperateService.saveRelationAndRewardAndCashback(relation, list,cashbacklist);
         Map<String,Object> rmap = new HashMap<>();
         rmap.put("reward",rewardConfig.getRegisterReward());
+        inviteOperateService.updateInviteCount(masterId);
         return Result.success(rmap);
     }
 
@@ -165,6 +166,10 @@ public class InviteController {
     @PostMapping("/noTask")
     public Result<FinishTask> getNoTask(HttpServletRequest request) throws Exception {
         //登录用户是普通用户，如果是普通用户，有师徒关系，查看执行内容，如果没有提示一个
+        boolean activef = inviteOperateService.checkTime(zone);
+        if(activef) {
+            return Result.success();
+        }
         LoginUser user = inviteOperateService.getOpayInfo(request);
         long mlis = System.currentTimeMillis();
         Map<String,String> map =rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());

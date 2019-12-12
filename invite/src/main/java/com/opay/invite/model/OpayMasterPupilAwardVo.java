@@ -32,7 +32,7 @@ public class OpayMasterPupilAwardVo {
     @ApiModelProperty(value = "收益状态",hidden = true)
     private int status;
 
-    @ApiModelProperty(value = "行为:1:注册、2:充值")
+    @ApiModelProperty(value = "行为:1:注册、2:充值,3:购买话费或其它小额支付 4:博彩 5:打车,6:表述代理任务")
     private int action;
 
     @ApiModelProperty(value = "行为名称",hidden = true)
