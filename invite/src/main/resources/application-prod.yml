@@ -202,4 +202,4 @@ prize-pool:
     - {prize: 5,prob: 0.0009}
     - {prize: 2,prob: 0.0285}
     - {prize: 1,prob: 0.27}
-    - {prize: 0,prob: 0.7}}
+    - {prize: 0,prob: 0.7}
