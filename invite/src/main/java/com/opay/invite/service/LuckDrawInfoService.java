@@ -23,6 +23,8 @@ public interface LuckDrawInfoService {
 
     List<LuckDrawListResponse> selectLuckDrawInfoList() throws Exception;
 
+    List<LuckDrawListResponse> selectLuckDrawInfoList(String opayId, int pageNum, int pageSize) throws Exception;
+
     LuckDrawInfoResponse getLuckDraw(String opayId, String opayName, String opayPhone) throws Exception;
 }
 

@@ -1,5 +1,6 @@
 package com.opay.invite.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.opay.invite.config.PrizePoolConfig;
 import com.opay.invite.exception.InviteException;
 import com.opay.invite.mapper.LuckDrawInfoMapper;
@@ -81,6 +82,20 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         List<LuckDrawListResponse> luckDrawInfoResponseList = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         List<LuckDrawInfoModel> luckDrawInfoModelList = luckDrawInfoMapper.selectLuckDrawInfoList(DateFormatter.getStartTime(calendar), DateFormatter.getEndTime(calendar));
+        LuckDrawListResponse luckDrawInfoResponse = null;
+        for (LuckDrawInfoModel luckDrawInfoModel : luckDrawInfoModelList) {
+            luckDrawInfoResponse = new LuckDrawListResponse();
+            BeanUtils.copyProperties(luckDrawInfoModel, luckDrawInfoResponse);
+            luckDrawInfoResponseList.add(luckDrawInfoResponse);
+        }
+        return luckDrawInfoResponseList;
+    }
+
+    @Override
+    public List<LuckDrawListResponse> selectLuckDrawInfoList(String opayId, int pageNum, int pageSize) throws Exception {
+        List<LuckDrawListResponse> luckDrawInfoResponseList = new ArrayList<>();
+        PageHelper.startPage(pageNum, pageSize);
+        List<LuckDrawInfoModel> luckDrawInfoModelList = luckDrawInfoMapper.selectLuckDrawInfoListByOpayId(opayId);
         LuckDrawListResponse luckDrawInfoResponse = null;
         for (LuckDrawInfoModel luckDrawInfoModel : luckDrawInfoModelList) {
             luckDrawInfoResponse = new LuckDrawListResponse();

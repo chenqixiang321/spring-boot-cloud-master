@@ -3,22 +3,27 @@ package com.opay.invite.controller;
 import com.opay.invite.config.PrizePoolConfig;
 import com.opay.invite.model.LoginUser;
 import com.opay.invite.model.PrizeModel;
+import com.opay.invite.model.request.MyLuckDrawListRequest;
 import com.opay.invite.model.response.LuckDrawCountResponse;
 import com.opay.invite.model.response.LuckDrawInfoResponse;
 import com.opay.invite.model.response.LuckDrawListResponse;
 import com.opay.invite.model.response.LuckDrawResponse;
 import com.opay.invite.model.response.ResultResponse;
 import com.opay.invite.model.response.SuccessResponse;
+import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.LuckDrawInfoService;
 import com.opay.invite.utils.DateFormatter;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -152,6 +157,15 @@ public class LuckDrawController {
         return resultResponse;
     }
 
+    @ApiOperation(value = "我的中奖列表", notes = "我的中奖列表")
+    @GetMapping("/mylist")
+    public ResultResponse<List<LuckDrawListResponse>> getMyLuckDrawList(HttpServletRequest request, @RequestBody @ApiParam(name = "我的中奖列表请求参数", value = "传入json格式", required = true) MyLuckDrawListRequest myLuckDrawListRequest) throws Exception {
+        LoginUser user = inviteOperateService.getOpayInfo(request);
+        ResultResponse resultResponse = new ResultResponse();
+        resultResponse.setData(luckDrawInfoService.selectLuckDrawInfoList(user.getOpayId(), myLuckDrawListRequest.getPageNum(), myLuckDrawListRequest.getPageSize()));
+        return resultResponse;
+    }
+
     @ApiOperation(value = "分享次数+1", notes = "分享次数+1")
     @PostMapping("/share")
     public SuccessResponse updateShareCount(HttpServletRequest request) throws Exception {
@@ -172,13 +186,12 @@ public class LuckDrawController {
     @GetMapping
     public ResultResponse<LuckDrawInfoResponse> luckDraw(HttpServletRequest request) throws Exception {
         LoginUser user = inviteOperateService.getOpayInfo(request);
-        return new ResultResponse(luckDrawInfoService.getLuckDraw(user.getOpayId(), user.getFirstName(), user.getPhoneNumber()));
-//        format.setTimeZone(TimeZone.getTimeZone(timeZone));
-//        int hour = Integer.parseInt(format.format(new Date()));
-//        if ((hour >= firstPoolStart && hour < firstPoolEnd) || (hour >= secondPoolStart && hour < secondPoolEnd)) {
-//            return new ResultResponse(luckDrawInfoService.getLuckDraw("1", "1", "1"));
-//        } else {
-//            return new ResultResponse(CodeMsg.LUCKY_DRAW_NOT_START_CODE.getCode(), CodeMsg.LUCKY_DRAW_NOT_START_CODE.getMessage());
-//        }
+        format.setTimeZone(TimeZone.getTimeZone(timeZone));
+        int hour = Integer.parseInt(format.format(new Date()));
+        if ((hour >= firstPoolStart && hour < firstPoolEnd) || (hour >= secondPoolStart && hour < secondPoolEnd)) {
+            return new ResultResponse(luckDrawInfoService.getLuckDraw(user.getOpayId(), user.getFirstName(), user.getPhoneNumber()));
+        } else {
+            return new ResultResponse(CodeMsg.LUCKY_DRAW_NOT_START_CODE.getCode(), CodeMsg.LUCKY_DRAW_NOT_START_CODE.getMessage());
+        }
     }
 }

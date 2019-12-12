@@ -137,4 +137,10 @@
         <include refid="Base_Column_List"/>
         from luck_draw_info where create_time between #{beginTime} and #{endTime} and prize in ("phone","100","50","10") order by prize_level asc limit 10
     </select>
+
+    <select id="selectLuckDrawInfoListByOpayId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from luck_draw_info where opay_id=#{opayId} order by create_time desc
+    </select>
 </mapper>

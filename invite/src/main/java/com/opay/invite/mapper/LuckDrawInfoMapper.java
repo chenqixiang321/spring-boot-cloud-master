@@ -22,4 +22,6 @@ public interface LuckDrawInfoMapper {
     int updateByPrimaryKey(LuckDrawInfoModel record);
 
     List<LuckDrawInfoModel> selectLuckDrawInfoList(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
+
+    List<LuckDrawInfoModel> selectLuckDrawInfoListByOpayId(String opayId);
 }
