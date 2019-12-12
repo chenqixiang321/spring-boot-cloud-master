@@ -161,6 +161,7 @@ public class ApiController {
         }
         Map<String,Object> rmap = new HashMap<>();
         rmap.put("reward",rewardConfig.getRegisterReward());
+        inviteOperateService.updateInviteCount(masterId);
         return Result.success(rmap);
     }
 
