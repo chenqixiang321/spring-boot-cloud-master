@@ -25,8 +25,8 @@ public class OpayApiServiceImpl extends AbstractOpayApi implements OpayApiServic
         log.info("createOrder param:{}", JSON.toJSONString(object));
         OpayApiRequest request =getOpayApiRequest(merchantId,requestId,object,aesKey,iv);
         OpayApiResultResponse feiginResponse= opayFeignApiService.createOrder(request);
+        log.info("createOrder reuslt:{}", JSON.toJSONString(feiginResponse));
         String result= opayApiResultResponseHandler(feiginResponse,aesKey,iv);
-        log.info("createOrder reuslt:{}", JSON.toJSONString(result));
         OpayApiOrderResultResponse opayApiOrderResult = (OpayApiOrderResultResponse) mapperToClassObject(result, OpayApiOrderResultResponse.class);
         feiginResponse.setData(opayApiOrderResult);
         return feiginResponse;
@@ -36,9 +36,9 @@ public class OpayApiServiceImpl extends AbstractOpayApi implements OpayApiServic
     public OpayApiResultResponse queryUserRecordByUserId(String merchantId, String requestId, Object object, String aesKey, String iv) throws Exception {
         log.debug("queryUserRecordByUserId param:{}", JSON.toJSONString(object));
         OpayApiRequest request =getOpayApiRequest(merchantId,requestId,object,aesKey,iv);
-        OpayApiResultResponse feiginResponse= opayFeignApiService.queryUserRecordByUserId(request);
+        OpayApiResultResponse feiginResponse= null;//opayFeignApiService.queryUserRecordByUserId(request);
+        log.debug("queryUserRecordByUserId reuslt:{}", JSON.toJSONString(feiginResponse));
         String result= opayApiResultResponseHandler(feiginResponse,aesKey,iv);
-        log.debug("queryUserRecordByUserId reuslt:{}", JSON.toJSONString(result));
         OpayApiUserOrderResponse opayApiOrderResult = (OpayApiUserOrderResponse) mapperToClassObject(result, OpayApiUserOrderResponse.class);
         feiginResponse.setData(opayApiOrderResult);
         return feiginResponse;

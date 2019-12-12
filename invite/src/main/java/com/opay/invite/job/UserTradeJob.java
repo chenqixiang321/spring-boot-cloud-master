@@ -64,9 +64,9 @@ public class UserTradeJob extends OpayJob {
             }
             try {
                 List<OpayApiUserOrder> userOrderList = new ArrayList<>();
-                int subStart = 0;
+                int subStart = 1;
                 while (true) {
-                    OpayApiResultResponse resultResponse = userTradeService.getUserTradeList(list, subStart, SUB_PAGE_SIZE, startTime, endTime, ServiceType.Airtime.getServiceType());
+                    OpayApiResultResponse resultResponse = userTradeService.getUserTradeList(list, subStart, SUB_PAGE_SIZE,endTime,startTime, ServiceType.Airtime.getServiceType());
                     OpayApiUserOrderResponse opayApiUserOrderResponse = (OpayApiUserOrderResponse) resultResponse.getData();
                     if(opayApiUserOrderResponse.getRecords().isEmpty()){
                         log.warn("resultResponse data empty,task finish day:{}",day);
@@ -77,7 +77,7 @@ public class UserTradeJob extends OpayJob {
                         log.warn("resultResponse data pageSize,task finish day:{}",day);
                         break;
                     }
-                    subStart += SUB_PAGE_SIZE;
+                    subStart += 1;
                 }
                 List<OpayUserOrder> userOrders = new ArrayList<>();
                 Date nowTime= new Date();

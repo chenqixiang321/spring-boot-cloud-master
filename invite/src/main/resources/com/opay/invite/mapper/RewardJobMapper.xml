@@ -59,8 +59,8 @@
        select a.id, a.master_id, a.pupil_id,pupil_phone,a.master_phone,a.create_at,a.master_parent_id,a.mark_type
         from opay_invite_relation a
         left join opay_user_task b on a.pupil_id=b.opay_id and b.day=#{day} and b.type=#{type}
-        where b.id is null
-        order by id asc
+        where a.mark_type=1 and b.id is null
+        order by a.id asc
         limit #{start},#{pageSize}
     </select>
     <update id="updateOpayUserOrder" parameterType="java.util.List">

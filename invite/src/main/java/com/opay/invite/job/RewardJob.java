@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Slf4j
 public class RewardJob extends OpayJob {
-    private static final int PAGE_SIZE = 2000;
+    private static final int PAGE_SIZE = 1000;
 
     @Autowired
     private RewardJobService rewardJobService;
@@ -33,7 +33,6 @@ public class RewardJob extends OpayJob {
 
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext) {
-
         DataQuery dataQuery = getDataQuery(jobExecutionContext);
         String preDay = dataQuery.getDay();
         String startTime=dataQuery.getFormatDay()+" 00:00:00";

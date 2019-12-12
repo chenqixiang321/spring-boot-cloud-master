@@ -31,7 +31,7 @@ public class UserTradeService {
 
     public OpayApiResultResponse getUserTradeList(
             List<OpayInviteRelation> list, int subStart, int subPageSize,
-            String serviceType,String startTime,String endTime) throws Exception {
+            String endTime,String startTime,String serviceType) throws Exception {
         long mills = System.currentTimeMillis();
         OpayApiUserRecordRequest request = new OpayApiUserRecordRequest();
         request.setPageNo(String.valueOf(subStart));
@@ -54,7 +54,6 @@ public class UserTradeService {
 
     @Transactional(rollbackFor = Exception.class)
     public void saveUserOrder(List<OpayUserOrder> userOrders, List<OpayInviteRelation> list,int day,int type) {
-        rewardJobMapper.saveOpayUserOrder(userOrders);
         List<OpayUserTask> userTasks = new ArrayList<>();
         for(OpayInviteRelation re:list){
             OpayUserTask userTask = new OpayUserTask();
@@ -64,5 +63,10 @@ public class UserTradeService {
             userTasks.add(userTask);
         }
         rewardJobMapper.saveUserTask(userTasks);
+
+        if(userOrders==null || userOrders.size()==0){
+            return ;
+        }
+        rewardJobMapper.saveOpayUserOrder(userOrders);
     }
 }
