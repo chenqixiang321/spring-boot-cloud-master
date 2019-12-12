@@ -24,4 +24,12 @@ public class LuaConfiguration {
         redisScript.setResultType(PrizePoolResponse.class);
         return redisScript;
     }
+
+    @Bean(name = "incrKey")
+    public DefaultRedisScript<Long> incrKey() {
+        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
+        redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua_script/increment_key.lua")));
+        redisScript.setResultType(Long.class);
+        return redisScript;
+    }
 }

@@ -1,6 +1,7 @@
 package com.opay.invite.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.opay.invite.config.OpayConfig;
 import com.opay.invite.config.PrizePoolConfig;
 import com.opay.invite.exception.InviteException;
 import com.opay.invite.mapper.LuckDrawInfoMapper;
@@ -8,9 +9,16 @@ import com.opay.invite.model.LuckDrawInfoModel;
 import com.opay.invite.model.PrizeModel;
 import com.opay.invite.model.response.LuckDrawInfoResponse;
 import com.opay.invite.model.response.LuckDrawListResponse;
+import com.opay.invite.model.response.OpayApiResultResponse;
 import com.opay.invite.model.response.PrizePoolResponse;
 import com.opay.invite.service.AliasMethodService;
+import com.opay.invite.service.IncrKeyService;
 import com.opay.invite.service.LuckDrawInfoService;
+import com.opay.invite.service.OpayApiService;
+import com.opay.invite.service.RpcService;
+import com.opay.invite.transferconfig.OrderType;
+import com.opay.invite.transferconfig.PayChannel;
+import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.DateFormatter;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.BeanUtils;
@@ -20,6 +28,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -27,6 +36,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
@@ -37,14 +47,22 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
     private AliasMethodService aliasMethodService;
     @Resource(name = "inviteShareCountDec")
     private DefaultRedisScript<PrizePoolResponse> inviteShareCountDec;
+    @Value("${spring.jackson.time-zone}")
+    private String timeZone;
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
     private PrizePoolConfig prizePoolConfig;
-    @Value("${prize-pool.grandPrizeIndex}")
-    private int grandPrizeIndex;
-    @Value("${prize-pool.secondPoolRate}")
-    private int secondPoolRate;
+    @Autowired
+    private OpayConfig opayConfig;
+    @Autowired
+    private OpayApiService opayApiService;
+    @Autowired
+    private IncrKeyService incrKeyService;
+    @Autowired
+    private RpcService rpcService;
+    @Value("${transfer.opay.transferNotify}")
+    private String transferNotify;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -106,15 +124,29 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public LuckDrawInfoResponse getLuckDraw(String opayId, String opayName, String opayPhone) throws Exception {
         int firstPrizePoolIndex = aliasMethodService.firstPoolAliasMethod();
         int secondPrizePoolIndex = aliasMethodService.secondPoolAliasMethod();
         LuckDrawInfoResponse luckDrawInfoResponse = new LuckDrawInfoResponse();
         List<String> keys = Arrays.asList(opayId);
-        boolean grandPrizeTimeUp = true;
-        PrizePoolResponse prizePoolResponse = (PrizePoolResponse) redisTemplate.execute(inviteShareCountDec, keys, firstPrizePoolIndex, secondPrizePoolIndex, grandPrizeIndex, grandPrizeTimeUp, secondPoolRate);
-        LuckDrawInfoModel luckDrawInfoModel = new LuckDrawInfoModel();
         Date date = new Date();
+        prizePoolConfig.getFirstGrandPrizeTimeUp();
+        String ymd = DateFormatter.formatDateByZone(date, timeZone);
+        long now = DateFormatter.parseYMDHMSDate(DateFormatter.formatDatetimeByZone(date, timeZone)).getTime();
+        long secondLong = DateFormatter.parseYMDHMSDate(ymd + " " + prizePoolConfig.getSecondGrandPrizeTimeUp()).getTime();
+        boolean grandPrizeTimeUp = false;
+        if (now > secondLong) {
+            grandPrizeTimeUp = true;
+        } else {
+            long firstLong = DateFormatter.parseYMDHMSDate(ymd + " " + prizePoolConfig.getFirstGrandPrizeTimeUp()).getTime();
+            if (now > firstLong) {
+                grandPrizeTimeUp = true;
+            }
+        }
+        PrizePoolResponse prizePoolResponse = (PrizePoolResponse) redisTemplate.execute(inviteShareCountDec, keys, firstPrizePoolIndex, secondPrizePoolIndex, prizePoolConfig.getGrandPrizeIndex(), grandPrizeTimeUp, prizePoolConfig.getSecondPoolRate());
+        LuckDrawInfoModel luckDrawInfoModel = new LuckDrawInfoModel();
+
         if ("success".equals(prizePoolResponse.getMessage()) && prizePoolResponse.getPrize() != null) {
             luckDrawInfoModel.setCreateTime(date);
             luckDrawInfoModel.setOpayId(opayId);
@@ -126,11 +158,22 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             }
             String prize = prizes.get(prizePoolResponse.getPrize()).getPrize();
             if (!"0".equals(prize)) {
+                String requestId = incrKeyService.getIncrKey();
+                String reference = incrKeyService.getIncrKey();
                 luckDrawInfoModel.setPrizeLevel(prizePoolResponse.getPrize());
                 luckDrawInfoModel.setPrize(prize);
                 luckDrawInfoModel.setPrizePool(prizePoolResponse.getPool());
+                luckDrawInfoModel.setRequestId(requestId);
+                luckDrawInfoModel.setReference(reference);
                 luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
                 luckDrawInfoResponse.setPrize(luckDrawInfoModel.getPrize());
+                if (CommonUtil.isInteger(prize)) {
+                    Map<String, String> data = rpcService.getParamMap(opayConfig.getMerchantId(), opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), transferNotify, PayChannel.BalancePayment.getPayChannel());
+                    OpayApiResultResponse opayApiResultResponse = opayApiService.createOrder(opayConfig.getMerchantId(), requestId, data, opayConfig.getAesKey(), opayConfig.getIv());
+                    if (!"00000".equals(opayApiResultResponse.getCode())) {
+                        throw new InviteException(opayApiResultResponse.getMessage());
+                    }
+                }
             }
         } else {
             throw new InviteException(prizePoolResponse.getMessage());

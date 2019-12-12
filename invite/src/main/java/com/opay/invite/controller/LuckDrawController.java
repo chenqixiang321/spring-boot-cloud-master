@@ -13,6 +13,7 @@ import com.opay.invite.model.response.SuccessResponse;
 import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.LuckDrawInfoService;
+import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.DateFormatter;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -100,24 +101,19 @@ public class LuckDrawController {
         for (int i = 0; i < firstPollSize; i++) {
             String prize = firstPool.get(i).getPrize();
             if (!"0".equals(prize)) {
-                prizeInfo.put(prize, isInteger(prize) ? "₦" + prize : prize);
+                prizeInfo.put(prize, CommonUtil.isInteger(prize) ? "₦" + prize : prize);
             }
 
         }
         for (int i = 0; i < secondPollSize; i++) {
             String prize = secondPool.get(i).getPrize();
             if (!"0".equals(prize)) {
-                prizeInfo.put(prize, isInteger(prize) ? "₦" + prize : prize);
+                prizeInfo.put(prize, CommonUtil.isInteger(prize) ? "₦" + prize : prize);
             }
         }
         luckDrawResponse.setPrizeInfo(prizeInfo);
         resultResponse.setData(luckDrawResponse);
         return resultResponse;
-    }
-
-    private boolean isInteger(String str) {
-        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-        return pattern.matcher(str).matches();
     }
 
     @ApiOperation(value = "获取抽奖次数信息", notes = "获取抽奖次数信息")
@@ -158,7 +154,7 @@ public class LuckDrawController {
     }
 
     @ApiOperation(value = "我的中奖列表", notes = "我的中奖列表")
-    @GetMapping("/mylist")
+    @PostMapping("/mylist")
     public ResultResponse<List<LuckDrawListResponse>> getMyLuckDrawList(HttpServletRequest request, @RequestBody @ApiParam(name = "我的中奖列表请求参数", value = "传入json格式", required = true) MyLuckDrawListRequest myLuckDrawListRequest) throws Exception {
         LoginUser user = inviteOperateService.getOpayInfo(request);
         ResultResponse resultResponse = new ResultResponse();

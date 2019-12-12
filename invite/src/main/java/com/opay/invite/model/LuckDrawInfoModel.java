@@ -2,7 +2,9 @@ package com.opay.invite.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,4 +58,8 @@ public class LuckDrawInfoModel {
      */
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
+    @ApiModelProperty(value = "requestId", hidden = true)
+    private String requestId;
+    @ApiModelProperty(value = "reference", hidden = true)
+    private String reference;
 }

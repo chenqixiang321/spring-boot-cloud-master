@@ -14,6 +14,10 @@ import java.util.List;
 @Setter
 @Getter
 public class PrizePoolConfig {
+    private int grandPrizeIndex;
+    private int secondPoolRate;
+    private String firstGrandPrizeTimeUp;
+    private String secondGrandPrizeTimeUp;
     private List<PrizeModel> firstPool = new ArrayList<>();
     private List<PrizeModel> secondPool = new ArrayList<>();
 }

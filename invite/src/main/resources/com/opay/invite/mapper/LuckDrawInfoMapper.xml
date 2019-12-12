@@ -67,6 +67,12 @@
             <if test="createTime != null">
                 create_time,
             </if>
+            <if test="reference != null">
+                reference,
+            </if>
+            <if test="requestId != null">
+                requestId,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -92,6 +98,12 @@
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="reference != null">
+                #{reference,jdbcType=VARCHAR},
+            </if>
+            <if test="requestId != null">
+                #{requestId,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>

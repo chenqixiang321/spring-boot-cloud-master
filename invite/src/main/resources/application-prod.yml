@@ -180,8 +180,8 @@ prometheus:
 
 prize-pool:
   grandPrizeIndex: 2000 #还剩n次时,开出大奖
-  firstGrandPrizeTimeUp: 13:00:00
-  secondGrandPrizeTimeUp: 21:00:00
+  firstGrandPrizeTimeUp: "13:00:00"
+  secondGrandPrizeTimeUp: "21:00:00"
   secondPoolRate: 3
   count: 10000
   firstPoolStart: 12
