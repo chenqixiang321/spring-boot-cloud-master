@@ -135,6 +135,6 @@
     <select id="selectLuckDrawInfoList" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from luck_draw_info where prize_level =0 and prize_pool =2
+        from luck_draw_info where create_time between #{beginTime} and #{endTime} and prize in ("phone","100","50","10") order by prize_level asc limit 10
     </select>
 </mapper>

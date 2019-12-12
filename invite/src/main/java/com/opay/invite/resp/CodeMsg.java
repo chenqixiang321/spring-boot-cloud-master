@@ -26,6 +26,8 @@ public class CodeMsg {
 
     public static final CodeMsg ILLEGAL_CODE_ACTIVE = new CodeMsg(1014, "Activity ended");
 
+
+    public static final CodeMsg LUCKY_DRAW_NOT_START_CODE = new CodeMsg(2001, "The lucky draw has not yet started");
     private int code;
     private String message;
 

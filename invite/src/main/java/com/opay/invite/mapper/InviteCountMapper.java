@@ -17,5 +17,5 @@ public interface InviteCountMapper {
 
     int updateByPrimaryKey(InviteCountModel record);
 
-    InviteCountModel selectByOpayId(String opayId);
+    InviteCountModel selectByOpayId(String opayId, String day);
 }

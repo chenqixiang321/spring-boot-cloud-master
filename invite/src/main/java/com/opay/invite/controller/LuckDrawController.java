@@ -1,19 +1,36 @@
 package com.opay.invite.controller;
 
+import com.opay.invite.config.PrizePoolConfig;
+import com.opay.invite.model.LoginUser;
+import com.opay.invite.model.PrizeModel;
+import com.opay.invite.model.response.LuckDrawCountResponse;
 import com.opay.invite.model.response.LuckDrawInfoResponse;
+import com.opay.invite.model.response.LuckDrawListResponse;
 import com.opay.invite.model.response.LuckDrawResponse;
 import com.opay.invite.model.response.ResultResponse;
 import com.opay.invite.model.response.SuccessResponse;
+import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.LuckDrawInfoService;
+import com.opay.invite.utils.DateFormatter;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping(value = "/luckDraw")
@@ -24,18 +41,112 @@ public class LuckDrawController {
     private LuckDrawInfoService luckDrawInfoService;
     @Autowired
     private com.opay.invite.service.InviteCountService InviteCountService;
+    @Value("${spring.jackson.time-zone}")
+    private String timeZone;
+    @Value("${prize-pool.firstPoolStart}")
+    private int firstPoolStart;
+    @Value("${prize-pool.firstPoolEnd}")
+    private int firstPoolEnd;
+    @Value("${prize-pool.secondPoolStart}")
+    private int secondPoolStart;
+    @Value("${prize-pool.secondPoolEnd}")
+    private int secondPoolEnd;
+    @Autowired
+    private PrizePoolConfig prizePoolConfig;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private InviteOperateService inviteOperateService;
+    private SimpleDateFormat format = new SimpleDateFormat("HH");
 
     @ApiOperation(value = "获取抽奖信息", notes = "获取抽奖信息")
     @GetMapping("/info")
-    public ResultResponse getLuckDrawInfo() {
+    public ResultResponse<LuckDrawResponse> getLuckDrawInfo() {
         ResultResponse resultResponse = new ResultResponse();
-        resultResponse.setData(new LuckDrawResponse());
+        LuckDrawResponse luckDrawResponse = new LuckDrawResponse();
+        format.setTimeZone(TimeZone.getTimeZone(timeZone));
+        int hour = Integer.parseInt(format.format(new Date()));
+        Date date = new Date();
+        if (hour >= firstPoolStart && hour < firstPoolEnd) {
+            luckDrawResponse.setCanLuckyDraw(true);
+            luckDrawResponse.setCurrentStartTime(DateFormatter.formatDateByZone(date, timeZone) + " " + firstPoolStart + ":00:00");
+            luckDrawResponse.setCurrentEndTime(DateFormatter.formatDateByZone(date, timeZone) + " " + firstPoolEnd + ":00:00");
+        } else if (hour >= secondPoolStart && hour < secondPoolEnd) {
+            luckDrawResponse.setCanLuckyDraw(true);
+            luckDrawResponse.setCurrentStartTime(DateFormatter.formatDateByZone(date, timeZone) + " " + secondPoolStart + ":00:00");
+            luckDrawResponse.setCurrentEndTime(DateFormatter.formatDateByZone(date, timeZone) + " " + secondPoolEnd + ":00:00");
+        } else {
+            luckDrawResponse.setCanLuckyDraw(false);
+            if (hour < firstPoolStart) {
+                luckDrawResponse.setNextStartTime(DateFormatter.formatDateByZone(date, timeZone) + " " + firstPoolStart + ":00:00");
+                luckDrawResponse.setNextEndTime(DateFormatter.formatDateByZone(date, timeZone) + " " + firstPoolEnd + ":00:00");
+            } else if (hour >= secondPoolEnd) {
+                Date afterDate = DateFormatter.getDateAfter(date, 1);
+                luckDrawResponse.setNextStartTime(DateFormatter.formatDateByZone(afterDate, timeZone) + " " + firstPoolStart + ":00:00");
+                luckDrawResponse.setNextEndTime(DateFormatter.formatDateByZone(afterDate, timeZone) + " " + firstPoolEnd + ":00:00");
+            }
+        }
+        luckDrawResponse.setSystemTime(DateFormatter.formatDatetimeByZone(date, timeZone));
+        Map<String, String> prizeInfo = new HashMap<>();
+        List<PrizeModel> firstPool = prizePoolConfig.getFirstPool();
+        List<PrizeModel> secondPool = prizePoolConfig.getSecondPool();
+        int firstPollSize = firstPool.size();
+        int secondPollSize = secondPool.size();
+        for (int i = 0; i < firstPollSize; i++) {
+            String prize = firstPool.get(i).getPrize();
+            if (!"0".equals(prize)) {
+                prizeInfo.put(prize, isInteger(prize) ? "₦" + prize : prize);
+            }
+
+        }
+        for (int i = 0; i < secondPollSize; i++) {
+            String prize = secondPool.get(i).getPrize();
+            if (!"0".equals(prize)) {
+                prizeInfo.put(prize, isInteger(prize) ? "₦" + prize : prize);
+            }
+        }
+        luckDrawResponse.setPrizeInfo(prizeInfo);
+        resultResponse.setData(luckDrawResponse);
+        return resultResponse;
+    }
+
+    private boolean isInteger(String str) {
+        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+        return pattern.matcher(str).matches();
+    }
+
+    @ApiOperation(value = "获取抽奖次数信息", notes = "获取抽奖次数信息")
+    @GetMapping("/count")
+    public ResultResponse<LuckDrawCountResponse> getLuckDrawCount(HttpServletRequest request) throws Exception {
+        LoginUser user = inviteOperateService.getOpayInfo(request);
+        ResultResponse resultResponse = new ResultResponse();
+        LuckDrawCountResponse luckDrawCountResponse = new LuckDrawCountResponse();
+        Object activityCount = redisTemplate.opsForValue().get("prize_pool:count");
+        if (activityCount == null) {
+            luckDrawCountResponse.setActivityCount(0);
+        } else {
+            luckDrawCountResponse.setActivityCount(Integer.parseInt(activityCount.toString()));
+        }
+        Object inviteCount = redisTemplate.opsForValue().get("invite_count:" + user.getOpayId());
+        Object shareCount = redisTemplate.opsForHash().get("invite_share_count:" + user.getOpayId(), "share_current");
+        int inviteCt = 0;
+        int shareCt;
+        if (inviteCount != null) {
+            inviteCt = Integer.parseInt(inviteCount.toString());
+        }
+        if (shareCount != null) {
+            shareCt = Integer.parseInt(shareCount.toString());
+        } else {
+            shareCt = 1;
+        }
+        luckDrawCountResponse.setUserCount(inviteCt + shareCt);
+        resultResponse.setData(luckDrawCountResponse);
         return resultResponse;
     }
 
     @ApiOperation(value = "获取中奖者信息", notes = "获取中奖者信息")
     @GetMapping("/list")
-    public ResultResponse<List<LuckDrawInfoResponse>> getLuckDrawList() throws Exception {
+    public ResultResponse<List<LuckDrawListResponse>> getLuckDrawList() throws Exception {
         ResultResponse resultResponse = new ResultResponse();
         resultResponse.setData(luckDrawInfoService.selectLuckDrawInfoList());
         return resultResponse;
@@ -43,21 +154,31 @@ public class LuckDrawController {
 
     @ApiOperation(value = "分享次数+1", notes = "分享次数+1")
     @PostMapping("/share")
-    public SuccessResponse updateShareCount() throws Exception {
-        boolean t = InviteCountService.updateShareCount("1", "1", "1");
+    public SuccessResponse updateShareCount(HttpServletRequest request) throws Exception {
+        LoginUser user = inviteOperateService.getOpayInfo(request);
+        InviteCountService.updateShareCount(user.getOpayId(), user.getFirstName(), user.getPhoneNumber());
         return new SuccessResponse();
     }
 
     @ApiOperation(value = "邀请次数+5", notes = "邀请次数+5")
     @PostMapping("/invite")
-    public SuccessResponse updateInviteCount() throws Exception {
-        boolean t = InviteCountService.updateInviteCount("1", "1", "1");
+    public SuccessResponse updateInviteCount(HttpServletRequest request) throws Exception {
+        LoginUser user = inviteOperateService.getOpayInfo(request);
+        InviteCountService.updateInviteCount(user.getOpayId(), user.getFirstName(), user.getPhoneNumber());
         return new SuccessResponse();
     }
 
     @ApiOperation(value = "抽奖", notes = "抽奖")
     @GetMapping
-    public LuckDrawInfoResponse luckDraw() throws Exception {
-        return luckDrawInfoService.getLuckDraw("1", "1", "1");
+    public ResultResponse<LuckDrawInfoResponse> luckDraw(HttpServletRequest request) throws Exception {
+        LoginUser user = inviteOperateService.getOpayInfo(request);
+        return new ResultResponse(luckDrawInfoService.getLuckDraw(user.getOpayId(), user.getFirstName(), user.getPhoneNumber()));
+//        format.setTimeZone(TimeZone.getTimeZone(timeZone));
+//        int hour = Integer.parseInt(format.format(new Date()));
+//        if ((hour >= firstPoolStart && hour < firstPoolEnd) || (hour >= secondPoolStart && hour < secondPoolEnd)) {
+//            return new ResultResponse(luckDrawInfoService.getLuckDraw("1", "1", "1"));
+//        } else {
+//            return new ResultResponse(CodeMsg.LUCKY_DRAW_NOT_START_CODE.getCode(), CodeMsg.LUCKY_DRAW_NOT_START_CODE.getMessage());
+//        }
     }
 }

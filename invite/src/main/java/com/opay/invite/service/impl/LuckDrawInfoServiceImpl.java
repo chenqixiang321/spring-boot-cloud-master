@@ -1,13 +1,17 @@
 package com.opay.invite.service.impl;
 
 import com.opay.invite.config.PrizePoolConfig;
+import com.opay.invite.exception.InviteException;
 import com.opay.invite.mapper.LuckDrawInfoMapper;
 import com.opay.invite.model.LuckDrawInfoModel;
 import com.opay.invite.model.PrizeModel;
 import com.opay.invite.model.response.LuckDrawInfoResponse;
+import com.opay.invite.model.response.LuckDrawListResponse;
 import com.opay.invite.model.response.PrizePoolResponse;
 import com.opay.invite.service.AliasMethodService;
 import com.opay.invite.service.LuckDrawInfoService;
+import com.opay.invite.utils.DateFormatter;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -71,13 +76,14 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
     }
 
     @Override
-    @Cacheable(value = "luckDrawInfoList", unless = "#result == null")
-    public List<LuckDrawInfoResponse> selectLuckDrawInfoList() throws Exception {
-        List<LuckDrawInfoResponse> luckDrawInfoResponseList = new ArrayList<>();
-        List<LuckDrawInfoModel> luckDrawInfoModelList = luckDrawInfoMapper.selectLuckDrawInfoList();
-        LuckDrawInfoResponse luckDrawInfoResponse = null;
+    @Cacheable(value = "luckDrawInfoList@600", unless = "#result == null")
+    public List<LuckDrawListResponse> selectLuckDrawInfoList() throws Exception {
+        List<LuckDrawListResponse> luckDrawInfoResponseList = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        List<LuckDrawInfoModel> luckDrawInfoModelList = luckDrawInfoMapper.selectLuckDrawInfoList(DateFormatter.getStartTime(calendar), DateFormatter.getEndTime(calendar));
+        LuckDrawListResponse luckDrawInfoResponse = null;
         for (LuckDrawInfoModel luckDrawInfoModel : luckDrawInfoModelList) {
-            luckDrawInfoResponse = new LuckDrawInfoResponse();
+            luckDrawInfoResponse = new LuckDrawListResponse();
             BeanUtils.copyProperties(luckDrawInfoModel, luckDrawInfoResponse);
             luckDrawInfoResponseList.add(luckDrawInfoResponse);
         }
@@ -86,15 +92,15 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
 
     @Override
     public LuckDrawInfoResponse getLuckDraw(String opayId, String opayName, String opayPhone) throws Exception {
-        String prizePool = "prize_pool:first:";
         int firstPrizePoolIndex = aliasMethodService.firstPoolAliasMethod();
         int secondPrizePoolIndex = aliasMethodService.secondPoolAliasMethod();
+        LuckDrawInfoResponse luckDrawInfoResponse = new LuckDrawInfoResponse();
         List<String> keys = Arrays.asList(opayId);
-        PrizePoolResponse prizePoolResponse = (PrizePoolResponse) redisTemplate.execute(inviteShareCountDec, keys, firstPrizePoolIndex, secondPrizePoolIndex, grandPrizeIndex, secondPoolRate);
+        boolean grandPrizeTimeUp = true;
+        PrizePoolResponse prizePoolResponse = (PrizePoolResponse) redisTemplate.execute(inviteShareCountDec, keys, firstPrizePoolIndex, secondPrizePoolIndex, grandPrizeIndex, grandPrizeTimeUp, secondPoolRate);
         LuckDrawInfoModel luckDrawInfoModel = new LuckDrawInfoModel();
         Date date = new Date();
-        LuckDrawInfoResponse luckDrawInfoResponse = new LuckDrawInfoResponse();
-        if ("success".equals(prizePoolResponse.getMessage())) {
+        if ("success".equals(prizePoolResponse.getMessage()) && prizePoolResponse.getPrize() != null) {
             luckDrawInfoModel.setCreateTime(date);
             luckDrawInfoModel.setOpayId(opayId);
             luckDrawInfoModel.setOpayName(opayName);
@@ -103,31 +109,19 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             if (prizePoolResponse.getPool() == 2) {
                 prizes = prizePoolConfig.getSecondPool();
             }
-            if (prizePoolResponse.getPrize() != null) {
+            String prize = prizes.get(prizePoolResponse.getPrize()).getPrize();
+            if (!"0".equals(prize)) {
                 luckDrawInfoModel.setPrizeLevel(prizePoolResponse.getPrize());
-                luckDrawInfoModel.setPrize(prizes.get(prizePoolResponse.getPrize()).getPrize());
-            } else {
-                int index;
-                String prize;
-                if (prizePoolResponse.getPool() == 1) {
-                    index = prizePoolConfig.getFirstPool().size() - 1;
-                    prize = prizePoolConfig.getFirstPool().get(index).getPrize();
-                } else {
-                    index = prizePoolConfig.getSecondPool().size() - 1;
-                    prize = prizePoolConfig.getSecondPool().get(index).getPrize();
-                }
-                luckDrawInfoModel.setPrizeLevel(index);
                 luckDrawInfoModel.setPrize(prize);
+                luckDrawInfoModel.setPrizePool(prizePoolResponse.getPool());
+                luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
+                luckDrawInfoResponse.setPrize(luckDrawInfoModel.getPrize());
             }
-            luckDrawInfoModel.setPrizePool(prizePoolResponse.getPool());
-            luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
-            luckDrawInfoResponse.setPrize(luckDrawInfoModel.getPrize());
-            luckDrawInfoResponse.setId(luckDrawInfoModel.getId());
-            luckDrawInfoResponse.setOpayId(luckDrawInfoModel.getOpayId());
-            luckDrawInfoResponse.setOpayName(luckDrawInfoModel.getOpayName());
         } else {
-            throw new Exception(prizePoolResponse.getMessage());
+            throw new InviteException(prizePoolResponse.getMessage());
         }
+        luckDrawInfoResponse.setActivityCount(prizePoolResponse.getActivityCount());
+        luckDrawInfoResponse.setUserCount(prizePoolResponse.getUserCount());
         return luckDrawInfoResponse;
     }
 

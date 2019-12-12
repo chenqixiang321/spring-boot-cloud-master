@@ -33,7 +33,7 @@ public class AESUtil {
             throw new Exception("encrypt key can't null or empty");
         }
 
-        log.info("AESUtil key:{}, data:{}", key, data);
+        log.debug("AESUtil key:{}, data:{}", key, data);
 
         SecretKeySpec skeySpec = getKey(key);
         Cipher cipher = Cipher.getInstance(PADDING);
@@ -43,7 +43,7 @@ public class AESUtil {
 
         String result = Base64Utils.encodeToString(encrypted);
 
-        log.info("AESUtil key:{}, data:{}, result:{}", key, data, result);
+        log.debug("AESUtil key:{}, data:{}, result:{}", key, data, result);
         return result;
     }
 
@@ -65,7 +65,7 @@ public class AESUtil {
             throw new Exception("decrypt key can't null or empty");
         }
 
-        log.info("AESUtil decrypt data:{}, key:{}", data, key);
+        log.debug("AESUtil decrypt data:{}, key:{}", data, key);
         SecretKeySpec skeySpec = getKey(key);
         Cipher cipher = Cipher.getInstance(PADDING);
         IvParameterSpec iv = new IvParameterSpec(ivStr.getBytes());
@@ -75,7 +75,7 @@ public class AESUtil {
         byte[] original = cipher.doFinal(encrypted);
         String originalString = new String(original, "utf-8");
 
-        log.info("AESUtil decrypt data:{}, key:{}, result:{}", data, key, originalString);
+        log.debug("AESUtil decrypt data:{}, key:{}, result:{}", data, key, originalString);
         return originalString;
     }
 

@@ -25,6 +25,8 @@ public class InviteCountModel {
     @ApiModelProperty(value="发送者的opay_id")
     private String opayId;
 
+    @ApiModelProperty(value="日期")
+    private String day;
     /**
     * 发送者的opay名字
     */

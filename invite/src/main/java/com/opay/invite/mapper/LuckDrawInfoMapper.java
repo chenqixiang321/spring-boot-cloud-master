@@ -2,7 +2,9 @@ package com.opay.invite.mapper;
 
 import com.opay.invite.model.LuckDrawInfoModel;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -19,5 +21,5 @@ public interface LuckDrawInfoMapper {
 
     int updateByPrimaryKey(LuckDrawInfoModel record);
 
-    List<LuckDrawInfoModel> selectLuckDrawInfoList();
+    List<LuckDrawInfoModel> selectLuckDrawInfoList(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 }

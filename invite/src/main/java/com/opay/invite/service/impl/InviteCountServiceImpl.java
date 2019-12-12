@@ -1,9 +1,10 @@
 package com.opay.invite.service.impl;
 
-import com.opay.invite.config.PrizePoolConfig;
+import com.opay.invite.exception.InviteException;
 import com.opay.invite.mapper.InviteCountMapper;
 import com.opay.invite.model.InviteCountModel;
 import com.opay.invite.service.InviteCountService;
+import com.opay.invite.utils.DateFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Service
 public class InviteCountServiceImpl implements InviteCountService {
@@ -28,9 +30,11 @@ public class InviteCountServiceImpl implements InviteCountService {
     @Value("${upperLimit.invite:100}")
     private int inviteUpperLimit;
     @Value("${upperLimit.share:3}")
-    private int shareUpperLimit;
+    private int shareUpperLimit;//每天分享上线(包括1次登陆)
     @Resource(name = "inviteShareCountInc")
     private DefaultRedisScript<Boolean> inviteShareCountInc;
+    @Value("${spring.jackson.time-zone}")
+    private String timeZone;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -68,7 +72,8 @@ public class InviteCountServiceImpl implements InviteCountService {
         List<String> keys = Arrays.asList(opayId, "invite");
         Boolean execute = (Boolean) redisTemplate.execute(inviteShareCountInc, keys, inviteUpperLimit, getSecondsToMidnight(date));
         if (execute) {
-            InviteCountModel inviteCountModel = inviteCountMapper.selectByOpayId(opayId);
+            String day = DateFormatter.formatShortYMDDateByZone(date, timeZone);
+            InviteCountModel inviteCountModel = inviteCountMapper.selectByOpayId(opayId, day);
             if (inviteCountModel == null) {
                 inviteCountModel = new InviteCountModel();
                 inviteCountModel.setOpayId(opayId);
@@ -76,11 +81,16 @@ public class InviteCountServiceImpl implements InviteCountService {
                 inviteCountModel.setOpayName(opayName);
                 inviteCountModel.setOpayPhone(opayPhone);
                 inviteCountModel.setCreateTime(date);
+                inviteCountModel.setDay(day);
                 inviteCountMapper.insertSelective(inviteCountModel);
             } else {
+                inviteCountModel.setOpayName(opayName);
+                inviteCountModel.setOpayPhone(opayPhone);
                 inviteCountModel.setInvite(inviteCountModel.getInvite() + 5);
                 inviteCountMapper.updateByPrimaryKeySelective(inviteCountModel);
             }
+        } else {
+            throw new InviteException("Today's invite limit has been reached");
         }
         return execute;
     }
@@ -91,29 +101,35 @@ public class InviteCountServiceImpl implements InviteCountService {
         List<String> keys = Arrays.asList(opayId, "share");
         Boolean execute = (Boolean) redisTemplate.execute(inviteShareCountInc, keys, shareUpperLimit, getSecondsToMidnight(date));
         if (execute) {
-            InviteCountModel inviteCountModel = inviteCountMapper.selectByOpayId(opayId);
+            String day = DateFormatter.formatShortYMDDateByZone(date, timeZone);
+            InviteCountModel inviteCountModel = inviteCountMapper.selectByOpayId(opayId, day);
             if (inviteCountModel == null) {
                 inviteCountModel = new InviteCountModel();
                 inviteCountModel.setOpayId(opayId);
                 inviteCountModel.setShare(1);
                 inviteCountModel.setOpayName(opayName);
                 inviteCountModel.setOpayPhone(opayPhone);
+                inviteCountModel.setDay(day);
                 inviteCountModel.setCreateTime(date);
                 inviteCountMapper.insertSelective(inviteCountModel);
             } else {
+                inviteCountModel.setOpayName(opayName);
+                inviteCountModel.setOpayPhone(opayPhone);
                 inviteCountModel.setShare(inviteCountModel.getShare() + 1);
                 inviteCountMapper.updateByPrimaryKeySelective(inviteCountModel);
             }
+        } else {
+            throw new InviteException("Today's share limit has been reached");
         }
         return execute;
     }
 
     private long getSecondsToMidnight(Date date) {
         LocalDateTime midnight = LocalDateTime.ofInstant(date.toInstant(),
-                ZoneId.systemDefault()).plusDays(1).withHour(0).withMinute(0)
+                TimeZone.getTimeZone(timeZone).toZoneId()).plusDays(1).withHour(0).withMinute(0)
                 .withSecond(0).withNano(0);
         LocalDateTime currentDateTime = LocalDateTime.ofInstant(date.toInstant(),
-                ZoneId.systemDefault());
+                TimeZone.getTimeZone(timeZone).toZoneId());
         long seconds = ChronoUnit.SECONDS.between(currentDateTime, midnight);
         return seconds;
     }

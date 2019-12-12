@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class LoginUser {
     private String opayId;
-
+    private String firstName;
     private String phoneNumber;
 }

@@ -167,9 +167,18 @@ transfer:
 opay:
   settings:
     jobs:
-      fix-merchant-balance:
-        expression: "*/2 * * * * ?"
+      fix-user-trade:
+        expression: "19 47 10 * * ?"
         jobClass: "com.opay.invite.job.UserTradeJob"
+      fix-user-reward:
+        expression: "05 56 12 * * ?"
+        jobClass: "com.opay.invite.job.RewardJob"
+      first-luck-draw:
+        expression: "0 50 11 * * ?"
+        jobClass: "com.opay.invite.job.InitPrizePoolJob"
+      second-luck-draw:
+        expression: "0 50 19 * * ?"
+        jobClass: "com.opay.invite.job.InitPrizePoolJob"
 
 management:
   endpoints:
@@ -202,9 +211,14 @@ prometheus:
 #    - {prize: 1,prob: 0.27}
 #    - {prize: 0,prob: 0.7}
 prize-pool:
-  grandPrizeIndex: 37
+  grandPrizeIndex: 37 #还剩n次时,开出大奖
+  grandPrizeTimeUp:
   secondPoolRate: 3
   count: 100
+  firstPoolStart: 10
+  firstPoolEnd: 12
+  secondPoolStart: 13
+  secondPoolEnd: 22
   firstPool:
     - {prize: 10,prob: 0.01}
     - {prize: 5,prob: 0.04}
@@ -212,7 +226,7 @@ prize-pool:
     - {prize: 1,prob: 0.20}
     - {prize: 0,prob: 0.70}
   secondPool:
-    - {prize: 100,prob: 0.01}
+    - {prize: phone,prob: 0.01}
     - {prize: 5,prob: 0.04}
     - {prize: 2,prob: 0.05}
     - {prize: 1,prob: 0.20}

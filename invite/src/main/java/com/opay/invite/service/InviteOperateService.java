@@ -271,12 +271,16 @@ public class InviteOperateService {
     public LoginUser getOpayInfo(HttpServletRequest request){
         LoginUser user = new LoginUser();
         Object opayId = request.getAttribute("opayId");
-        if(opayId !=null){
-            user.setOpayId((String)opayId);
+        if (opayId != null) {
+            user.setOpayId((String) opayId);
         }
         Object phoneNumber = request.getAttribute("phoneNumber");
-        if(phoneNumber !=null){
-            user.setPhoneNumber(mobileHandler((String)phoneNumber));
+        if (phoneNumber != null) {
+            user.setPhoneNumber(mobileHandler((String) phoneNumber));
+        }
+        Object firstName = request.getAttribute("firstName");
+        if (firstName != null) {
+            user.setFirstName((String) firstName);
         }
         return user;
     }

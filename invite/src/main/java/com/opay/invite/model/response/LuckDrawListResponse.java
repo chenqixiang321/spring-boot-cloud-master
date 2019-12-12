@@ -16,13 +16,14 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class LuckDrawInfoResponse {
+public class LuckDrawListResponse {
 
+    @ApiModelProperty(value = "中奖者的opay_id")
+    private String opayId;
+    @ApiModelProperty(value = "中奖者的opay名字")
+    private String opayName;
     @ApiModelProperty(value = "奖品")
     private String prize;
-    @ApiModelProperty(value = "活动剩余抽奖次数")
-    private int activityCount;
-    @ApiModelProperty(value = "用户剩余抽奖次数")
-    private int userCount;
-
+    @ApiModelProperty(value = "中奖时间")
+    private Date createTime;
 }
