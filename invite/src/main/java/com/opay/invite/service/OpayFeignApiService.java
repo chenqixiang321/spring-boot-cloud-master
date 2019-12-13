@@ -19,8 +19,8 @@ public interface OpayFeignApiService {
     @Headers({"ContentType:application/json"})
     OpayApiResultResponse createOrder(@RequestBody OpayApiRequest opayApiRequest);
 
-//    @PostMapping({"/api/im/queryUserRecordByUserId"})
-//    @Headers({"ContentType:application/json"})
-//    OpayApiResultResponse queryUserRecordByUserId(@RequestBody OpayApiRequest opayApiRequest);
+    @PostMapping({"/api/im/queryUserRecordByUserId"})
+    @Headers({"ContentType:application/json"})
+    OpayApiResultResponse queryUserRecordByUserId(@RequestBody OpayApiRequest opayApiRequest);
 
 }
