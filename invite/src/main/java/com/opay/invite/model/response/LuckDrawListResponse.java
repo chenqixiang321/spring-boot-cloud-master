@@ -10,14 +10,15 @@ import lombok.ToString;
 
 import java.util.Date;
 
-@ApiModel(value = "com-opay-invite-model-LuckDrawInfoResponse")
+@ApiModel(value = "com-opay-invite-model-LuckDrawListResponse")
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class LuckDrawListResponse {
-
+    @ApiModelProperty(value = "id")
+    private Long id;
     @ApiModelProperty(value = "中奖者的opay_id")
     private String opayId;
     @ApiModelProperty(value = "中奖者的opay名字")
