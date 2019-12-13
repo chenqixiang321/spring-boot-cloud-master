@@ -72,6 +72,8 @@ public class LuckyMoneyResponse {
     @ApiModelProperty(value="红包个数")
     private Integer quantity;
 
+    @ApiModelProperty(value="ReferenceId")
+    private String reference;
     /**
      * 创建时间
      */

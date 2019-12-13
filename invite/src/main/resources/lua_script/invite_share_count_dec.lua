@@ -28,10 +28,10 @@ if prize_pool_count == false then
     prize_pool_count = 0
 end
 if tonumber(prize_pool_count) <= 0 then
-    return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"Prize pool is empty\",\"activityCount\":0,\"userCount\":" .. share_current_value + invite_current_value .. "}]"
+    return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"Prize pool is empty\",\"activityCount\":0,\"loginCount\":" .. login_current_value .. ",\"shareCount\":"..share_current_value..",\"inviteCount\":"..invite_current_value.."}]"
 else
     if tonumber(share_current_value) <= 0 and tonumber(invite_current_value) <= 0 and tonumber(login_current_value) <= 0 then
-        return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"The number of draws has been exhausted\",\"activityCount\":" .. prize_pool_count .. ",\"userCount\":0}]"
+        return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"The number of draws has been exhausted\",\"activityCount\":" .. prize_pool_count .. ",\"loginCount\":" .. login_current_value .. ",\"shareCount\":"..share_current_value..",\"inviteCount\":"..invite_current_value.."}]"
     else
         local prize_key = first_prize_key
         local luck_draw_count = redis.call("hget", invite_share_count_key, luck_draw_key)

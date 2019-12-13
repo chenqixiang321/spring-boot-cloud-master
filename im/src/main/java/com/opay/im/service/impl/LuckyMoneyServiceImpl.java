@@ -1,6 +1,7 @@
 package com.opay.im.service.impl;
 
 import com.opay.im.exception.ImException;
+import com.opay.im.exception.LuckMoneyLimitException;
 import com.opay.im.mapper.LuckyMoneyRecordMapper;
 import com.opay.im.model.ChatGroupMemberModel;
 import com.opay.im.model.LuckyMoneyRecordModel;
@@ -12,6 +13,7 @@ import com.opay.im.model.response.LuckyMoneyInfoResponse;
 import com.opay.im.model.response.LuckyMoneyRecordInfoResponse;
 import com.opay.im.model.response.LuckyMoneyResponse;
 import com.opay.im.service.ChatGroupMemberService;
+import com.opay.im.service.IncrKeyService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,8 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Service
 public class LuckyMoneyServiceImpl implements LuckyMoneyService {
@@ -44,14 +48,20 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     private DefaultRedisScript<Boolean> sendLuckyMoney;
     @Resource(name = "grabLuckyMoney")
     private DefaultRedisScript<GrabLuckyMoneyResult> grabLuckyMoney;
+    @Value("${im.luckyMoney.singleMax}")
+    private int singleMax;
+    @Value("${im.luckyMoney.dayMax}")
+    private int dayMax;
     @Value("${im.luckyMoney.expirationDays}")
     private int expirationDays;
-    @Value("${im.luckyMoney.max}")
-    private String max;
+    @Value("${spring.jackson.time-zone}")
+    private String timeZone;
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
     private ChatGroupMemberService chatGroupMemberService;
+    @Autowired
+    private IncrKeyService incrKeyService;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -87,12 +97,14 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     @Transactional(rollbackFor = Exception.class)
     public LuckyMoneyResponse sendLuckyMoney(LuckyMoneyRequest luckyMoneyRequest) throws Exception {
         Date date = new Date();
+        String reference = incrKeyService.getIncrKey("LM");
         LuckyMoneyModel luckyMoneyModel = new LuckyMoneyModel();
         BeanUtils.copyProperties(luckyMoneyRequest, luckyMoneyModel);
         luckyMoneyModel.setCreateTime(date);
+        luckyMoneyModel.setReference(reference);
         luckyMoneyMapper.insertSelective(luckyMoneyModel);
         BigDecimal minValue = new BigDecimal(String.valueOf(luckyMoneyRequest.getQuantity() * 0.01));
-        BigDecimal maxValue = new BigDecimal(max);
+        BigDecimal maxValue = new BigDecimal(singleMax);
         if (luckyMoneyRequest.getAmount().compareTo(minValue) == -1) {
             throw new Exception("The amount is too small and must be larger than " + minValue);
         }
@@ -114,13 +126,22 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             amountIds.add(String.valueOf(luckyMoneyRecordModel.getId()));
         }
         List<String> keys = Arrays.asList(String.valueOf(luckyMoneyModel.getId()), String.valueOf(luckyMoneyModel.getTargetType()), luckyMoneyModel.getOpayId(), luckyMoneyModel.getTargetId());
-        Boolean sendLuckyMoneyResult = (Boolean) redisTemplate.execute(sendLuckyMoney, keys, String.join(",", amountIds), String.join(",", amounts), expirationDays * 24 * 3600);
+        Boolean sendLuckyMoneyResult = (Boolean) redisTemplate.execute(sendLuckyMoney, keys, luckyMoneyRequest.getAmount(), String.join(",", amountIds), String.join(",", amounts), dayMax, expirationDays * 24 * 3600, getEndTime());
         if (!sendLuckyMoneyResult) {
-            throw new ImException("create lucky money error");
+            throw new LuckMoneyLimitException("Today's red envelope amount has reached the limit");
         }
         LuckyMoneyResponse luckyMoneyResponse = new LuckyMoneyResponse();
         BeanUtils.copyProperties(luckyMoneyModel, luckyMoneyResponse);
         return luckyMoneyResponse;
+    }
+
+    private Long getEndTime() {
+        Calendar todayEnd = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
+        todayEnd.set(Calendar.HOUR_OF_DAY, 23);
+        todayEnd.set(Calendar.MINUTE, 59);
+        todayEnd.set(Calendar.SECOND, 59);
+        todayEnd.set(Calendar.MILLISECOND, 999);
+        return todayEnd.getTimeInMillis() / 1000;
     }
 
     @Override

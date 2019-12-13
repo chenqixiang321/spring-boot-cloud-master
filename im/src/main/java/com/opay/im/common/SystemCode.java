@@ -8,6 +8,7 @@ public enum SystemCode {
     SYS_ARG_NOT_VALID("00004", "Method Argument Not Valid"),
     IM_ERROR("10001", "Im server error"),
     LUCKY_MONEY_ERROR("20001", "The lucky money has been robbed"),
+    LUCKY_MONEY_LIMIT_ERROR("20002", "Today's red envelope amount has reached the limit"),
     ;
 
 

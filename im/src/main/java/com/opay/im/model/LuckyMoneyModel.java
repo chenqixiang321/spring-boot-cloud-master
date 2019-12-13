@@ -75,6 +75,11 @@ public class LuckyMoneyModel {
     @ApiModelProperty(value="创建时间")
     private Date createTime;
 
+    @ApiModelProperty(value="ReferenceId")
+    private String reference;
+
+    @ApiModelProperty(value="支付状态1:成功 2:失败")
+    private int payStatus;
     /**
     * 版本
     */

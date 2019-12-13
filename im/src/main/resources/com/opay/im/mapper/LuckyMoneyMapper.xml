@@ -78,6 +78,12 @@
       <if test="version != null">
         version,
       </if>
+      <if test="payStatus != null">
+        pay_status,
+      </if>
+      <if test="reference != null">
+        reference,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="opayId != null">
@@ -109,6 +115,12 @@
       </if>
       <if test="version != null">
         #{version,jdbcType=BIGINT},
+      </if>
+      <if test="payStatus != null">
+        #{payStatus,jdbcType=TINYINT},
+      </if>
+      <if test="reference != null">
+        #{reference,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
