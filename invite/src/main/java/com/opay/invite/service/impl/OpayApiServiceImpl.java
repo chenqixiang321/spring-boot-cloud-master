@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Slf4j
 @Service
 public class OpayApiServiceImpl implements OpayApiService {
@@ -51,8 +53,8 @@ public class OpayApiServiceImpl implements OpayApiService {
         log.info("createOrder param:{}", JSON.toJSONString(object));
         OpayApiRequest request =getOpayApiRequest(merchantId,requestId,object,aesKey,iv);
         OpayApiResultResponse feiginResponse= opayFeignApiService.createOrder(request);
-        log.info("createOrder reuslt:{}", JSON.toJSONString(feiginResponse));
         String result= opayApiResultResponseHandler(feiginResponse,aesKey,iv);
+        log.info("createOrder reuslt:{}", JSON.toJSONString(feiginResponse));
         OpayApiOrderResultResponse opayApiOrderResult = (OpayApiOrderResultResponse) mapperToClassObject(result, OpayApiOrderResultResponse.class);
         feiginResponse.setData(opayApiOrderResult);
         return feiginResponse;
@@ -66,6 +68,30 @@ public class OpayApiServiceImpl implements OpayApiService {
         log.debug("queryUserRecordByUserId reuslt:{}", JSON.toJSONString(feiginResponse));
         String result= opayApiResultResponseHandler(feiginResponse,aesKey,iv);
         OpayApiUserOrderResponse opayApiOrderResult = (OpayApiUserOrderResponse) mapperToClassObject(result, OpayApiUserOrderResponse.class);
+        feiginResponse.setData(opayApiOrderResult);
+        return feiginResponse;
+    }
+
+    @Override
+    public OpayApiResultResponse createRedPacket(String merchantId, String requestId, Object object, String aesKey, String iv) throws Exception {
+        log.info("createRedPacket param:{}", JSON.toJSONString(object));
+        OpayApiRequest request =getOpayApiRequest(merchantId,requestId,object,aesKey,iv);
+        OpayApiResultResponse feiginResponse= opayFeignApiService.createRedPacket(request);
+        String result= opayApiResultResponseHandler(feiginResponse,aesKey,iv);
+        Map opayApiOrderResult = (Map) mapperToClassObject(result, Map.class);
+        log.info("createRedPacket reuslt:{}", JSON.toJSONString(feiginResponse));
+        feiginResponse.setData(opayApiOrderResult);
+        return feiginResponse;
+    }
+
+    @Override
+    public OpayApiResultResponse refundRedPacket(String merchantId, String requestId, Object object, String aesKey, String iv) throws Exception {
+        log.info("refundRedPacket param:{}", JSON.toJSONString(object));
+        OpayApiRequest request = getOpayApiRequest(merchantId, requestId, object, aesKey, iv);
+        OpayApiResultResponse feiginResponse = opayFeignApiService.refundRedPacket(request);
+        String result = opayApiResultResponseHandler(feiginResponse, aesKey, iv);
+        log.info("refundRedPacket reuslt:{}", JSON.toJSONString(feiginResponse));
+        Map opayApiOrderResult = (Map) mapperToClassObject(result, Map.class);
         feiginResponse.setData(opayApiOrderResult);
         return feiginResponse;
     }

@@ -23,4 +23,12 @@ public interface OpayFeignApiService {
     @Headers({"ContentType:application/json"})
     OpayApiResultResponse queryUserRecordByUserId(@RequestBody OpayApiRequest opayApiRequest);
 
+    @PostMapping({"/api/im/createRedPacket"})
+    @Headers({"ContentType:application/json"})
+    OpayApiResultResponse createRedPacket(@RequestBody OpayApiRequest opayApiRequest);
+
+    @PostMapping({"/api/im/refundRedPacket"})
+    @Headers({"ContentType:application/json"})
+    OpayApiResultResponse refundRedPacket(@RequestBody OpayApiRequest opayApiRequest);
+
 }
