@@ -157,21 +157,24 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             }
             String prize = prizes.get(prizePoolResponse.getPrize()).getPrize();
             if (!"0".equals(prize)) {
-                String requestId = incrKeyService.getIncrKey();
-                String reference = incrKeyService.getIncrKey();
+
                 luckDrawInfoModel.setPrizeLevel(prizePoolResponse.getPrize());
                 luckDrawInfoModel.setPrize(prize);
                 luckDrawInfoModel.setPrizePool(prizePoolResponse.getPool());
-                luckDrawInfoModel.setRequestId(requestId);
-                luckDrawInfoModel.setReference(reference);
-                luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
                 luckDrawInfoResponse.setPrize(luckDrawInfoModel.getPrize());
                 if (CommonUtil.isInteger(prize)) {
+                    String requestId = incrKeyService.getIncrKey();
+                    String reference = incrKeyService.getIncrKey();
+                    luckDrawInfoModel.setRequestId(requestId);
+                    luckDrawInfoModel.setReference(reference);
                     Map<String, String> data = rpcService.getParamMap(opayConfig.getMerchantId(), opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), transferNotify, PayChannel.BalancePayment.getPayChannel());
                     OpayApiResultResponse opayApiResultResponse = opayApiService.createOrder(opayConfig.getMerchantId(), requestId, data, opayConfig.getAesKey(), opayConfig.getIv());
                     if (!"00000".equals(opayApiResultResponse.getCode())) {
                         throw new InviteException(opayApiResultResponse.getMessage());
                     }
+                    luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
+                }else{
+                    luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
                 }
             }
         } else {

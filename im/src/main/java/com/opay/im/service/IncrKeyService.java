@@ -1,5 +1,8 @@
 package com.opay.im.service;
 
 public interface IncrKeyService {
-    public String getIncrKey();
+
+    String getIncrKey();
+
+    String getIncrKey(String keyPrefix);
 }

@@ -1,7 +1,7 @@
 package com.opay.im.service.impl;
 
-import com.opay.im.model.response.GrabLuckyMoneyResponse;
 import com.opay.im.service.IncrKeyService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -26,9 +26,19 @@ public class IncrKeyServiceImpl implements IncrKeyService {
 
     @Override
     public String getIncrKey() {
+        return getIncrKey(null);
+    }
+
+    @Override
+    public String getIncrKey(String keyPrefix) {
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        String key = sdf.format(date);
+        String key;
+        if (StringUtils.isNotBlank(keyPrefix)) {
+            key = keyPrefix + ":" + sdf.format(date);
+        } else {
+            key = sdf.format(date);
+        }
         List<String> keys = Arrays.asList(key);
         Long incr = (Long) redisTemplate.execute(incrKey, keys, getSecondsToMidnight(date));
         return key + incr;
