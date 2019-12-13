@@ -108,7 +108,7 @@ public class ActivityController {
 
         //计算用户所属阶段
         List<StepReward> stepList = inviteOperateService.getStepList(count);
-        BigDecimal rd = BigDecimal.ZERO;
+        BigDecimal rd = stepList.get(0).getWalletReward();
         for(int i=0;i<stepList.size();i++){
             StepReward stepReward = stepList.get(i);
             if(stepList.size()==1 || (stepReward.getStep()==1 && i==stepList.size()-1)){
@@ -132,15 +132,14 @@ public class ActivityController {
         //邀请人数
         if(count==0){
             activity.setIsFriend(0);
-            StepReward stepReward =stepList.get(0);
-            activity.setFriendText(MsgConst.noFriend+stepReward.getWalletReward());
+            activity.setFriendText(MsgConst.noFriend+rd.toString());
         }else {//有徒弟，并且有对应阶段
             activity.setFriendText(MsgConst.friend+rd.toString());
             activity.setIsFriend(1);
         }
         List<OpayMasterPupilAwardVo> task = inviteService.getTaskByOpayId(user.getOpayId());//获取注册任务和充值任务
         OpayInviteRelation ir = inviteService.selectRelationMasterByMasterId(user.getOpayId());
-        List<OpayMasterPupilAwardVo> noTask =inviteOperateService.getActivityTask(task,ir,isF7,activity.getIsAgent(),user.getPhoneNumber());
+        List<OpayMasterPupilAwardVo> noTask =inviteOperateService.getActivityTask(task,ir,isF7,activity.getIsAgent(),user.getPhoneNumber(),rd);
         activity.setTask(noTask);
         int isStart = inviteOperateService.checkActiveStatusTime(zone,rewardConfig.getStartTime(),rewardConfig.getEndTime());
         activity.setIsStart(isStart);

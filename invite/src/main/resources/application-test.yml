@@ -63,7 +63,7 @@ activity:
     registerReward: 1
     masterReward: 1
     rechargeReward: 2
-    agentOpen: 0
+    agentOpen: 1
     startTime: 2019-11-23 00:00:00
     endTime: 2019-12-18 21:00:00
     effectiveDay: 7

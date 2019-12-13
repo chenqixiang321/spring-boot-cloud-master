@@ -151,7 +151,7 @@ public class InviteOperateService {
         return tmp_stepReward;
     }
 
-    public List<OpayMasterPupilAwardVo> getActivityTask(List<OpayMasterPupilAwardVo> task, OpayInviteRelation ir,int isF7,int isAgent,String phone) throws Exception {
+    public List<OpayMasterPupilAwardVo> getActivityTask(List<OpayMasterPupilAwardVo> task, OpayInviteRelation ir,int isF7,int isAgent,String phone,BigDecimal stepRd) throws Exception {
         List<OpayMasterPupilAwardVo> list = new ArrayList<>();
         if (task == null || task.size() == 0) {
             task = new ArrayList<>();
@@ -176,19 +176,6 @@ public class InviteOperateService {
                 list.add(vo);
             }
         }
-//        if (task == null || task.size() == 0) {
-//            if (isF7 == 0) {//已经过了七天，新用户，老用户自动过滤
-//                OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
-//                vo.setAction(1);
-//                vo.setReward(rewardConfig.getRegisterReward());
-//            }
-//            OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
-//            vo.setAction(2);
-//            vo.setReward(rewardConfig.getRechargeReward());
-//            list.add(vo);
-//        } else {
-//
-//        }
         //区分当前用户师傅是否是代理
         if(rewardConfig.getAgentOpen()==1) {
             if ((ir != null && ir.getMarkType() == 1)) {
@@ -209,6 +196,10 @@ public class InviteOperateService {
                 }
             }
         }
+        OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
+        vo.setAction(7);
+        vo.setReward(stepRd);
+        list.add(vo);
         return list;
     }
 
