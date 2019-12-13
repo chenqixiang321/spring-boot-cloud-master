@@ -1,5 +1,6 @@
 package com.opay.invite.model.response;
 
+import com.opay.invite.model.PrizeModel;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -28,5 +29,5 @@ public class LuckDrawResponse {
     @ApiModelProperty(value = "系统时间")
     private String systemTime;
     @ApiModelProperty(value = "奖品信息")
-    private Map<String, String> prizeInfo;
+    private Map<Integer, PrizeModel> prizeInfo;
 }

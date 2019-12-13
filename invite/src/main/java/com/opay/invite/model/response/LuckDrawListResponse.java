@@ -25,6 +25,8 @@ public class LuckDrawListResponse {
     private String opayName;
     @ApiModelProperty(value = "奖品")
     private String prize;
+    @ApiModelProperty(value = "奖品Id")
+    private int prizeId;
     @ApiModelProperty(value = "中奖时间")
     private Date createTime;
 }

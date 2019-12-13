@@ -17,7 +17,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LuckDrawInfoResponse {
-
+    @ApiModelProperty(value = "奖品ID")
+    private int prizeId;
     @ApiModelProperty(value = "奖品")
     private String prize;
     @ApiModelProperty(value = "活动剩余抽奖次数")

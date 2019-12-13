@@ -36,10 +36,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
-
+    private Map<Integer, PrizeModel> prizeInfo = null;
     @Resource
     private LuckDrawInfoMapper luckDrawInfoMapper;
     @Autowired
@@ -103,6 +104,7 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         for (LuckDrawInfoModel luckDrawInfoModel : luckDrawInfoModelList) {
             luckDrawInfoResponse = new LuckDrawListResponse();
             BeanUtils.copyProperties(luckDrawInfoModel, luckDrawInfoResponse);
+            luckDrawInfoResponse.setPrizeId(luckDrawInfoModel.getPrizeLevel());
             luckDrawInfoResponseList.add(luckDrawInfoResponse);
         }
         return luckDrawInfoResponseList;
@@ -110,16 +112,17 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
 
     @Override
     public List<LuckDrawListResponse> selectLuckDrawInfoList(String opayId, int pageNum, int pageSize) throws Exception {
-        List<LuckDrawListResponse> luckDrawInfoResponseList = new ArrayList<>();
+        List<LuckDrawListResponse> luckDrawListResponseList = new ArrayList<>();
         PageHelper.startPage(pageNum, pageSize);
         List<LuckDrawInfoModel> luckDrawInfoModelList = luckDrawInfoMapper.selectLuckDrawInfoListByOpayId(opayId);
-        LuckDrawListResponse luckDrawInfoResponse = null;
+        LuckDrawListResponse luckDrawListResponse = null;
         for (LuckDrawInfoModel luckDrawInfoModel : luckDrawInfoModelList) {
-            luckDrawInfoResponse = new LuckDrawListResponse();
-            BeanUtils.copyProperties(luckDrawInfoModel, luckDrawInfoResponse);
-            luckDrawInfoResponseList.add(luckDrawInfoResponse);
+            luckDrawListResponse = new LuckDrawListResponse();
+            BeanUtils.copyProperties(luckDrawInfoModel, luckDrawListResponse);
+            luckDrawListResponse.setPrizeId(luckDrawInfoModel.getPrizeLevel());
+            luckDrawListResponseList.add(luckDrawListResponse);
         }
-        return luckDrawInfoResponseList;
+        return luckDrawListResponseList;
     }
 
     @Override
@@ -155,13 +158,14 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             if (prizePoolResponse.getPool() == 2) {
                 prizes = prizePoolConfig.getSecondPool();
             }
-            String prize = prizes.get(prizePoolResponse.getPrize()).getPrize();
+            PrizeModel pm = prizes.get(prizePoolResponse.getPrize());
+            String prize = pm.getPrize();
             if (!"0".equals(prize)) {
-
-                luckDrawInfoModel.setPrizeLevel(prizePoolResponse.getPrize());
+                luckDrawInfoModel.setPrizeLevel(pm.getId());
                 luckDrawInfoModel.setPrize(prize);
                 luckDrawInfoModel.setPrizePool(prizePoolResponse.getPool());
                 luckDrawInfoResponse.setPrize(luckDrawInfoModel.getPrize());
+                luckDrawInfoResponse.setPrizeId(pm.getId());
                 if (CommonUtil.isInteger(prize)) {
                     String requestId = incrKeyService.getIncrKey();
                     String reference = incrKeyService.getIncrKey();
@@ -173,7 +177,7 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
                         throw new InviteException(opayApiResultResponse.getMessage());
                     }
                     luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
-                }else{
+                } else {
                     luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
                 }
             }
@@ -187,5 +191,24 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         return luckDrawInfoResponse;
     }
 
+    @Override
+    public Map<Integer, PrizeModel> getPrize() {
+        if (prizeInfo == null) {
+            prizeInfo = new ConcurrentHashMap();
+            List<PrizeModel> firstPool = prizePoolConfig.getFirstPool();
+            List<PrizeModel> secondPool = prizePoolConfig.getSecondPool();
+            int firstPollSize = firstPool.size();
+            int secondPollSize = secondPool.size();
+            for (int i = 0; i < firstPollSize; i++) {
+                PrizeModel prizeModel = firstPool.get(i);
+                prizeInfo.put(prizeModel.getId(), prizeModel);
+            }
+            for (int i = 0; i < secondPollSize; i++) {
+                PrizeModel prizeModel = secondPool.get(i);
+                prizeInfo.put(prizeModel.getId(), prizeModel);
+            }
+        }
+        return prizeInfo;
+    }
 }
 

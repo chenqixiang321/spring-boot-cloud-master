@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PrizeModel {
+    private int id;
     private String prize;
     private BigDecimal prob;
 }

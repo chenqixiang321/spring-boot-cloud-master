@@ -44,7 +44,6 @@ public class LuckDrawInfoModel {
      */
     @ApiModelProperty(value = "奖品")
     private String prize;
-
     /**
      * 奖品级别 数越小越值钱
      */

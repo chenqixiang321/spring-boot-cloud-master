@@ -58,8 +58,6 @@ public class LuckDrawController {
     @Value("${prize-pool.secondPoolEnd}")
     private int secondPoolEnd;
     @Autowired
-    private PrizePoolConfig prizePoolConfig;
-    @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
     private InviteOperateService inviteOperateService;
@@ -93,25 +91,7 @@ public class LuckDrawController {
             }
         }
         luckDrawResponse.setSystemTime(DateFormatter.formatDatetimeByZone(date, timeZone));
-        Map<String, String> prizeInfo = new HashMap<>();
-        List<PrizeModel> firstPool = prizePoolConfig.getFirstPool();
-        List<PrizeModel> secondPool = prizePoolConfig.getSecondPool();
-        int firstPollSize = firstPool.size();
-        int secondPollSize = secondPool.size();
-        for (int i = 0; i < firstPollSize; i++) {
-            String prize = firstPool.get(i).getPrize();
-            if (!"0".equals(prize)) {
-                prizeInfo.put(prize, CommonUtil.isInteger(prize) ? "₦" + prize : prize);
-            }
-
-        }
-        for (int i = 0; i < secondPollSize; i++) {
-            String prize = secondPool.get(i).getPrize();
-            if (!"0".equals(prize)) {
-                prizeInfo.put(prize, CommonUtil.isInteger(prize) ? "₦" + prize : prize);
-            }
-        }
-        luckDrawResponse.setPrizeInfo(prizeInfo);
+        luckDrawResponse.setPrizeInfo(luckDrawInfoService.getPrize());
         resultResponse.setData(luckDrawResponse);
         return resultResponse;
     }
@@ -189,11 +169,10 @@ public class LuckDrawController {
         LoginUser user = inviteOperateService.getOpayInfo(request);
         format.setTimeZone(TimeZone.getTimeZone(timeZone));
         int hour = Integer.parseInt(format.format(new Date()));
-        return new ResultResponse(luckDrawInfoService.getLuckDraw(user.getOpayId(), user.getFirstName(), user.getPhoneNumber()));
-//        if ((hour >= firstPoolStart && hour < firstPoolEnd) || (hour >= secondPoolStart && hour < secondPoolEnd)) {
-//            return new ResultResponse(luckDrawInfoService.getLuckDraw(user.getOpayId(), user.getFirstName(), user.getPhoneNumber()));
-//        } else {
-//            return new ResultResponse(CodeMsg.LUCKY_DRAW_NOT_START_CODE.getCode(), CodeMsg.LUCKY_DRAW_NOT_START_CODE.getMessage());
-//        }
+        if ((hour >= firstPoolStart && hour < firstPoolEnd) || (hour >= secondPoolStart && hour < secondPoolEnd)) {
+            return new ResultResponse(luckDrawInfoService.getLuckDraw(user.getOpayId(), user.getFirstName(), user.getPhoneNumber()));
+        } else {
+            return new ResultResponse(CodeMsg.LUCKY_DRAW_NOT_START_CODE.getCode(), CodeMsg.LUCKY_DRAW_NOT_START_CODE.getMessage());
+        }
     }
 }

@@ -196,21 +196,21 @@ prize-pool:
   grandPrizeIndex: 37 #还剩n次时,开出大奖
   firstGrandPrizeTimeUp: "13:00:00"
   secondGrandPrizeTimeUp: "21:00:00"
-  secondPoolRate: 3
+  secondPoolRate: 4
   count: 100
-  firstPoolStart: 8
+  firstPoolStart: 1
   firstPoolEnd: 14
   secondPoolStart: 14
   secondPoolEnd: 22
   firstPool:
-    - {prize: 10,prob: 0.01}
-    - {prize: 5,prob: 0.04}
-    - {prize: 2,prob: 0.05}
-    - {prize: 1,prob: 0.20}
-    - {prize: 0,prob: 0.70}
+    - {id: 2,prize: 10,prob: 0.01}
+    - {id: 3,prize: 5,prob: 0.04}
+    - {id: 4,prize: 2,prob: 0.05}
+    - {id: 5,prize: 1,prob: 0.20}
+    - {id: 6,prize: 0,prob: 0.70}
   secondPool:
-    - {prize: phone,prob: 0.01}
-    - {prize: 5,prob: 0.04}
-    - {prize: 2,prob: 0.05}
-    - {prize: 1,prob: 0.20}
-    - {prize: 0,prob: 0.70}
+    - {id: 1,prize: phone,prob: 0.01}
+    - {id: 3,prize: 5,prob: 0.04}
+    - {id: 4,prize: 2,prob: 0.05}
+    - {id: 5,prize: 1,prob: 0.20}
+    - {id: 6,prize: 0,prob: 0.70}
