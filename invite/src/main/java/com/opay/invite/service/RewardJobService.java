@@ -51,8 +51,19 @@ public class RewardJobService {
         for(int i=0;i<list.size();i++){
             OpayUserOrder opayUserOrder =  list.get(i);
             AgentRoyaltyReward agentRoyaltyReward = map.get(opayUserOrder.getType());
-            BigDecimal masterReward = opayUserOrder.getActualAmount().multiply(agentRoyaltyReward.getMasterReward()).divide(BigDecimal.valueOf(100l)).setScale(0, RoundingMode.DOWN);
-            BigDecimal pupilReward = opayUserOrder.getActualAmount().multiply(agentRoyaltyReward.getPupilReward()).divide(BigDecimal.valueOf(100l)).setScale(0, RoundingMode.DOWN);
+            BigDecimal masterReward = opayUserOrder.getActualAmount().multiply(agentRoyaltyReward.getMasterReward()).divide(BigDecimal.valueOf(100l));
+            if(masterReward.compareTo(BigDecimal.valueOf(1l))>=0){
+                masterReward=masterReward.setScale(0, RoundingMode.HALF_UP);//
+            }else{
+                masterReward=BigDecimal.ZERO;
+            }
+
+            BigDecimal pupilReward = opayUserOrder.getActualAmount().multiply(agentRoyaltyReward.getPupilReward()).divide(BigDecimal.valueOf(100l));
+            if(pupilReward.compareTo(BigDecimal.valueOf(1l))>=0){
+                pupilReward=pupilReward.setScale(0, RoundingMode.HALF_UP);//
+            }else{
+                pupilReward=BigDecimal.ZERO;
+            }
             OpayMasterPupilAward master = new OpayMasterPupilAward(opayUserOrder.getMasterOpayId(),masterReward,
                     date,1, opayUserOrder.getType(), opayUserOrder.getActualAmount(),opayUserOrder.getMarkType(),null,
                     BigDecimal.ZERO,1,opayUserOrder.getMonth(),opayUserOrder.getDay());//师傅奖励

@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class UserTradeService {
@@ -67,6 +70,22 @@ public class UserTradeService {
         if(userOrders==null || userOrders.size()==0){
             return ;
         }
-        rewardJobMapper.saveOpayUserOrder(userOrders);
+        List<OpayUserOrder> existlist = rewardJobMapper.selectUserOrderList(userOrders);
+       if(existlist ==null || existlist.size()==0){
+           rewardJobMapper.saveOpayUserOrder(userOrders);
+           return ;
+       }
+        Map<String, OpayUserOrder> map = existlist.stream().collect(Collectors.toMap(OpayUserOrder::getOrderId, Function.identity()));
+        List<OpayUserOrder> new_userOrders = new ArrayList<>();
+        for(OpayUserOrder userOrder:userOrders){
+            if(map.get(userOrder.getOrderId())==null){
+                new_userOrders.add(userOrder);
+            }
+        }
+        if(new_userOrders==null || new_userOrders.size()==0){
+            return ;
+        }
+        //存入非存在的
+        rewardJobMapper.saveOpayUserOrder(new_userOrders);
     }
 }

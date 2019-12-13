@@ -20,4 +20,6 @@ public interface RewardJobMapper {
     void saveUserTask(List<OpayUserTask> list);
 
     List<OpayInviteRelation> getTaskRelationList(@Param("start") int start, @Param("pageSize") int pageSize,@Param("day") Integer day,@Param("type") Integer type);
+
+    List<OpayUserOrder> selectUserOrderList(List<OpayUserOrder> list);
 }

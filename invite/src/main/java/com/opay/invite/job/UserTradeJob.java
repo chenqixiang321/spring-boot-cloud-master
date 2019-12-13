@@ -48,7 +48,7 @@ public class UserTradeJob extends OpayJob {
         String month = dataQuery.getMonth();
         String day = dataQuery.getDay();
         String startTime=dataQuery.getFormatDay()+" 00:00:00";
-        String endTime=dataQuery.getFormatDay()+" 59:59:59";
+        String endTime=dataQuery.getFormatDay()+" 23:59:59";
         Date sTime = DateFormatter.parseDate(startTime);
         int isStart = inviteOperateService.checkActiveStatusTime(sTime,rewardConfig.getStartTime(),rewardConfig.getEndTime());
         if(isStart!=1){
@@ -103,7 +103,6 @@ public class UserTradeJob extends OpayJob {
                 log.warn("UserTradeJob data pageSize,task finish day:{}",day);
                 break;
             }
-            start += PAGE_SIZE;
         }
 
     }

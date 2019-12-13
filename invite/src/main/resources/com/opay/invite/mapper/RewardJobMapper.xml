@@ -34,7 +34,7 @@
         from opay_user_order a
         left join opay_invite_relation b on a.opay_id=b.pupil_id
         where  <![CDATA[ a.day <= #{day}  ]]> and a.status=0
-        order by id asc
+        order by a.id asc
         limit #{start},#{pageSize}
     </select>
 
@@ -70,4 +70,12 @@
             #{item.id}
         </foreach>
     </update>
+    
+    <select id="selectUserOrderList" parameterType="java.util.List" resultMap="BaseResultMap">
+        select opay_id,order_id from opay_user_order where order_id in
+        <foreach collection="list" open="(" close=")" item="item" index="index" separator=",">
+            #{item.orderId}
+        </foreach>
+    </select>
+    
 </mapper>

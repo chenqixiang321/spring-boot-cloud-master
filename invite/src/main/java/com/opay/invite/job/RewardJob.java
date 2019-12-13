@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Slf4j
 public class RewardJob extends OpayJob {
-    private static final int PAGE_SIZE = 1000;
+    private static final int PAGE_SIZE = 500;
 
     @Autowired
     private RewardJobService rewardJobService;
@@ -47,7 +47,7 @@ public class RewardJob extends OpayJob {
         while (true) {
             List<OpayUserOrder> list = rewardJobService.getOpayUserOrderList(Integer.valueOf(preDay),start, PAGE_SIZE);
             if(list.isEmpty()){
-                log.warn("RewardJob data empty,task finish");
+                log.warn("RewardJob data empty,task finish day:{}",preDay);
                 break;
             }
             //循环每一个用户，获取用户数据
@@ -57,10 +57,9 @@ public class RewardJob extends OpayJob {
             rewardJobService.saveAwardAndCashAndOrderStatus(nlist,mplist,list);
 
             if (list.size() < PAGE_SIZE) {
-                log.warn("RewardJob data empty,task finish");
+                log.warn("RewardJob data pageSize,task finish day:{}",preDay);
                 break;
             }
-            start += PAGE_SIZE;
         }
     }
 
