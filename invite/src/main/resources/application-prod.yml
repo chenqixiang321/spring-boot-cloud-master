@@ -48,9 +48,6 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+1
-upperLimit:
-  invite: 100
-  share: 5
 
 config:
   opay:
@@ -179,6 +176,8 @@ prometheus:
     basePackage: com.opay.invite
 
 prize-pool:
+  inviteLimit: 100
+  shareLimit: 3 #每天分享上线
   grandPrizeIndex: 2000 #还剩n次时,开出大奖
   firstGrandPrizeTimeUp: "13:00:00"
   secondGrandPrizeTimeUp: "21:00:00"

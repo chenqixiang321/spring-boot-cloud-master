@@ -20,7 +20,6 @@ import com.opay.invite.transferconfig.OrderType;
 import com.opay.invite.transferconfig.PayChannel;
 import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.DateFormatter;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -179,7 +178,9 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             throw new InviteException(prizePoolResponse.getMessage());
         }
         luckDrawInfoResponse.setActivityCount(prizePoolResponse.getActivityCount());
-        luckDrawInfoResponse.setUserCount(prizePoolResponse.getUserCount());
+        luckDrawInfoResponse.setLoginCount(prizePoolResponse.getLoginCount());
+        luckDrawInfoResponse.setInviteCount(prizePoolResponse.getInviteCount());
+        luckDrawInfoResponse.setShareCount(prizePoolResponse.getShareCount());
         return luckDrawInfoResponse;
     }
 

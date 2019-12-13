@@ -1,5 +1,6 @@
 package com.opay.invite.service.impl;
 
+import com.opay.invite.config.PrizePoolConfig;
 import com.opay.invite.exception.InviteException;
 import com.opay.invite.mapper.InviteCountMapper;
 import com.opay.invite.model.InviteCountModel;
@@ -27,14 +28,12 @@ public class InviteCountServiceImpl implements InviteCountService {
     private InviteCountMapper inviteCountMapper;
     @Autowired
     private RedisTemplate redisTemplate;
-    @Value("${upperLimit.invite:100}")
-    private int inviteUpperLimit;
-    @Value("${upperLimit.share:3}")
-    private int shareUpperLimit;//每天分享上线(包括1次登陆)
     @Resource(name = "inviteShareCountInc")
     private DefaultRedisScript<Boolean> inviteShareCountInc;
     @Value("${spring.jackson.time-zone}")
     private String timeZone;
+    @Autowired
+    private PrizePoolConfig prizePoolConfig;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -70,7 +69,7 @@ public class InviteCountServiceImpl implements InviteCountService {
     public boolean updateInviteCount(String opayId, String opayName, String opayPhone) throws Exception {
         Date date = new Date();
         List<String> keys = Arrays.asList(opayId, "invite");
-        Boolean execute = (Boolean) redisTemplate.execute(inviteShareCountInc, keys, inviteUpperLimit, getSecondsToMidnight(date));
+        Boolean execute = (Boolean) redisTemplate.execute(inviteShareCountInc, keys, prizePoolConfig.getInviteLimit(), getSecondsToMidnight(date));
         if (execute) {
             String day = DateFormatter.formatShortYMDDateByZone(date, timeZone);
             InviteCountModel inviteCountModel = inviteCountMapper.selectByOpayId(opayId, day);
@@ -99,7 +98,7 @@ public class InviteCountServiceImpl implements InviteCountService {
     public boolean updateShareCount(String opayId, String opayName, String opayPhone) throws Exception {
         Date date = new Date();
         List<String> keys = Arrays.asList(opayId, "share");
-        Boolean execute = (Boolean) redisTemplate.execute(inviteShareCountInc, keys, shareUpperLimit, getSecondsToMidnight(date));
+        Boolean execute = (Boolean) redisTemplate.execute(inviteShareCountInc, keys, prizePoolConfig.getShareLimit(), getSecondsToMidnight(date));
         if (execute) {
             String day = DateFormatter.formatShortYMDDateByZone(date, timeZone);
             InviteCountModel inviteCountModel = inviteCountMapper.selectByOpayId(opayId, day);

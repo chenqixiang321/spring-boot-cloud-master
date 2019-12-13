@@ -16,6 +16,7 @@ public class PrizePoolResponse {
     private String message;
     private Integer pool;
     private Integer activityCount;
-    private Integer userCount;
-
+    private Integer loginCount;
+    private Integer shareCount;
+    private Integer inviteCount;
 }

@@ -50,9 +50,6 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+1
-upperLimit:
-  invite: 100
-  share: 5
 
 config:
   opay:
@@ -211,15 +208,17 @@ prometheus:
 #    - {prize: 1,prob: 0.27}
 #    - {prize: 0,prob: 0.7}
 prize-pool:
+  inviteLimit: 100
+  shareLimit: 3 #每天分享上线
   grandPrizeIndex: 37 #还剩n次时,开出大奖
   firstGrandPrizeTimeUp: "11:30:00"
   secondGrandPrizeTimeUp: "21:30:00"
   secondPoolRate: 3
-  count: 100
-  firstPoolStart: 10
+  count: 10000
+  firstPoolStart: 1
   firstPoolEnd: 12
   secondPoolStart: 13
-  secondPoolEnd: 22
+  secondPoolEnd: 23
   firstPool:
     - {prize: 10,prob: 0.01}
     - {prize: 5,prob: 0.04}

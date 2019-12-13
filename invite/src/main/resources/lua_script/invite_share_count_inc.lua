@@ -4,9 +4,10 @@ local upper_limit = ARGV[1]
 local expire = ARGV[2]
 local max_value = redis.call("hget", invite_share_count_key, max_key)
 local share_current_key = "share_current"
-local share_current_value = redis.call("hget", invite_share_count_key, share_current_key)
-if share_current_value == false then
-    redis.call("hset", invite_share_count_key, share_current_key, 1)
+local login_current_key = "login_current"
+local login_current_value = redis.call("hget", invite_share_count_key, login_current_key)
+if login_current_value == false then
+    redis.call("hset", invite_share_count_key, login_current_key, 1)
 end
 if KEYS[2] == "invite" then
     local step = 5
@@ -29,6 +30,9 @@ if KEYS[2] == "invite" then
 elseif KEYS[2] == "share" then
     local step = 1
     local current_value = redis.call("hget", invite_share_count_key, share_current_key)
+    if current_value == false then
+        current_value = 0
+    end
     if max_value == false then
         redis.call("hset", invite_share_count_key, max_key, step + current_value)
         redis.call("hset", invite_share_count_key, share_current_key, step + current_value)

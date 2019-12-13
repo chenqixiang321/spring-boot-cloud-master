@@ -130,17 +130,22 @@ public class LuckDrawController {
         }
         Object inviteCount = redisTemplate.opsForValue().get("invite_count:" + user.getOpayId());
         Object shareCount = redisTemplate.opsForHash().get("invite_share_count:" + user.getOpayId(), "share_current");
+        Object loginCount = redisTemplate.opsForHash().get("invite_share_count:" + user.getOpayId(), "login_current");
         int inviteCt = 0;
-        int shareCt;
+        int shareCt = 0;
+        int loginCt = 1;
         if (inviteCount != null) {
             inviteCt = Integer.parseInt(inviteCount.toString());
         }
         if (shareCount != null) {
             shareCt = Integer.parseInt(shareCount.toString());
-        } else {
-            shareCt = 1;
         }
-        luckDrawCountResponse.setUserCount(inviteCt + shareCt);
+        if (loginCount != null) {
+            loginCt = Integer.parseInt(loginCount.toString());
+        }
+        luckDrawCountResponse.setInviteCount(inviteCt);
+        luckDrawCountResponse.setLoginCount(loginCt);
+        luckDrawCountResponse.setShareCount(shareCt);
         resultResponse.setData(luckDrawCountResponse);
         return resultResponse;
     }
@@ -184,10 +189,11 @@ public class LuckDrawController {
         LoginUser user = inviteOperateService.getOpayInfo(request);
         format.setTimeZone(TimeZone.getTimeZone(timeZone));
         int hour = Integer.parseInt(format.format(new Date()));
-        if ((hour >= firstPoolStart && hour < firstPoolEnd) || (hour >= secondPoolStart && hour < secondPoolEnd)) {
-            return new ResultResponse(luckDrawInfoService.getLuckDraw(user.getOpayId(), user.getFirstName(), user.getPhoneNumber()));
-        } else {
-            return new ResultResponse(CodeMsg.LUCKY_DRAW_NOT_START_CODE.getCode(), CodeMsg.LUCKY_DRAW_NOT_START_CODE.getMessage());
-        }
+        return new ResultResponse(luckDrawInfoService.getLuckDraw(user.getOpayId(), user.getFirstName(), user.getPhoneNumber()));
+//        if ((hour >= firstPoolStart && hour < firstPoolEnd) || (hour >= secondPoolStart && hour < secondPoolEnd)) {
+//            return new ResultResponse(luckDrawInfoService.getLuckDraw(user.getOpayId(), user.getFirstName(), user.getPhoneNumber()));
+//        } else {
+//            return new ResultResponse(CodeMsg.LUCKY_DRAW_NOT_START_CODE.getCode(), CodeMsg.LUCKY_DRAW_NOT_START_CODE.getMessage());
+//        }
     }
 }
