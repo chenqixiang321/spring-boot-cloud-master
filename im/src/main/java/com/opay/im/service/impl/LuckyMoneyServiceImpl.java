@@ -21,6 +21,7 @@ import com.opay.im.model.response.opaycallback.PayloadResponse;
 import com.opay.im.service.ChatGroupMemberService;
 import com.opay.im.service.IncrKeyService;
 import com.opay.im.service.LuckyMoneyService;
+import com.opay.im.service.RongCloudService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,7 +64,8 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     private ChatGroupMemberService chatGroupMemberService;
     @Autowired
     private IncrKeyService incrKeyService;
-
+    @Autowired
+    private RongCloudService rongCloudService;
     @Override
     public int deleteByPrimaryKey(Long id) {
         return luckyMoneyMapper.deleteByPrimaryKey(id);
@@ -152,7 +154,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             List<ChatGroupMemberModel> members = chatGroupMemberService.selectGroupMember(Long.parseLong(grabLuckyMoneyRequest.getTargetId()));
             boolean isInGroup = false;
             for (ChatGroupMemberModel member : members) {
-                if (member.getOpayId().equals(grabLuckyMoneyRequest.getOpayId())) {
+                if (member.getOpayId().equals(grabLuckyMoneyRequest.getCurrentOpayId())) {
                     isInGroup = true;
                 }
             }
@@ -173,6 +175,8 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             GrabLuckyMoneyResponse grabLuckyMoneyResponse = new GrabLuckyMoneyResponse();
             grabLuckyMoneyResponse.setAmount(grabLuckyMoneyResult.getAmount());
             grabLuckyMoneyResponse.setId(grabLuckyMoneyResult.getId());
+            rongCloudService.sendMessage(grabLuckyMoneyRequest.getTargetId(),grabLuckyMoneyRequest.getOpayId(),"hahah","");
+            rongCloudService.sendMessage(grabLuckyMoneyRequest.getOpayId(),grabLuckyMoneyRequest.getTargetId(),"wawawa","");
             return grabLuckyMoneyResponse;
         } else if (grabLuckyMoneyResult.getCode() == 1) {
             LuckyMoneyRecordModel luckyMoneyRecordModel = luckyMoneyRecordMapper.selectLuckyMoneyRecordByOpayId(grabLuckyMoneyRequest.getId(), grabLuckyMoneyRequest.getOpayId());

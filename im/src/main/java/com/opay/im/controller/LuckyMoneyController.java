@@ -71,9 +71,7 @@ public class LuckyMoneyController {
     @ApiOperation(value = "抢红包", notes = "抢红包")
     @PostMapping("/grab")
     public ResultResponse<GrabLuckyMoneyResponse> grabLuckyMoney(@RequestBody @Validated @ApiParam(name = "抢红包", value = "传入json格式", required = true) GrabLuckyMoneyRequest grabLuckyMoneyRequest) throws Exception {
-        if (grabLuckyMoneyRequest.getTargetId() == null) {
-            grabLuckyMoneyRequest.setOpayId(String.valueOf(request.getAttribute("opayId")));
-        }
+        grabLuckyMoneyRequest.setCurrentOpayId(String.valueOf(request.getAttribute("opayId")));
         GrabLuckyMoneyResponse grabLuckyMoneyResponse = luckyMoneyService.grabLuckyMoney(grabLuckyMoneyRequest);
         if (grabLuckyMoneyResponse != null) {
             return new ResultResponse(grabLuckyMoneyResponse);

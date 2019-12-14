@@ -38,7 +38,8 @@ public class OPayCallBackController {
             } catch (Exception e) {
                 log.error("call back error", e);
             }
-
+        } else {
+            log.error("sign does not equals,data{},sign{}:", data, oPayCallBackResponse.getSha512());
         }
     }
 

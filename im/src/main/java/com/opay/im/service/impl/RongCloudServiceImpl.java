@@ -1,10 +1,13 @@
 package com.opay.im.service.impl;
 
+import com.opay.im.exception.ImException;
 import com.opay.im.mapper.UserTokenMapper;
 import com.opay.im.model.UserTokenModel;
 import com.opay.im.model.response.BlackListUserIdsResponse;
 import com.opay.im.service.RongCloudService;
 import io.rong.RongCloud;
+import io.rong.messages.InfoNtfMessage;
+import io.rong.messages.TxtMessage;
 import io.rong.methods.conversation.Conversation;
 import io.rong.methods.group.Group;
 import io.rong.methods.group.mute.MuteMembers;
@@ -14,6 +17,7 @@ import io.rong.models.Result;
 import io.rong.models.conversation.ConversationModel;
 import io.rong.models.group.GroupMember;
 import io.rong.models.group.GroupModel;
+import io.rong.models.message.PrivateMessage;
 import io.rong.models.response.BlackListResult;
 import io.rong.models.response.ResponseResult;
 import io.rong.models.response.TokenResult;
@@ -172,10 +176,10 @@ public class RongCloudServiceImpl implements RongCloudService {
             groupResult = (Result) groupApi.join(group);
         }
         if (groupResult == null) {
-            throw new Exception("groupResult is null");
+            throw new ImException("groupResult is null");
         }
         if (groupResult.getCode() != 200) {
-            throw new Exception(groupResult.errorMessage);
+            throw new ImException(groupResult.errorMessage);
         }
     }
 
@@ -188,7 +192,7 @@ public class RongCloudServiceImpl implements RongCloudService {
                 .setMembers(members);
         Result joinGroupResult = (Result) groupApi.quit(group);
         if (joinGroupResult.getCode() != 200) {
-            throw new Exception(joinGroupResult.errorMessage);
+            throw new ImException(joinGroupResult.errorMessage);
         }
     }
 
@@ -201,7 +205,7 @@ public class RongCloudServiceImpl implements RongCloudService {
                 .setTargetId(groupIdPrefix + targetId);
         ResponseResult muteConversationResult = conversationApi.mute(conversation);
         if (muteConversationResult.getCode() != 200) {
-            throw new Exception(muteConversationResult.errorMessage);
+            throw new ImException(muteConversationResult.errorMessage);
         }
     }
 
@@ -215,7 +219,7 @@ public class RongCloudServiceImpl implements RongCloudService {
                 .setMinute(0);
         Result result = muteMembers.add(group);
         if (result.getCode() != 200) {
-            throw new Exception(result.errorMessage);
+            throw new ImException(result.errorMessage);
         }
     }
 
@@ -228,7 +232,7 @@ public class RongCloudServiceImpl implements RongCloudService {
                 .setMembers(members);
         Result result = muteMembers.remove(group);
         if (result.getCode() != 200) {
-            throw new Exception(result.errorMessage);
+            throw new ImException(result.errorMessage);
         }
     }
 
@@ -240,6 +244,21 @@ public class RongCloudServiceImpl implements RongCloudService {
     @Override
     public void removeBlackList(String userId, String blackUserId) throws Exception {
         operationBlackList(userId, blackUserId, 1);
+    }
+
+    @Override
+    public void sendMessage(String fromUserId, String toUserId, String content, String extra) throws Exception {
+        String[] targetIds = {toUserId};
+        InfoNtfMessage infoNtfMessage = new InfoNtfMessage(content, extra);
+        PrivateMessage privateMessage = new PrivateMessage()
+                .setSenderId(fromUserId)
+                .setTargetId(targetIds)
+                .setObjectName("app:red-envelope-receipt")
+                .setContent(infoNtfMessage);
+        ResponseResult privateResult = getRongCloud().message.msgPrivate.send(privateMessage);
+        if (privateResult.getCode() != 200) {
+            throw new ImException(privateResult.errorMessage);
+        }
     }
 
     /**
@@ -258,12 +277,12 @@ public class RongCloudServiceImpl implements RongCloudService {
         if (type == 0) {
             Result blacklistResult = (Result) blackListApi.add(user);
             if (blacklistResult.getCode() != 200) {
-                throw new Exception(blacklistResult.errorMessage);
+                throw new ImException(blacklistResult.errorMessage);
             }
         } else {
             Result blacklistResult = (Result) blackListApi.remove(user);
             if (blacklistResult.getCode() != 200) {
-                throw new Exception(blacklistResult.errorMessage);
+                throw new ImException(blacklistResult.errorMessage);
             }
         }
 
@@ -275,7 +294,7 @@ public class RongCloudServiceImpl implements RongCloudService {
         UserModel user = new UserModel().setId(userId);
         BlackListResult result = blackListApi.getList(user);
         if (result.getCode() != 200) {
-            throw new Exception(result.errorMessage);
+            throw new ImException(result.errorMessage);
         }
         List<String> userIds = new ArrayList<>();
         for (UserModel u : result.getUsers()) {
