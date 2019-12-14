@@ -17,8 +17,19 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GrabLuckyMoneyResponse {
+
     @ApiModelProperty(value = "红包ID")
     private Long id;
+
     @ApiModelProperty(value = "红包金额")
     private BigDecimal amount;
+
+    @ApiModelProperty(value = "抢到的红包金额")
+    private BigDecimal grabAmount;
+
+    @ApiModelProperty(value = "发送者的opay_id")
+    private String opayId;
+
+    @ApiModelProperty(value = "发送者的opay名字")
+    private String opayName;
 }

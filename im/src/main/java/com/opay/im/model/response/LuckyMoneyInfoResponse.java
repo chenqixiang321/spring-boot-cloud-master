@@ -27,6 +27,9 @@ public class LuckyMoneyInfoResponse {
      */
     @ApiModelProperty(value = "发送者的opay_id")
     private String opayId;
+
+    @ApiModelProperty(value = "发送者的opay名字")
+    private String opayName;
     /**
      * 红包说明Best Wishes!
      */

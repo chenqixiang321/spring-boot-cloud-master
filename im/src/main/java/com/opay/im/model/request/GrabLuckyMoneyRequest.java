@@ -31,6 +31,9 @@ public class GrabLuckyMoneyRequest {
 
     @ApiModelProperty(value = "当前用户的opayName", hidden = true)
     private String currentOpayName;
+
+    @ApiModelProperty(value = "当前用户的phone", hidden = true)
+    private String currentPhone;
     /**
      * 发送目标 群or人
      */

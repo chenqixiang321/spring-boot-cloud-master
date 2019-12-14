@@ -168,21 +168,28 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         }
         List<String> keys = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getOpayId(), grabLuckyMoneyRequest.getTargetId());
         GrabLuckyMoneyResult grabLuckyMoneyResult = (GrabLuckyMoneyResult) redisTemplate.execute(grabLuckyMoney, keys, grabLuckyMoneyRequest.getOpayId());
+        LuckyMoneyRecordModel luckyMoneyRecordModelData = luckyMoneyRecordMapper.selectLuckyMoneyRecordByOpayId(grabLuckyMoneyRequest.getId(), grabLuckyMoneyRequest.getOpayId());
+        if (luckyMoneyRecordModelData == null) {
+            throw new LuckMoneyExpiredException(grabLuckyMoneyResult.getMessage());
+        }
+        GrabLuckyMoneyResponse grabLuckyMoneyResponse = new GrabLuckyMoneyResponse();
+        grabLuckyMoneyResponse.setAmount(luckyMoneyRecordModelData.getAmount());
+        grabLuckyMoneyResponse.setId(grabLuckyMoneyResult.getId());
+        grabLuckyMoneyResponse.setOpayName(luckyMoneyRecordModelData.getOpayName());
+        grabLuckyMoneyResponse.setOpayId(luckyMoneyRecordModelData.getOpayId());
+        grabLuckyMoneyResponse.setGrabAmount(grabLuckyMoneyResult.getAmount());
         if (grabLuckyMoneyResult.getCode() == 0) {
             LuckyMoneyRecordModel luckyMoneyRecordModel = new LuckyMoneyRecordModel();
             luckyMoneyRecordModel.setId(grabLuckyMoneyResult.getId());
-            luckyMoneyRecordModel.setOpayPhone(grabLuckyMoneyRequest.getOpayPhone());
-            luckyMoneyRecordModel.setOpayName(grabLuckyMoneyRequest.getOpayName());
-            luckyMoneyRecordModel.setOpayId(grabLuckyMoneyRequest.getOpayId());
+            luckyMoneyRecordModel.setOpayPhone(grabLuckyMoneyRequest.getCurrentPhone());
+            luckyMoneyRecordModel.setOpayName(grabLuckyMoneyRequest.getCurrentOpayName());
+            luckyMoneyRecordModel.setOpayId(grabLuckyMoneyRequest.getCurrentOpayId());
             luckyMoneyRecordModel.setGetTime(new Date());
             luckyMoneyRecordMapper.updateByPrimaryKeySelective(luckyMoneyRecordModel);
-            GrabLuckyMoneyResponse grabLuckyMoneyResponse = new GrabLuckyMoneyResponse();
-            grabLuckyMoneyResponse.setAmount(grabLuckyMoneyResult.getAmount());
-            grabLuckyMoneyResponse.setId(grabLuckyMoneyResult.getId());
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> map = new HashMap<>();
-            map.put("sendUserId", grabLuckyMoneyRequest.getOpayId());
-            map.put("sendNickName", grabLuckyMoneyRequest.getOpayName());
+            map.put("sendUserId", luckyMoneyRecordModelData.getOpayId());
+            map.put("sendNickName", luckyMoneyRecordModelData.getOpayName());
             map.put("openUserId", grabLuckyMoneyRequest.getCurrentOpayId());
             map.put("openNickName", grabLuckyMoneyRequest.getCurrentOpayName());
             map.put("envelopId", grabLuckyMoneyRequest.getId());
@@ -191,22 +198,9 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             rongCloudService.sendMessage(grabLuckyMoneyRequest.getTargetId(), grabLuckyMoneyRequest.getOpayId(), mapper.writeValueAsString(map), "");
             rongCloudService.sendMessage(grabLuckyMoneyRequest.getOpayId(), grabLuckyMoneyRequest.getTargetId(), mapper.writeValueAsString(map), "");
             return grabLuckyMoneyResponse;
-        } else if (grabLuckyMoneyResult.getCode() == 1) {
-            LuckyMoneyRecordModel luckyMoneyRecordModel = luckyMoneyRecordMapper.selectLuckyMoneyRecordByOpayId(grabLuckyMoneyRequest.getId(), grabLuckyMoneyRequest.getOpayId());
-            if (luckyMoneyRecordModel == null) {
-                throw new LuckMoneyExpiredException(grabLuckyMoneyResult.getMessage());
-            } else {
-                GrabLuckyMoneyResponse grabLuckyMoneyResponse = new GrabLuckyMoneyResponse();
-                grabLuckyMoneyResponse.setAmount(luckyMoneyRecordModel.getAmount());
-                grabLuckyMoneyResponse.setId(luckyMoneyRecordModel.getLuckMoneyId());
-                return grabLuckyMoneyResponse;
-            }
         } else if (grabLuckyMoneyResult.getCode() == 2) {
             throw new LuckMoneyGoneException(grabLuckyMoneyResult.getMessage());
         } else {
-            GrabLuckyMoneyResponse grabLuckyMoneyResponse = new GrabLuckyMoneyResponse();
-            grabLuckyMoneyResponse.setAmount(grabLuckyMoneyResult.getAmount());
-            grabLuckyMoneyResponse.setId(grabLuckyMoneyResult.getId());
             return grabLuckyMoneyResponse;
         }
     }
@@ -227,6 +221,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                 luckyMoneyInfoResponse.setGrabAmount(luckyMoneyRecordModel.getAmount());
             }
         }
+        luckyMoneyInfoResponse.setOpayName(luckyMoneyModel.getOpayName());
         luckyMoneyInfoResponse.setLuckyMoneyRecordInfoResponses(luckyMoneyRecordInfoResponses);
         return luckyMoneyInfoResponse;
     }
