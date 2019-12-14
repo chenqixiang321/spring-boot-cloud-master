@@ -58,6 +58,8 @@ config:
     merchantId: 256619090900002
     aesKey: UxanhvcUC3aeiLRR
     iv: qazwert12345!@#$
+    publickey: OPAYPUB15681687755840.5595849282926585
+    privatekey: OPAYPRV15681687755840.6456873089707088
 im:
   group:
     maxMember: 200

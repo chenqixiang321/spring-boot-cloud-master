@@ -12,6 +12,8 @@ import com.opay.im.model.response.GrabLuckyMoneyResult;
 import com.opay.im.model.response.LuckyMoneyInfoResponse;
 import com.opay.im.model.response.LuckyMoneyRecordInfoResponse;
 import com.opay.im.model.response.LuckyMoneyResponse;
+import com.opay.im.model.response.opaycallback.OPayCallBackResponse;
+import com.opay.im.model.response.opaycallback.PayloadResponse;
 import com.opay.im.service.ChatGroupMemberService;
 import com.opay.im.service.IncrKeyService;
 import org.springframework.beans.BeanUtils;
@@ -136,12 +138,13 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     private Long getEndTime() {
+        Calendar now = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
         Calendar todayEnd = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
         todayEnd.set(Calendar.HOUR_OF_DAY, 23);
         todayEnd.set(Calendar.MINUTE, 59);
         todayEnd.set(Calendar.SECOND, 59);
         todayEnd.set(Calendar.MILLISECOND, 999);
-        return todayEnd.getTimeInMillis() / 1000;
+        return (todayEnd.getTimeInMillis() - now.getTimeInMillis()) / 1000;
     }
 
     @Override
@@ -195,6 +198,27 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         }
         luckyMoneyInfoResponse.setLuckyMoneyRecordInfoResponses(luckyMoneyRecordInfoResponses);
         return luckyMoneyInfoResponse;
+    }
+
+    @Override
+    public int updatePayStatus(OPayCallBackResponse oPayCallBackResponse) throws Exception {
+        PayloadResponse payload = oPayCallBackResponse.getPayload();
+        LuckyMoneyModel luckyMoneyModel = new LuckyMoneyModel();
+        if ("successful".equals(payload.getStatus())) {
+            luckyMoneyModel.setPayStatus(1);
+        } else if ("failed".equals(payload.getStatus())) {
+            luckyMoneyModel.setPayStatus(2);
+        } else {
+            luckyMoneyModel.setPayStatus(3);
+        }
+        luckyMoneyModel.setReference(payload.getReference());
+        luckyMoneyModel.setTransactionId(payload.getTransactionId());
+        return luckyMoneyMapper.updateByReferenceKeySelective(luckyMoneyModel);
+    }
+
+    @Override
+    public int selectPayStatus(String opayId, String reference) throws Exception {
+        return luckyMoneyMapper.selectPayStatus(opayId, reference);
     }
 
     public BigDecimal getRandomMoney(RedPackage _redPackage) {

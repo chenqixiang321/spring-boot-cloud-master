@@ -6,6 +6,7 @@ import com.opay.im.model.request.LuckyMoneyRequest;
 import com.opay.im.model.response.GrabLuckyMoneyResponse;
 import com.opay.im.model.response.LuckyMoneyInfoResponse;
 import com.opay.im.model.response.LuckyMoneyResponse;
+import com.opay.im.model.response.opaycallback.OPayCallBackResponse;
 
 public interface LuckyMoneyService {
 
@@ -28,4 +29,7 @@ public interface LuckyMoneyService {
 
     LuckyMoneyInfoResponse selectLuckyMoneyEveryPerson(Long id) throws Exception;
 
+    int updatePayStatus(OPayCallBackResponse oPayCallBackResponse) throws Exception;
+
+    int selectPayStatus(String opayId, String reference) throws Exception;
 }

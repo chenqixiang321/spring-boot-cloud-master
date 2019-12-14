@@ -3,6 +3,7 @@ package com.opay.im.service.impl;
 import com.opay.im.service.IncrKeyService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Service
 public class IncrKeyServiceImpl implements IncrKeyService {
@@ -23,6 +25,8 @@ public class IncrKeyServiceImpl implements IncrKeyService {
     private DefaultRedisScript<Long> incrKey;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Value("${spring.jackson.time-zone}")
+    private String timeZone;
 
     @Override
     public String getIncrKey() {
@@ -46,10 +50,10 @@ public class IncrKeyServiceImpl implements IncrKeyService {
 
     private long getSecondsToMidnight(Date date) {
         LocalDateTime midnight = LocalDateTime.ofInstant(date.toInstant(),
-                ZoneId.systemDefault()).plusDays(1).withHour(0).withMinute(0)
+                TimeZone.getTimeZone(timeZone).toZoneId()).plusDays(1).withHour(0).withMinute(0)
                 .withSecond(0).withNano(0);
         LocalDateTime currentDateTime = LocalDateTime.ofInstant(date.toInstant(),
-                ZoneId.systemDefault());
+                TimeZone.getTimeZone(timeZone).toZoneId());
         long seconds = ChronoUnit.SECONDS.between(currentDateTime, midnight);
         return seconds;
     }

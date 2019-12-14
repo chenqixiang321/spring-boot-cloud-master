@@ -2,6 +2,7 @@ package com.opay.im.mapper;
 
 import com.opay.im.model.LuckyMoneyModel;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface LuckyMoneyMapper {
@@ -16,4 +17,8 @@ public interface LuckyMoneyMapper {
     int updateByPrimaryKeySelective(LuckyMoneyModel record);
 
     int updateByPrimaryKey(LuckyMoneyModel record);
+
+    int updateByReferenceKeySelective(LuckyMoneyModel record);
+
+    int selectPayStatus(@Param("opayId") String opayId, @Param("reference") String reference);
 }

@@ -80,6 +80,9 @@ public class LuckyMoneyModel {
 
     @ApiModelProperty(value="支付状态1:成功 2:失败")
     private int payStatus;
+
+    @ApiModelProperty(value="transactionId")
+    private String transactionId;
     /**
     * 版本
     */
