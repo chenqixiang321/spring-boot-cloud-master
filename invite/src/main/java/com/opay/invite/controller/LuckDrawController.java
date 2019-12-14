@@ -151,7 +151,7 @@ public class LuckDrawController {
     @PostMapping("/share")
     public SuccessResponse updateShareCount(HttpServletRequest request) throws Exception {
         LoginUser user = inviteOperateService.getOpayInfo(request);
-        InviteCountService.updateShareCount(user.getOpayId(), user.getFirstName(), user.getPhoneNumber());
+        InviteCountService.updateShareCount(user.getOpayId(), user.getOpayName(), user.getPhoneNumber());
         return new SuccessResponse();
     }
 
@@ -159,7 +159,7 @@ public class LuckDrawController {
     @PostMapping("/invite")
     public SuccessResponse updateInviteCount(HttpServletRequest request) throws Exception {
         LoginUser user = inviteOperateService.getOpayInfo(request);
-        InviteCountService.updateInviteCount(user.getOpayId(), user.getFirstName(), user.getPhoneNumber());
+        InviteCountService.updateInviteCount(user.getOpayId(), user.getOpayName(), user.getPhoneNumber());
         return new SuccessResponse();
     }
 
@@ -170,7 +170,7 @@ public class LuckDrawController {
         format.setTimeZone(TimeZone.getTimeZone(timeZone));
         int hour = Integer.parseInt(format.format(new Date()));
         if ((hour >= firstPoolStart && hour < firstPoolEnd) || (hour >= secondPoolStart && hour < secondPoolEnd)) {
-            return new ResultResponse(luckDrawInfoService.getLuckDraw(user.getOpayId(), user.getFirstName(), user.getPhoneNumber()));
+            return new ResultResponse(luckDrawInfoService.getLuckDraw(user.getOpayId(), user.getOpayName(), user.getPhoneNumber()));
         } else {
             return new ResultResponse(CodeMsg.LUCKY_DRAW_NOT_START_CODE.getCode(), CodeMsg.LUCKY_DRAW_NOT_START_CODE.getMessage());
         }
