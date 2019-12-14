@@ -1,5 +1,6 @@
 package com.opay.im.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opay.im.exception.ImException;
 import com.opay.im.exception.LuckMoneyExpiredException;
 import com.opay.im.exception.LuckMoneyGoneException;
@@ -36,7 +37,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 @Service
@@ -66,6 +69,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     private IncrKeyService incrKeyService;
     @Autowired
     private RongCloudService rongCloudService;
+
     @Override
     public int deleteByPrimaryKey(Long id) {
         return luckyMoneyMapper.deleteByPrimaryKey(id);
@@ -175,8 +179,17 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             GrabLuckyMoneyResponse grabLuckyMoneyResponse = new GrabLuckyMoneyResponse();
             grabLuckyMoneyResponse.setAmount(grabLuckyMoneyResult.getAmount());
             grabLuckyMoneyResponse.setId(grabLuckyMoneyResult.getId());
-            rongCloudService.sendMessage(grabLuckyMoneyRequest.getTargetId(),grabLuckyMoneyRequest.getOpayId(),"hahah","");
-            rongCloudService.sendMessage(grabLuckyMoneyRequest.getOpayId(),grabLuckyMoneyRequest.getTargetId(),"wawawa","");
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> map = new HashMap<>();
+            map.put("sendUserId", grabLuckyMoneyRequest.getOpayId());
+            map.put("sendNickName", grabLuckyMoneyRequest.getOpayName());
+            map.put("openUserId", grabLuckyMoneyRequest.getCurrentOpayId());
+            map.put("openNickName", grabLuckyMoneyRequest.getCurrentOpayName());
+            map.put("envelopId", grabLuckyMoneyRequest.getId());
+            map.put("targetId", grabLuckyMoneyRequest.getTargetId());
+            map.put("status", "0");
+            rongCloudService.sendMessage(grabLuckyMoneyRequest.getTargetId(), grabLuckyMoneyRequest.getOpayId(), mapper.writeValueAsString(map), "");
+            rongCloudService.sendMessage(grabLuckyMoneyRequest.getOpayId(), grabLuckyMoneyRequest.getTargetId(), mapper.writeValueAsString(map), "");
             return grabLuckyMoneyResponse;
         } else if (grabLuckyMoneyResult.getCode() == 1) {
             LuckyMoneyRecordModel luckyMoneyRecordModel = luckyMoneyRecordMapper.selectLuckyMoneyRecordByOpayId(grabLuckyMoneyRequest.getId(), grabLuckyMoneyRequest.getOpayId());

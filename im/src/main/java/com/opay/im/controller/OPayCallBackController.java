@@ -5,6 +5,7 @@ import com.opay.im.model.response.opaycallback.PayloadResponse;
 import com.opay.im.service.LuckyMoneyService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.buf.HexUtils;
 import org.bouncycastle.crypto.digests.SHA3Digest;
 import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.params.KeyParameter;
@@ -31,8 +32,8 @@ public class OPayCallBackController {
     @PostMapping
     public void callBack(@RequestBody OPayCallBackResponse oPayCallBackResponse) {
         PayloadResponse payload = oPayCallBackResponse.getPayload();
-        String data = "{Amount:\"" + payload.getAmount() + "\",Currency:\"" + payload.getCurrency() + "\",Reference:\"" + payload.getReference() + "\",Refunded:\"" + (payload.isRefunded() ? "t" : "f") + "\",Status:\"" + payload.getStatus() + "\",Timestamp:\"" + payload.getTimestamp() + "\",Token:\"" + payload.getToken() + "\",TransactionID:\"" + payload.getTransactionId() + "\"}";
-        if (oPayCallBackResponse.getSha512().equals(hmacSha3(data, privatekey))) {
+        String data = "{Amount:\"" + payload.getAmount() + "\",Currency:\"" + payload.getCurrency() + "\",Reference:\"" + payload.getReference() + "\",Refunded:" + (payload.isRefunded() ? "t" : "f") + ",Status:\"" + payload.getStatus() + "\",Timestamp:\"" + payload.getTimestamp() + "\",Token:\"" + payload.getToken() + "\",TransactionID:\"" + payload.getTransactionId() + "\"}";
+        if (oPayCallBackResponse.getSha512().equals(HexUtils.toHexString(hmacSha3(data, privatekey)))) {
             try {
                 luckyMoneyService.updatePayStatus(oPayCallBackResponse);
             } catch (Exception e) {
