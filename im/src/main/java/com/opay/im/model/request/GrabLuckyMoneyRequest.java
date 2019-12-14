@@ -30,7 +30,7 @@ public class GrabLuckyMoneyRequest {
     /**
      * 发送目标 群or人
      */
-    @ApiModelProperty(value = "发送目标 群or人的id,不传则默认为当前用户id")
+    @ApiModelProperty(value = "发送目标 群or人的id")
     @NotNull
     private String targetId;
 

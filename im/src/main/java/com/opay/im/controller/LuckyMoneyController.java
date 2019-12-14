@@ -5,6 +5,7 @@ import com.opay.im.model.LuckyMoneyModel;
 import com.opay.im.model.request.GrabLuckyMoneyRequest;
 import com.opay.im.model.request.LuckyMoneyRequest;
 import com.opay.im.model.response.GrabLuckyMoneyResponse;
+import com.opay.im.model.response.LuckyMoneyInfoResponse;
 import com.opay.im.model.response.LuckyMoneyResponse;
 import com.opay.im.model.response.ResultResponse;
 import com.opay.im.model.response.SuccessResponse;
@@ -15,6 +16,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +38,8 @@ public class LuckyMoneyController {
     private HttpServletRequest request;
     @Autowired
     private LuckyMoneyService luckyMoneyService;
+    @Value("${config.opay.publickey}")
+    private String publickey;
 
     @ApiOperation(value = "生成红包", notes = "生成红包")
     @PostMapping
@@ -48,7 +52,9 @@ public class LuckyMoneyController {
                 throw new Exception("The target cannot be yourself");
             }
         }
-        return new ResultResponse(luckyMoneyService.sendLuckyMoney(createLuckyMoney));
+        LuckyMoneyResponse luckyMoneyResponse = luckyMoneyService.sendLuckyMoney(createLuckyMoney);
+        luckyMoneyResponse.setPublicKey(publickey);
+        return new ResultResponse(luckyMoneyResponse);
     }
 
     @ApiOperation(value = "轮询红包支付状态", notes = "轮询红包支付状态 0:未支付 1:支付成功 2;失败 3:支付中")
@@ -64,7 +70,7 @@ public class LuckyMoneyController {
 
     @ApiOperation(value = "抢红包", notes = "抢红包")
     @PostMapping("/grab")
-    public ResultResponse grabLuckyMoney(@RequestBody @Validated @ApiParam(name = "抢红包", value = "传入json格式", required = true) GrabLuckyMoneyRequest grabLuckyMoneyRequest) throws Exception {
+    public ResultResponse<GrabLuckyMoneyResponse> grabLuckyMoney(@RequestBody @Validated @ApiParam(name = "抢红包", value = "传入json格式", required = true) GrabLuckyMoneyRequest grabLuckyMoneyRequest) throws Exception {
         if (grabLuckyMoneyRequest.getTargetId() == null) {
             grabLuckyMoneyRequest.setOpayId(String.valueOf(request.getAttribute("opayId")));
         }
@@ -82,7 +88,7 @@ public class LuckyMoneyController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "红包ID", required = true, paramType = "path", dataType = "Long")
     })
-    public ResultResponse getLuckyMoney(@PathVariable long id) throws Exception {
+    public ResultResponse<LuckyMoneyInfoResponse> getLuckyMoney(@PathVariable long id) throws Exception {
         return new ResultResponse(luckyMoneyService.selectLuckyMoneyEveryPerson(id));
     }
 }

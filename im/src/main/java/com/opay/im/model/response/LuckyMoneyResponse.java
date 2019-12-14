@@ -80,4 +80,7 @@ public class LuckyMoneyResponse {
     @ApiModelProperty(value="创建时间")
     private Date createTime;
 
+    @ApiModelProperty(value="opay publicKey")
+    private String publicKey;
+
 }
