@@ -89,6 +89,6 @@ public class LuckyMoneyController {
             @ApiImplicitParam(name = "id", value = "红包ID", required = true, paramType = "path", dataType = "Long")
     })
     public ResultResponse<LuckyMoneyInfoResponse> getLuckyMoney(@PathVariable long id) throws Exception {
-        return new ResultResponse(luckyMoneyService.selectLuckyMoneyEveryPerson(id));
+        return new ResultResponse(luckyMoneyService.selectLuckyMoneyEveryPerson(String.valueOf(request.getAttribute("opayId")), id));
     }
 }

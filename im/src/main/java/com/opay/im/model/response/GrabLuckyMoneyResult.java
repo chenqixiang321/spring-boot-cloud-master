@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GrabLuckyMoneyResult {
+    private Integer code;
     private Long id;
     private BigDecimal amount;
     private String message;

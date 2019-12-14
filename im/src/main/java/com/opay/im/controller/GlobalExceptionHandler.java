@@ -2,6 +2,8 @@ package com.opay.im.controller;
 
 import com.opay.im.common.SystemCode;
 import com.opay.im.exception.ImException;
+import com.opay.im.exception.LuckMoneyExpiredException;
+import com.opay.im.exception.LuckMoneyGoneException;
 import com.opay.im.exception.LuckMoneyLimitException;
 import com.opay.im.model.response.ResultResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,10 @@ public class GlobalExceptionHandler {
             return new ResultResponse(SystemCode.IM_ERROR.getCode(), e.getMessage(), null);
         } else if (e instanceof LuckMoneyLimitException) {
             return new ResultResponse(SystemCode.LUCKY_MONEY_LIMIT_ERROR.getCode(), e.getMessage(), null);
+        } else if (e instanceof LuckMoneyExpiredException) {
+            return new ResultResponse(SystemCode.LUCKY_MONEY_EXPIRED_ERROR.getCode(), e.getMessage(), null);
+        }else if (e instanceof LuckMoneyGoneException) {
+            return new ResultResponse(SystemCode.LUCKY_MONEY_GONE_ERROR.getCode(), e.getMessage(), null);
         } else {//其他未捕获异常
             return new ResultResponse(SystemCode.SYS_ERROR.getCode(), e.getMessage(), null);
         }

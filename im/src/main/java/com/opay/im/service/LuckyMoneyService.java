@@ -27,7 +27,7 @@ public interface LuckyMoneyService {
 
     GrabLuckyMoneyResponse grabLuckyMoney(GrabLuckyMoneyRequest grabLuckyMoneyRequest) throws Exception;
 
-    LuckyMoneyInfoResponse selectLuckyMoneyEveryPerson(Long id) throws Exception;
+    LuckyMoneyInfoResponse selectLuckyMoneyEveryPerson(String opayId, Long id) throws Exception;
 
     int updatePayStatus(OPayCallBackResponse oPayCallBackResponse) throws Exception;
 

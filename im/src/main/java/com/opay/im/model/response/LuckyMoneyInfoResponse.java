@@ -39,11 +39,15 @@ public class LuckyMoneyInfoResponse {
     @ApiModelProperty(value = "红包总金额")
     private BigDecimal amount;
 
+
+    @ApiModelProperty(value = "抢到的红包金额")
+    private BigDecimal grabAmount;
     /**
      * 红包个数
      */
     @ApiModelProperty(value = "红包个数")
     private Integer quantity;
+
 
     @ApiModelProperty(value = "抢了多少")
     private List<LuckyMoneyRecordInfoResponse> LuckyMoneyRecordInfoResponses;

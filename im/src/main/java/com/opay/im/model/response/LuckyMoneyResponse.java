@@ -52,7 +52,7 @@ public class LuckyMoneyResponse {
      * 目标类型:0个人 1群
      */
     @ApiModelProperty(value="目标类型:0个人 1群")
-    private Byte targetType;
+    private Integer targetType;
 
     /**
      * 红包说明Best Wishes!

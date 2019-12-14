@@ -1,9 +1,13 @@
 package com.opay.im.service.impl;
 
 import com.opay.im.exception.ImException;
+import com.opay.im.exception.LuckMoneyExpiredException;
+import com.opay.im.exception.LuckMoneyGoneException;
 import com.opay.im.exception.LuckMoneyLimitException;
+import com.opay.im.mapper.LuckyMoneyMapper;
 import com.opay.im.mapper.LuckyMoneyRecordMapper;
 import com.opay.im.model.ChatGroupMemberModel;
+import com.opay.im.model.LuckyMoneyModel;
 import com.opay.im.model.LuckyMoneyRecordModel;
 import com.opay.im.model.request.GrabLuckyMoneyRequest;
 import com.opay.im.model.request.LuckyMoneyRequest;
@@ -16,21 +20,16 @@ import com.opay.im.model.response.opaycallback.OPayCallBackResponse;
 import com.opay.im.model.response.opaycallback.PayloadResponse;
 import com.opay.im.service.ChatGroupMemberService;
 import com.opay.im.service.IncrKeyService;
+import com.opay.im.service.LuckyMoneyService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-
-import com.opay.im.model.LuckyMoneyModel;
-import com.opay.im.mapper.LuckyMoneyMapper;
-import com.opay.im.service.LuckyMoneyService;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -163,7 +162,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         }
         List<String> keys = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getOpayId(), grabLuckyMoneyRequest.getTargetId());
         GrabLuckyMoneyResult grabLuckyMoneyResult = (GrabLuckyMoneyResult) redisTemplate.execute(grabLuckyMoney, keys, grabLuckyMoneyRequest.getOpayId());
-        if (grabLuckyMoneyResult.getId() != 0) {
+        if (grabLuckyMoneyResult.getCode() == 0) {
             LuckyMoneyRecordModel luckyMoneyRecordModel = new LuckyMoneyRecordModel();
             luckyMoneyRecordModel.setId(grabLuckyMoneyResult.getId());
             luckyMoneyRecordModel.setOpayPhone(grabLuckyMoneyRequest.getOpayPhone());
@@ -175,16 +174,28 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             grabLuckyMoneyResponse.setAmount(grabLuckyMoneyResult.getAmount());
             grabLuckyMoneyResponse.setId(grabLuckyMoneyResult.getId());
             return grabLuckyMoneyResponse;
-        } else {
-            if (grabLuckyMoneyResult.getMessage() != null) {
-                throw new ImException(grabLuckyMoneyResult.getMessage());
+        } else if (grabLuckyMoneyResult.getCode() == 1) {
+            LuckyMoneyRecordModel luckyMoneyRecordModel = luckyMoneyRecordMapper.selectLuckyMoneyRecordByOpayId(grabLuckyMoneyRequest.getId(), grabLuckyMoneyRequest.getOpayId());
+            if (luckyMoneyRecordModel == null) {
+                throw new LuckMoneyExpiredException(grabLuckyMoneyResult.getMessage());
+            } else {
+                GrabLuckyMoneyResponse grabLuckyMoneyResponse = new GrabLuckyMoneyResponse();
+                grabLuckyMoneyResponse.setAmount(luckyMoneyRecordModel.getAmount());
+                grabLuckyMoneyResponse.setId(luckyMoneyRecordModel.getLuckMoneyId());
+                return grabLuckyMoneyResponse;
             }
+        } else if (grabLuckyMoneyResult.getCode() == 2) {
+            throw new LuckMoneyGoneException(grabLuckyMoneyResult.getMessage());
+        } else {
+            GrabLuckyMoneyResponse grabLuckyMoneyResponse = new GrabLuckyMoneyResponse();
+            grabLuckyMoneyResponse.setAmount(grabLuckyMoneyResult.getAmount());
+            grabLuckyMoneyResponse.setId(grabLuckyMoneyResult.getId());
+            return grabLuckyMoneyResponse;
         }
-        return null;
     }
 
     @Override
-    public LuckyMoneyInfoResponse selectLuckyMoneyEveryPerson(Long id) throws Exception {
+    public LuckyMoneyInfoResponse selectLuckyMoneyEveryPerson(String opayId, Long id) throws Exception {
         LuckyMoneyInfoResponse luckyMoneyInfoResponse = new LuckyMoneyInfoResponse();
         List<LuckyMoneyRecordInfoResponse> luckyMoneyRecordInfoResponses = new ArrayList<>();
         LuckyMoneyModel luckyMoneyModel = luckyMoneyMapper.selectByPrimaryKey(id);
@@ -195,6 +206,9 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             luckyMoneyRecordInfoResponse = new LuckyMoneyRecordInfoResponse();
             BeanUtils.copyProperties(luckyMoneyRecordModel, luckyMoneyRecordInfoResponse);
             luckyMoneyRecordInfoResponses.add(luckyMoneyRecordInfoResponse);
+            if (opayId.equals(luckyMoneyRecordModel.getOpayId())) {
+                luckyMoneyInfoResponse.setGrabAmount(luckyMoneyRecordModel.getAmount());
+            }
         }
         luckyMoneyInfoResponse.setLuckyMoneyRecordInfoResponses(luckyMoneyRecordInfoResponses);
         return luckyMoneyInfoResponse;

@@ -133,6 +133,13 @@
     select
     <include refid="Base_Column_List" />
     from lucky_money_record
-    where luck_money_id = #{luckMoneyId,jdbcType=BIGINT}
+    where luck_money_id = #{luckMoneyId,jdbcType=BIGINT} and get_time is not null
+  </select>
+
+  <select id="selectLuckyMoneyRecordByOpayId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from lucky_money_record
+    where luck_money_id = #{luckMoneyId,jdbcType=BIGINT} and opay_id=#{opayId}
   </select>
 </mapper>
