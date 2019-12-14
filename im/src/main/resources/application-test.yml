@@ -64,7 +64,7 @@ im:
     maxMember: 200
   luckyMoney:
     singleMax: 500
-    datMax: 8000
+    dayMax: 8000
     expirationDays: 1
 management:
   endpoints:
