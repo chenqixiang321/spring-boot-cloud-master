@@ -87,6 +87,7 @@
             <![CDATA[
                 and a.`day` <= #{endYmd}
             ]]>
+            and a.reward>0
             order by a.id desc
     </select>
     
