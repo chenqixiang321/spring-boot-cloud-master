@@ -110,9 +110,11 @@ public class LuckDrawController {
         }
         Object inviteCount = redisTemplate.opsForValue().get("invite_count:" + user.getOpayId());
         Object shareCount = redisTemplate.opsForHash().get("invite_share_count:" + user.getOpayId(), "share_current");
+        Object shareMaxCount = redisTemplate.opsForHash().get("invite_share_count:" + user.getOpayId(), "share_max");
         Object loginCount = redisTemplate.opsForHash().get("invite_share_count:" + user.getOpayId(), "login_current");
         int inviteCt = 0;
         int shareCt = 0;
+        int shareMaxCt = 0;
         int loginCt = 1;
         if (inviteCount != null) {
             inviteCt = Integer.parseInt(inviteCount.toString());
@@ -123,9 +125,13 @@ public class LuckDrawController {
         if (loginCount != null) {
             loginCt = Integer.parseInt(loginCount.toString());
         }
+        if (shareMaxCount != null) {
+            shareMaxCt = Integer.parseInt(shareMaxCount.toString());
+        }
         luckDrawCountResponse.setInviteCount(inviteCt);
         luckDrawCountResponse.setLoginCount(loginCt);
         luckDrawCountResponse.setShareCount(shareCt);
+        luckDrawCountResponse.setShareMaxCount(shareMaxCt);
         resultResponse.setData(luckDrawCountResponse);
         return resultResponse;
     }
@@ -155,13 +161,13 @@ public class LuckDrawController {
         return new SuccessResponse();
     }
 
-    @ApiOperation(value = "邀请次数+5", notes = "邀请次数+5")
-    @PostMapping("/invite")
-    public SuccessResponse updateInviteCount(HttpServletRequest request) throws Exception {
-        LoginUser user = inviteOperateService.getOpayInfo(request);
-        InviteCountService.updateInviteCount(user.getOpayId(), user.getOpayName(), user.getPhoneNumber());
-        return new SuccessResponse();
-    }
+//    @ApiOperation(value = "邀请次数+5", notes = "邀请次数+5")
+//    @PostMapping("/invite")
+//    public SuccessResponse updateInviteCount(HttpServletRequest request) throws Exception {
+//        LoginUser user = inviteOperateService.getOpayInfo(request);
+//        InviteCountService.updateInviteCount(user.getOpayId(), user.getOpayName(), user.getPhoneNumber());
+//        return new SuccessResponse();
+//    }
 
     @ApiOperation(value = "抽奖", notes = "抽奖")
     @GetMapping

@@ -20,6 +20,8 @@ public class LuckDrawCountResponse {
     private Integer loginCount;
     @ApiModelProperty(value = "用户剩余抽奖次数-分享")
     private Integer shareCount;
+    @ApiModelProperty(value = "当天最高分享次数")
+    private Integer shareMaxCount;
     @ApiModelProperty(value = "用户剩余抽奖次数-邀请")
     private Integer inviteCount;
 }
