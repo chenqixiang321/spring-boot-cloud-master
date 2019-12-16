@@ -1,7 +1,6 @@
 package com.opay.im.service;
 
 import com.opay.im.model.request.OpayApiRequest;
-import com.opay.im.model.response.OpayApiResponse;
 import com.opay.im.model.response.OpayApiResultResponse;
 import com.opos.feign.factory.OpayFeignFactory;
 import feign.Headers;

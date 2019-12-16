@@ -256,6 +256,49 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         return luckyMoneyMapper.selectPayStatus(opayId, reference);
     }
 
+    @Override
+    @Cacheable(value = "luckyMoneyInfo", key = "#id", unless = "#result == null")
+    public LuckyMoneyModel selectLuckyMoneyByOpayId(Long id, String opayId) throws Exception {
+        return luckyMoneyMapper.selectLuckyMoneyByOpayId(id, opayId);
+    }
+
+    @Override
+    public LuckyMoneyInfoResponse selectLuckyMoneyDetailByOpayId(Long id, String senderOpayId, String receivedOpayId) throws Exception {
+        LuckyMoneyInfoResponse luckyMoneyInfoResponse = new LuckyMoneyInfoResponse();
+        Object luckyMoney = redisTemplate.opsForValue().get("luckyMoney:" + senderOpayId);
+        if (luckyMoney == null) {
+            luckyMoneyInfoResponse.setStatus(2);
+            return luckyMoneyInfoResponse;
+        }
+        LuckyMoneyModel luckyMoneyModelData = selectLuckyMoneyByOpayId(id, senderOpayId);
+        if (luckyMoneyModelData == null) {
+            throw new LuckMoneyExpiredException("The lucky money does not exist");
+        }
+        BeanUtils.copyProperties(luckyMoneyModelData, luckyMoneyInfoResponse);
+        LuckyMoneyRecordModel luckyMoneyRecordModel = luckyMoneyRecordMapper.selectLuckyMoneyRecordByOpayId(id, receivedOpayId);
+        if (luckyMoneyRecordModel == null) {
+            luckyMoneyInfoResponse.setStatus(0);
+        } else {
+            luckyMoneyInfoResponse.setGrabAmount(luckyMoneyRecordModel.getAmount());
+            luckyMoneyInfoResponse.setStatus(1);
+        }
+
+        return luckyMoneyInfoResponse;
+    }
+
+    @Override
+    public List<LuckyMoneyRecordResponse> selectLuckyMoneyView(Long id) throws Exception {
+        List<LuckyMoneyRecordResponse> luckyMoneyRecordResponses = new ArrayList<>();
+        List<LuckyMoneyRecordModel> LuckyMoneyRecords = luckyMoneyRecordMapper.selectLuckyMoneyRecord(id);
+        LuckyMoneyRecordResponse luckyMoneyRecordResponse;
+        for (LuckyMoneyRecordModel luckyMoneyRecordModel : LuckyMoneyRecords) {
+            luckyMoneyRecordResponse = new LuckyMoneyRecordResponse();
+            BeanUtils.copyProperties(luckyMoneyRecordModel, luckyMoneyRecordResponse);
+            luckyMoneyRecordResponses.add(luckyMoneyRecordResponse);
+        }
+        return luckyMoneyRecordResponses;
+    }
+
     private BigDecimal getRandomMoney(RedPackage _redPackage) {
         // remainSize 剩余的红包数量
         // remainMoney 剩余的钱
@@ -284,49 +327,5 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     static class RedPackage {
         int remainSize;
         BigDecimal remainMoney;
-    }
-
-    @Override
-    @Cacheable(value = "luckyMoneyInfo", key = "#id", unless = "#result == null")
-    public LuckyMoneyModel selectLuckyMoneyByOpayId(Long id, String opayId) throws Exception {
-        LuckyMoneyModel luckyMoneyModelData = luckyMoneyMapper.selectLuckyMoneyByOpayId(id, opayId);
-        return luckyMoneyModelData;
-    }
-
-    @Override
-    public LuckyMoneyInfoResponse selectLuckyMoneyDetailByOpayId(Long id, String senderOpayId, String receivedOpayId) throws Exception {
-        LuckyMoneyInfoResponse luckyMoneyInfoResponse = new LuckyMoneyInfoResponse();
-        Object luckyMoney = redisTemplate.opsForValue().get("luckyMoney:" + senderOpayId);
-        if (luckyMoney == null) {
-            luckyMoneyInfoResponse.setStatus(2);
-            return luckyMoneyInfoResponse;
-        }
-        LuckyMoneyModel luckyMoneyModelData = luckyMoneyMapper.selectByPrimaryKey(id);
-        if (luckyMoneyModelData == null) {
-            throw new LuckMoneyExpiredException("The lucky money does not exist");
-        }
-        BeanUtils.copyProperties(luckyMoneyModelData, luckyMoneyInfoResponse);
-        LuckyMoneyRecordModel luckyMoneyRecordModel = luckyMoneyRecordMapper.selectLuckyMoneyRecordByOpayId(id, receivedOpayId);
-        if (luckyMoneyRecordModel == null) {
-            luckyMoneyInfoResponse.setStatus(0);
-        } else {
-            luckyMoneyInfoResponse.setGrabAmount(luckyMoneyRecordModel.getAmount());
-            luckyMoneyInfoResponse.setStatus(1);
-        }
-
-        return luckyMoneyInfoResponse;
-    }
-
-    @Override
-    public List<LuckyMoneyRecordResponse> selectLuckyMoneyView(Long id) throws Exception {
-        List<LuckyMoneyRecordResponse> luckyMoneyRecordResponses = new ArrayList<>();
-        List<LuckyMoneyRecordModel> LuckyMoneyRecords = luckyMoneyRecordMapper.selectLuckyMoneyRecord(id);
-        LuckyMoneyRecordResponse luckyMoneyRecordResponse;
-        for (LuckyMoneyRecordModel luckyMoneyRecordModel : LuckyMoneyRecords) {
-            luckyMoneyRecordResponse = new LuckyMoneyRecordResponse();
-            BeanUtils.copyProperties(luckyMoneyRecordModel, luckyMoneyRecordResponse);
-            luckyMoneyRecordResponses.add(luckyMoneyRecordResponse);
-        }
-        return luckyMoneyRecordResponses;
     }
 }

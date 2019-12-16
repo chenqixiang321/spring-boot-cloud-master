@@ -15,6 +15,7 @@ import com.opay.im.model.response.OpayApiResultResponse;
 import com.opay.im.model.response.ResultResponse;
 import com.opay.im.model.response.SuccessResponse;
 import com.opay.im.service.IncrKeyService;
+import com.opay.im.service.OpayFriends;
 import com.opay.im.service.RongCloudService;
 import com.opay.im.utils.AESUtil;
 import io.swagger.annotations.Api;
@@ -46,7 +47,7 @@ public class UserController {
     @Autowired
     private RongCloudService rongCloudService;
     @Autowired
-    private com.opay.im.service.OpayFriends opayFriends;
+    private OpayFriends opayFriends;
     @Autowired
     private IncrKeyService incrKeyService;
     @Value("${config.opay.aesKey}")
