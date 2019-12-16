@@ -36,6 +36,8 @@ public class LuckyMoneyInfoResponse {
     @ApiModelProperty(value = "红包说明Best Wishes!")
     private String show;
 
+    @ApiModelProperty(value = "主题")
+    private String theme;
     /**
      * 红包总金额
      */
@@ -51,7 +53,6 @@ public class LuckyMoneyInfoResponse {
     @ApiModelProperty(value = "红包个数")
     private Integer quantity;
 
-
-    @ApiModelProperty(value = "抢了多少")
-    private List<LuckyMoneyRecordInfoResponse> LuckyMoneyRecordInfoResponses;
+    @ApiModelProperty(value = "红包状态0:未抢,1:已抢 ,2:过期")
+    private int status;
 }

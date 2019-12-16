@@ -15,11 +15,12 @@
     <result column="quantity" jdbcType="INTEGER" property="quantity" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="version" jdbcType="BIGINT" property="version" />
+    <result column="theme" jdbcType="VARCHAR" property="theme" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     id, opay_id, opay_name, opay_phone, target_id, target_type, `show`, amount, quantity, 
-    create_time, version
+    create_time, version, theme
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -84,6 +85,9 @@
       <if test="reference != null">
         reference,
       </if>
+      <if test="theme != null">
+        theme,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="opayId != null">
@@ -121,6 +125,9 @@
       </if>
       <if test="reference != null">
         #{reference,jdbcType=VARCHAR},
+      </if>
+      <if test="theme != null">
+        #{theme,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -222,5 +229,11 @@
 
   <select id="selectPayStatus" resultType="java.lang.Integer">
     select pay_status from lucky_money where reference=#{reference} and opay_id=#{opayId}
+  </select>
+
+  <select id="selectLuckyMoneyByOpayId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from lucky_money where id=#{id} and opay_id=#{opayId}
   </select>
 </mapper>

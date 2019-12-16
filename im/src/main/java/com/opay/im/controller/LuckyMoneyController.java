@@ -1,14 +1,15 @@
 package com.opay.im.controller;
 
 import com.opay.im.common.SystemCode;
-import com.opay.im.model.LuckyMoneyModel;
 import com.opay.im.model.request.GrabLuckyMoneyRequest;
+import com.opay.im.model.request.LuckyMoneyDetailRequest;
 import com.opay.im.model.request.LuckyMoneyRequest;
 import com.opay.im.model.response.GrabLuckyMoneyResponse;
 import com.opay.im.model.response.LuckyMoneyInfoResponse;
+import com.opay.im.model.response.LuckyMoneyPayStatusResponse;
+import com.opay.im.model.response.LuckyMoneyRecordResponse;
 import com.opay.im.model.response.LuckyMoneyResponse;
 import com.opay.im.model.response.ResultResponse;
-import com.opay.im.model.response.SuccessResponse;
 import com.opay.im.service.LuckyMoneyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -26,8 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/luckyMoney")
@@ -62,10 +61,9 @@ public class LuckyMoneyController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "reference", value = "reference", required = true, paramType = "path", dataType = "String")
     })
-    public ResultResponse<LuckyMoneyResponse> getLuckyMoneyPayStatus(@PathVariable String reference) throws Exception {
-        Map<String, Integer> map = new HashMap<>();
-        map.put("status", luckyMoneyService.selectPayStatus(String.valueOf(request.getAttribute("opayId")), reference));
-        return new ResultResponse(map);
+    public ResultResponse<LuckyMoneyPayStatusResponse> getLuckyMoneyPayStatus(@PathVariable String reference) throws Exception {
+        LuckyMoneyPayStatusResponse luckyMoneyPayStatusResponse = new LuckyMoneyPayStatusResponse(luckyMoneyService.selectPayStatus(String.valueOf(request.getAttribute("opayId")), reference));
+        return new ResultResponse(luckyMoneyPayStatusResponse);
     }
 
     @ApiOperation(value = "抢红包", notes = "抢红包")
@@ -90,5 +88,21 @@ public class LuckyMoneyController {
     })
     public ResultResponse<LuckyMoneyInfoResponse> getLuckyMoney(@PathVariable long id) throws Exception {
         return new ResultResponse(luckyMoneyService.selectLuckyMoneyEveryPerson(String.valueOf(request.getAttribute("opayId")), id));
+    }
+
+
+    @ApiOperation(value = "查看红包状态信息和详情", notes = "查看红包状态信息和详情")
+    @PostMapping("/status")
+    public ResultResponse<LuckyMoneyInfoResponse> getLuckyMoneyStatus(@RequestBody LuckyMoneyDetailRequest luckyMoneyDetailRequest) throws Exception {
+        return new ResultResponse(luckyMoneyService.selectLuckyMoneyDetailByOpayId(luckyMoneyDetailRequest.getId(), luckyMoneyDetailRequest.getOpayId(), String.valueOf(request.getAttribute("opayId"))));
+    }
+
+    @ApiOperation(value = "查看红包每个人抢了多少钱信息", notes = "查看红包每个人抢了多少钱信息")
+    @GetMapping("/view/{id}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "红包ID", required = true, paramType = "path", dataType = "Long")
+    })
+    public ResultResponse<LuckyMoneyRecordResponse> getViewLuckyMoney(@PathVariable long id) throws Exception {
+        return new ResultResponse(luckyMoneyService.selectLuckyMoneyView(id));
     }
 }

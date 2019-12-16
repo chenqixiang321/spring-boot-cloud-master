@@ -88,4 +88,7 @@ public class LuckyMoneyModel {
     */
     @ApiModelProperty(value="版本")
     private Long version;
+
+    @ApiModelProperty(value="主题")
+    private String theme;
 }

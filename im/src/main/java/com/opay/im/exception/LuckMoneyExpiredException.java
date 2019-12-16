@@ -6,6 +6,10 @@ public class LuckMoneyExpiredException extends Exception {
         super(message);
     }
 
+    public LuckMoneyExpiredException() {
+        super();
+    }
+
     @Override
     public synchronized Throwable fillInStackTrace() {
         return this;

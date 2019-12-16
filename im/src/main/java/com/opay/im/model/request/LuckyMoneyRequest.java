@@ -76,4 +76,7 @@ public class LuckyMoneyRequest {
     @ApiModelProperty(value = "红包个数")
     @NotNull
     private Integer quantity;
+
+    @ApiModelProperty(value = "主题")
+    private String theme;
 }
