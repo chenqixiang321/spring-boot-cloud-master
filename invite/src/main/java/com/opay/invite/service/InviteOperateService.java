@@ -187,15 +187,14 @@ public class InviteOperateService {
                     vo.setReward(rr.getPupilReward());
                     list.add(vo);
                 }
-            } else {
-                List<AgentRoyaltyReward> rr = rewardConfig.getRoyList();
-                rr.sort(Comparator.comparing(AgentRoyaltyReward::getMasterReward).reversed());
-                if (isAgent == 1) {
-                    OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
-                    vo.setAction(6);
-                    vo.setReward(rr.get(0).getMasterReward());
-                    list.add(vo);
-                }
+            }
+            List<AgentRoyaltyReward> rr = rewardConfig.getRoyList();
+            rr.sort(Comparator.comparing(AgentRoyaltyReward::getMasterReward).reversed());
+            if (isAgent == 1) {
+                OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
+                vo.setAction(6);
+                vo.setReward(rr.get(0).getMasterReward());
+                list.add(vo);
             }
         }
         OpayMasterPupilAwardVo vo = new OpayMasterPupilAwardVo();
