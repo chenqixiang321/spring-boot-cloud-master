@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.opay.invite.backstage.dao.mapper.LuckDrawInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.opay.invite.backstage.dao.entity.LuckDrawInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="opay_id" property="opayId" jdbcType="VARCHAR" />
+    <result column="opay_name" property="opayName" jdbcType="VARCHAR" />
+    <result column="opay_phone" property="opayPhone" jdbcType="VARCHAR" />
+    <result column="prize" property="prize" jdbcType="VARCHAR" />
+    <result column="prize_level" property="prizeLevel" jdbcType="INTEGER" />
+    <result column="prize_pool" property="prizePool" jdbcType="INTEGER" />
+    <result column="reference" property="reference" jdbcType="VARCHAR" />
+    <result column="requestId" property="requestid" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, opay_id, opay_name, opay_phone, prize, prize_level, prize_pool, reference, requestId, 
+    create_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.opay.invite.backstage.dao.entity.LuckDrawInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from luck_draw_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from luck_draw_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from luck_draw_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.opay.invite.backstage.dao.entity.LuckDrawInfoExample" >
+    delete from luck_draw_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.opay.invite.backstage.dao.entity.LuckDrawInfo" >
+    insert into luck_draw_info (id, opay_id, opay_name, 
+      opay_phone, prize, prize_level, 
+      prize_pool, reference, requestId, 
+      create_time)
+    values (#{id,jdbcType=BIGINT}, #{opayId,jdbcType=VARCHAR}, #{opayName,jdbcType=VARCHAR}, 
+      #{opayPhone,jdbcType=VARCHAR}, #{prize,jdbcType=VARCHAR}, #{prizeLevel,jdbcType=INTEGER}, 
+      #{prizePool,jdbcType=INTEGER}, #{reference,jdbcType=VARCHAR}, #{requestid,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.opay.invite.backstage.dao.entity.LuckDrawInfo" >
+    insert into luck_draw_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="opayId != null" >
+        opay_id,
+      </if>
+      <if test="opayName != null" >
+        opay_name,
+      </if>
+      <if test="opayPhone != null" >
+        opay_phone,
+      </if>
+      <if test="prize != null" >
+        prize,
+      </if>
+      <if test="prizeLevel != null" >
+        prize_level,
+      </if>
+      <if test="prizePool != null" >
+        prize_pool,
+      </if>
+      <if test="reference != null" >
+        reference,
+      </if>
+      <if test="requestid != null" >
+        requestId,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="opayId != null" >
+        #{opayId,jdbcType=VARCHAR},
+      </if>
+      <if test="opayName != null" >
+        #{opayName,jdbcType=VARCHAR},
+      </if>
+      <if test="opayPhone != null" >
+        #{opayPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="prize != null" >
+        #{prize,jdbcType=VARCHAR},
+      </if>
+      <if test="prizeLevel != null" >
+        #{prizeLevel,jdbcType=INTEGER},
+      </if>
+      <if test="prizePool != null" >
+        #{prizePool,jdbcType=INTEGER},
+      </if>
+      <if test="reference != null" >
+        #{reference,jdbcType=VARCHAR},
+      </if>
+      <if test="requestid != null" >
+        #{requestid,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.opay.invite.backstage.dao.entity.LuckDrawInfoExample" resultType="java.lang.Integer" >
+    select count(*) from luck_draw_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update luck_draw_info
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.opayId != null" >
+        opay_id = #{record.opayId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.opayName != null" >
+        opay_name = #{record.opayName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.opayPhone != null" >
+        opay_phone = #{record.opayPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.prize != null" >
+        prize = #{record.prize,jdbcType=VARCHAR},
+      </if>
+      <if test="record.prizeLevel != null" >
+        prize_level = #{record.prizeLevel,jdbcType=INTEGER},
+      </if>
+      <if test="record.prizePool != null" >
+        prize_pool = #{record.prizePool,jdbcType=INTEGER},
+      </if>
+      <if test="record.reference != null" >
+        reference = #{record.reference,jdbcType=VARCHAR},
+      </if>
+      <if test="record.requestid != null" >
+        requestId = #{record.requestid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update luck_draw_info
+    set id = #{record.id,jdbcType=BIGINT},
+      opay_id = #{record.opayId,jdbcType=VARCHAR},
+      opay_name = #{record.opayName,jdbcType=VARCHAR},
+      opay_phone = #{record.opayPhone,jdbcType=VARCHAR},
+      prize = #{record.prize,jdbcType=VARCHAR},
+      prize_level = #{record.prizeLevel,jdbcType=INTEGER},
+      prize_pool = #{record.prizePool,jdbcType=INTEGER},
+      reference = #{record.reference,jdbcType=VARCHAR},
+      requestId = #{record.requestid,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.opay.invite.backstage.dao.entity.LuckDrawInfo" >
+    update luck_draw_info
+    <set >
+      <if test="opayId != null" >
+        opay_id = #{opayId,jdbcType=VARCHAR},
+      </if>
+      <if test="opayName != null" >
+        opay_name = #{opayName,jdbcType=VARCHAR},
+      </if>
+      <if test="opayPhone != null" >
+        opay_phone = #{opayPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="prize != null" >
+        prize = #{prize,jdbcType=VARCHAR},
+      </if>
+      <if test="prizeLevel != null" >
+        prize_level = #{prizeLevel,jdbcType=INTEGER},
+      </if>
+      <if test="prizePool != null" >
+        prize_pool = #{prizePool,jdbcType=INTEGER},
+      </if>
+      <if test="reference != null" >
+        reference = #{reference,jdbcType=VARCHAR},
+      </if>
+      <if test="requestid != null" >
+        requestId = #{requestid,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.opay.invite.backstage.dao.entity.LuckDrawInfo" >
+    update luck_draw_info
+    set opay_id = #{opayId,jdbcType=VARCHAR},
+      opay_name = #{opayName,jdbcType=VARCHAR},
+      opay_phone = #{opayPhone,jdbcType=VARCHAR},
+      prize = #{prize,jdbcType=VARCHAR},
+      prize_level = #{prizeLevel,jdbcType=INTEGER},
+      prize_pool = #{prizePool,jdbcType=INTEGER},
+      reference = #{reference,jdbcType=VARCHAR},
+      requestId = #{requestid,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

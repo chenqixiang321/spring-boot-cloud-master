@@ -24,6 +24,7 @@
     <modules>
         <module>im</module>
         <module>invite</module>
+        <module>invite-backstage</module>
     </modules>
 
     <dependencies>
