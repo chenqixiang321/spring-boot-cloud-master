@@ -10,8 +10,8 @@ public class CodeMsg {
     public static final CodeMsg NEED_AUTHORIZATION = new CodeMsg(2005, "you need to be authorization");
 
     //
-    public static final CodeMsg ILLEGAL_CODE = new CodeMsg(1006, "Invalid referral code, please confirm.");
-    public static final CodeMsg ILLEGAL_CODE_RELATION = new CodeMsg(1007, "Invalid referral code, please confirm.");
+    public static final CodeMsg ILLEGAL_CODE = new CodeMsg(1006, "Invalid event referral code, please confirm.");
+    public static final CodeMsg ILLEGAL_CODE_RELATION = new CodeMsg(1007, "Invalid event referral code, please confirm.");
 
     public static final CodeMsg ILLEGAL_CODE_DAY = new CodeMsg(1008, "Oops, something went wrong, you're not rewarded");
 
