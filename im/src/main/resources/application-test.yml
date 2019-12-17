@@ -61,7 +61,7 @@ rongyun:
 #    privatekey: OPAYPRV15762910236470.8764696319929024
 config:
   opay:
-    domain: http://graphql.opaydev.com:8083/
+    domain: http://graphql.opaydev.com:8081/
     merchantId: 256619121714011
     aesKey: Gcn0yMfqNyDlbdbk
     iv: qazwert12345!@#$
