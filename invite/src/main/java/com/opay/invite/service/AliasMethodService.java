@@ -35,7 +35,6 @@ public class AliasMethodService {
     @Value("${prize-pool.count}")
     private int prizePoolCount;
 
-    @PostConstruct //TODO 本地测试时加上
     public void init() {
         for (int i = 0; i < prizePoolConfig.getFirstPool().size(); i++) {
             PrizeModel prizeModel = prizePoolConfig.getFirstPool().get(i);

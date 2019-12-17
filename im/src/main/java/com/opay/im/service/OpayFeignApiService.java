@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
-        name = "opayFriends",
+        name = "opayRedEnvelope",
         url = "${config.opay.domain}",
         fallbackFactory = OpayFeignFactory.class
 )
-public interface OpayFriends {
+public interface OpayFeignApiService {
     @PostMapping({"api/im/batchQueryUserByPhone"})
     @Headers({"ContentType:application/json"})
     OpayApiResultResponse batchQueryUserByPhone(@RequestBody OpayApiRequest opayApiRequest);
@@ -25,4 +25,12 @@ public interface OpayFriends {
     @PostMapping({"api/users/queryUserInfoByPhone"})
     @Headers({"ContentType:application/json"})
     OpayApiResultResponse queryUserInfoByPhone(@RequestBody OpayApiRequest opayApiRequest);
+
+    @PostMapping({"/api/im/createRedPacket"})
+    @Headers({"ContentType:application/json"})
+    OpayApiResultResponse createRedPacket(@RequestBody OpayApiRequest opayApiRequest);
+
+    @PostMapping({"/api/im/refundRedPacket"})
+    @Headers({"ContentType:application/json"})
+    OpayApiResultResponse refundRedPacket(@RequestBody OpayApiRequest opayApiRequest);
 }

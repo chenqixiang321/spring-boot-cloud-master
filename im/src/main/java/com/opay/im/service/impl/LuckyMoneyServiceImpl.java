@@ -169,10 +169,12 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             if (!isInGroup) {
                 throw new ImException("You do not belong to this group");
             }
+        } else {
+            grabLuckyMoneyRequest.setTargetId(grabLuckyMoneyRequest.getCurrentOpayId());
         }
-        List<String> keys = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getOpayId(), grabLuckyMoneyRequest.getTargetId());
-        GrabLuckyMoneyResult grabLuckyMoneyResult = (GrabLuckyMoneyResult) redisTemplate.execute(grabLuckyMoney, keys, grabLuckyMoneyRequest.getOpayId());
-        LuckyMoneyModel luckyMoneyModelData = selectLuckyMoneyByOpayId(grabLuckyMoneyRequest.getId(), grabLuckyMoneyRequest.getOpayId());
+        List<String> keys = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getSenderId(), grabLuckyMoneyRequest.getTargetId());
+        GrabLuckyMoneyResult grabLuckyMoneyResult = (GrabLuckyMoneyResult) redisTemplate.execute(grabLuckyMoney, keys, grabLuckyMoneyRequest.getCurrentOpayId());
+        LuckyMoneyModel luckyMoneyModelData = selectLuckyMoneyByOpayId(grabLuckyMoneyRequest.getId(), grabLuckyMoneyRequest.getSenderId());
         if (luckyMoneyModelData == null) {
             throw new LuckMoneyExpiredException(grabLuckyMoneyResult.getMessage());
         }
@@ -201,8 +203,8 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             map.put("envelopId", grabLuckyMoneyRequest.getId());
             map.put("targetId", grabLuckyMoneyRequest.getTargetId());
             map.put("status", "0");
-            rongCloudService.sendMessage(grabLuckyMoneyRequest.getTargetId(), grabLuckyMoneyRequest.getOpayId(), mapper.writeValueAsString(map), "");
-            rongCloudService.sendMessage(grabLuckyMoneyRequest.getOpayId(), grabLuckyMoneyRequest.getTargetId(), mapper.writeValueAsString(map), "");
+            rongCloudService.sendMessage(grabLuckyMoneyRequest.getTargetId(), grabLuckyMoneyRequest.getSenderId(), mapper.writeValueAsString(map), "");
+            rongCloudService.sendMessage(grabLuckyMoneyRequest.getSenderId(), grabLuckyMoneyRequest.getTargetId(), mapper.writeValueAsString(map), "");
             return grabLuckyMoneyResponse;
         } else if (grabLuckyMoneyResult.getCode() == 2) {
             throw new LuckMoneyGoneException(grabLuckyMoneyResult.getMessage());

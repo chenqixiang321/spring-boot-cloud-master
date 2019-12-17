@@ -86,3 +86,7 @@ prometheus:
   client:
     enabled: true
     basePackage: com.opay.im
+feign:
+  httpclient:
+    connectionTimeout: 50000
+    timeToLive: 1

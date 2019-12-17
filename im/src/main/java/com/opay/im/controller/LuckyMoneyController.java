@@ -84,7 +84,7 @@ public class LuckyMoneyController {
     @ApiOperation(value = "查看红包状态信息和详情", notes = "查看红包状态信息和详情")
     @PostMapping("/status")
     public ResultResponse<LuckyMoneyInfoResponse> getLuckyMoneyStatus(@RequestBody LuckyMoneyDetailRequest luckyMoneyDetailRequest) throws Exception {
-        return new ResultResponse(luckyMoneyService.selectLuckyMoneyDetailByOpayId(luckyMoneyDetailRequest.getId(), luckyMoneyDetailRequest.getOpayId(), String.valueOf(request.getAttribute("opayId"))));
+        return new ResultResponse(luckyMoneyService.selectLuckyMoneyDetailByOpayId(luckyMoneyDetailRequest.getId(), luckyMoneyDetailRequest.getSenderId(), String.valueOf(request.getAttribute("opayId"))));
     }
 
     @ApiOperation(value = "查看红包每个人抢了多少钱信息", notes = "查看红包每个人抢了多少钱信息")

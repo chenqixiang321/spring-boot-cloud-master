@@ -24,7 +24,7 @@ public class GrabLuckyMoneyRequest {
      * 发送者的opay_id
      */
     @ApiModelProperty(value = "发送者的opay_id")
-    private String opayId;
+    private String senderId;
 
     @ApiModelProperty(value = "当前用户的opay_id", hidden = true)
     private String currentOpayId;

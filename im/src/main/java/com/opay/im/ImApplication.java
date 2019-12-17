@@ -1,6 +1,6 @@
 package com.opay.im;
 
-import com.opay.im.service.OpayFriends;
+import com.opay.im.service.OpayFeignApiService;
 import com.opos.feign.OpayFeign;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -14,7 +14,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @EnableCaching
 @EnableHystrix
-@EnableFeignClients(clients = {OpayFeign.class, OpayFriends.class})
+@EnableFeignClients(clients = {OpayFeign.class, OpayFeignApiService.class})
 @MapperScan(basePackages = "com.opay.im.mapper")
 //@EnableApolloConfig
 public class ImApplication {

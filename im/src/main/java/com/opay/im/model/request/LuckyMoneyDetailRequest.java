@@ -24,5 +24,5 @@ public class LuckyMoneyDetailRequest {
     private Long id;
 
     @ApiModelProperty(value = "发送者的opay_id")
-    private String opayId;
+    private String senderId;
 }
