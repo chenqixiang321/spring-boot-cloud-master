@@ -211,13 +211,13 @@ prize-pool:
   inviteLimit: 100
   shareLimit: 3 #每天分享上线
   grandPrizeIndex: 37 #还剩n次时,开出大奖
-  firstGrandPrizeTimeUp: "11:30:00"
-  secondGrandPrizeTimeUp: "21:30:00"
+  firstGrandPrizeTimeUp: "4:00:00"
+  secondGrandPrizeTimeUp: "8:00:00"
   secondPoolRate: 4
-  count: 10000
+  count: 100
   firstPoolStart: 1
-  firstPoolEnd: 12
-  secondPoolStart: 13
+  firstPoolEnd: 6
+  secondPoolStart: 7
   secondPoolEnd: 23
   firstPool:
     - {id: 2,prize: 10,prob: 0.01}

@@ -212,30 +212,6 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public LuckyMoneyDetailResponse selectLuckyMoneyEveryPerson(String opayId, Long id) throws Exception {
-        LuckyMoneyDetailResponse luckyMoneyInfoResponse = new LuckyMoneyDetailResponse();
-        List<LuckyMoneyRecordResponse> luckyMoneyRecordResponses = new ArrayList<>();
-        LuckyMoneyModel luckyMoneyModel = selectLuckyMoneyByOpayId(id, opayId);
-        if (luckyMoneyModel == null) {
-            throw new LuckMoneyExpiredException(SystemCode.LUCKY_MONEY_EXPIRED_ERROR.getMessage());
-        }
-        BeanUtils.copyProperties(luckyMoneyModel, luckyMoneyInfoResponse);
-        List<LuckyMoneyRecordModel> LuckyMoneyRecords = luckyMoneyRecordMapper.selectLuckyMoneyRecord(id);
-        LuckyMoneyRecordResponse luckyMoneyRecordResponse;
-        for (LuckyMoneyRecordModel luckyMoneyRecordModel : LuckyMoneyRecords) {
-            luckyMoneyRecordResponse = new LuckyMoneyRecordResponse();
-            BeanUtils.copyProperties(luckyMoneyRecordModel, luckyMoneyRecordResponse);
-            luckyMoneyRecordResponses.add(luckyMoneyRecordResponse);
-            if (opayId.equals(luckyMoneyRecordModel.getOpayId())) {
-                luckyMoneyInfoResponse.setGrabAmount(luckyMoneyRecordModel.getAmount());
-            }
-        }
-        luckyMoneyInfoResponse.setOpayName(luckyMoneyModel.getOpayName());
-        luckyMoneyInfoResponse.setLuckyMoneyRecordResponses(luckyMoneyRecordResponses);
-        return luckyMoneyInfoResponse;
-    }
-
-    @Override
     public int updatePayStatus(OPayCallBackResponse oPayCallBackResponse) throws Exception {
         PayloadResponse payload = oPayCallBackResponse.getPayload();
         LuckyMoneyModel luckyMoneyModel = new LuckyMoneyModel();

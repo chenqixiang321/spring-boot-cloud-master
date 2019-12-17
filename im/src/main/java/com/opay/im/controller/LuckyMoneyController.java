@@ -81,16 +81,6 @@ public class LuckyMoneyController {
 
     }
 
-    @ApiOperation(value = "查看红包信息", notes = "每个人抢了多少钱")
-    @GetMapping("/info/{id}")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "红包ID", required = true, paramType = "path", dataType = "Long")
-    })
-    public ResultResponse<LuckyMoneyInfoResponse> getLuckyMoney(@PathVariable long id) throws Exception {
-        return new ResultResponse(luckyMoneyService.selectLuckyMoneyEveryPerson(String.valueOf(request.getAttribute("opayId")), id));
-    }
-
-
     @ApiOperation(value = "查看红包状态信息和详情", notes = "查看红包状态信息和详情")
     @PostMapping("/status")
     public ResultResponse<LuckyMoneyInfoResponse> getLuckyMoneyStatus(@RequestBody LuckyMoneyDetailRequest luckyMoneyDetailRequest) throws Exception {
