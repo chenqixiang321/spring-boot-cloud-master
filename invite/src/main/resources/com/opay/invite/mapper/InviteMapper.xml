@@ -47,13 +47,6 @@
     </select>
 
     <select id="selectRelationByMasterId" resultMap="BaseVoResultMap">
---         select
---         a.master_id,a.pupil_id,a.pupil_phone,a.create_at,b.master_reward
---         from opay_invite_relation a
---         left join opay_master_pupil_award b on a.pupil_id = b.opay_id
---         where a.master_id=#{masterId,jdbcType=VARCHAR} and b.master_type=0
---         order by a.id desc
-
          select
         a.master_id,a.pupil_id,a.pupil_phone,a.create_at,
 	(select sum(master_reward) from opay_master_pupil_award where  opay_id= a.pupil_id and master_type=0) master_reward
