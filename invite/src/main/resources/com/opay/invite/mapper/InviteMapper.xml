@@ -49,7 +49,7 @@
     <select id="selectRelationByMasterId" resultMap="BaseVoResultMap">
          select
         a.master_id,a.pupil_id,a.pupil_phone,a.create_at,
-	(select sum(master_reward) from opay_master_pupil_award where  opay_id= a.pupil_id and master_type=0) master_reward
+	(select sum(master_reward) from opay_master_pupil_award where  opay_id= a.pupil_id and master_type=0  and a.create_at <![CDATA[<=]]> create_at) master_reward
         from opay_invite_relation a
         where a.master_id=#{masterId,jdbcType=VARCHAR}
         order by a.id desc
