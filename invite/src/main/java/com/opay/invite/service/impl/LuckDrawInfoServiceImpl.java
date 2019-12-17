@@ -24,6 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cloud.openfeign.ribbon.FeignRibbonClientAutoConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -148,7 +149,6 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         }
         PrizePoolResponse prizePoolResponse = (PrizePoolResponse) redisTemplate.execute(inviteShareCountDec, keys, firstPrizePoolIndex, secondPrizePoolIndex, prizePoolConfig.getGrandPrizeIndex(), grandPrizeTimeUp, prizePoolConfig.getSecondPoolRate());
         LuckDrawInfoModel luckDrawInfoModel = new LuckDrawInfoModel();
-
         if ("success".equals(prizePoolResponse.getMessage()) && prizePoolResponse.getPrize() != null) {
             luckDrawInfoModel.setCreateTime(date);
             luckDrawInfoModel.setOpayId(opayId);
@@ -160,26 +160,24 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             }
             PrizeModel pm = prizes.get(prizePoolResponse.getPrize());
             String prize = pm.getPrize();
-            if (!"0".equals(prize)) {
-                luckDrawInfoModel.setPrizeLevel(pm.getId());
-                luckDrawInfoModel.setPrize(prize);
-                luckDrawInfoModel.setPrizePool(prizePoolResponse.getPool());
-                luckDrawInfoResponse.setPrize(luckDrawInfoModel.getPrize());
-                luckDrawInfoResponse.setPrizeId(pm.getId());
-                if (CommonUtil.isInteger(prize)) {
-                    String requestId = incrKeyService.getIncrKey();
-                    String reference = incrKeyService.getIncrKey();
-                    luckDrawInfoModel.setRequestId(requestId);
-                    luckDrawInfoModel.setReference(reference);
-                    Map<String, String> data = rpcService.getParamMap(opayConfig.getMerchantId(), opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), transferNotify, PayChannel.BalancePayment.getPayChannel());
-                    OpayApiResultResponse opayApiResultResponse = opayApiService.createOrder(opayConfig.getMerchantId(), requestId, data, opayConfig.getAesKey(), opayConfig.getIv());
-                    if (!"00000".equals(opayApiResultResponse.getCode())) {
-                        throw new InviteException(opayApiResultResponse.getMessage());
-                    }
-                    luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
-                } else {
-                    luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
+            luckDrawInfoModel.setPrizeLevel(pm.getId());
+            luckDrawInfoModel.setPrize(prize);
+            luckDrawInfoModel.setPrizePool(prizePoolResponse.getPool());
+            luckDrawInfoResponse.setPrize(luckDrawInfoModel.getPrize());
+            luckDrawInfoResponse.setPrizeId(pm.getId());
+            if (CommonUtil.isInteger(prize)) {
+                String requestId = incrKeyService.getIncrKey();
+                String reference = incrKeyService.getIncrKey();
+                luckDrawInfoModel.setRequestId(requestId);
+                luckDrawInfoModel.setReference(reference);
+                Map<String, String> data = rpcService.getParamMap(opayConfig.getMerchantId(), opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), transferNotify, PayChannel.BalancePayment.getPayChannel());
+                OpayApiResultResponse opayApiResultResponse = opayApiService.createOrder(opayConfig.getMerchantId(), requestId, data, opayConfig.getAesKey(), opayConfig.getIv());
+                if (!"00000".equals(opayApiResultResponse.getCode())) {
+                    throw new InviteException(opayApiResultResponse.getMessage());
                 }
+                luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
+            } else {
+                luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
             }
         } else {
             throw new InviteException(prizePoolResponse.getMessage());

@@ -13,9 +13,9 @@ spring:
   application:
     name: opay-invite
   datasource:
-    url: jdbc:mysql://localhost:3306/opay_invite_activitie?useSSL=false&useAffectedRows=true&allowMultiQueries=true
+    url: jdbc:mysql://localhost:3306/opay_invite?useSSL=false&useAffectedRows=true&allowMultiQueries=true
     username: root
-    password: 123456
+    password: root
     driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
