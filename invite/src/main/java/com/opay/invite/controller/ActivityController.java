@@ -103,6 +103,7 @@ public class ActivityController {
             activity.setAmount(BigDecimal.ZERO);
         }else {
             activity.setAmount(cashback.getAmount());
+            activity.setTotalReward(cashback.getTotalAmount());
         }
         int count =inviteService.getRelationCount(user.getOpayId());
 
