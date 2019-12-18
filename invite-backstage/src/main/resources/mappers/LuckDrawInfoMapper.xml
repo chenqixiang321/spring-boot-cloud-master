@@ -11,7 +11,13 @@
     <result column="prize_pool" property="prizePool" jdbcType="INTEGER" />
     <result column="reference" property="reference" jdbcType="VARCHAR" />
     <result column="requestId" property="requestid" jdbcType="VARCHAR" />
+    <result column="operator_id" property="operatorId" jdbcType="VARCHAR" />
+    <result column="operator_name" property="operatorName" jdbcType="VARCHAR" />
+    <result column="redeem_status" property="redeemStatus" jdbcType="TINYINT" />
+    <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -73,7 +79,7 @@
   </sql>
   <sql id="Base_Column_List" >
     id, opay_id, opay_name, opay_phone, prize, prize_level, prize_pool, reference, requestId, 
-    create_time
+    operator_id, operator_name, redeem_status, operate_time, memo, create_time, update_time
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.opay.invite.backstage.dao.entity.LuckDrawInfoExample" >
     select
@@ -109,11 +115,15 @@
     insert into luck_draw_info (id, opay_id, opay_name, 
       opay_phone, prize, prize_level, 
       prize_pool, reference, requestId, 
-      create_time)
+      operator_id, operator_name, redeem_status, 
+      operate_time, memo, create_time, 
+      update_time)
     values (#{id,jdbcType=BIGINT}, #{opayId,jdbcType=VARCHAR}, #{opayName,jdbcType=VARCHAR}, 
       #{opayPhone,jdbcType=VARCHAR}, #{prize,jdbcType=VARCHAR}, #{prizeLevel,jdbcType=INTEGER}, 
       #{prizePool,jdbcType=INTEGER}, #{reference,jdbcType=VARCHAR}, #{requestid,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP})
+      #{operatorId,jdbcType=VARCHAR}, #{operatorName,jdbcType=VARCHAR}, #{redeemStatus,jdbcType=TINYINT}, 
+      #{operateTime,jdbcType=TIMESTAMP}, #{memo,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.opay.invite.backstage.dao.entity.LuckDrawInfo" >
     insert into luck_draw_info
@@ -145,8 +155,26 @@
       <if test="requestid != null" >
         requestId,
       </if>
+      <if test="operatorId != null" >
+        operator_id,
+      </if>
+      <if test="operatorName != null" >
+        operator_name,
+      </if>
+      <if test="redeemStatus != null" >
+        redeem_status,
+      </if>
+      <if test="operateTime != null" >
+        operate_time,
+      </if>
+      <if test="memo != null" >
+        memo,
+      </if>
       <if test="createTime != null" >
         create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -177,8 +205,26 @@
       <if test="requestid != null" >
         #{requestid,jdbcType=VARCHAR},
       </if>
+      <if test="operatorId != null" >
+        #{operatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorName != null" >
+        #{operatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="redeemStatus != null" >
+        #{redeemStatus,jdbcType=TINYINT},
+      </if>
+      <if test="operateTime != null" >
+        #{operateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memo != null" >
+        #{memo,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null" >
         #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -218,8 +264,26 @@
       <if test="record.requestid != null" >
         requestId = #{record.requestid,jdbcType=VARCHAR},
       </if>
+      <if test="record.operatorId != null" >
+        operator_id = #{record.operatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.operatorName != null" >
+        operator_name = #{record.operatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.redeemStatus != null" >
+        redeem_status = #{record.redeemStatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.operateTime != null" >
+        operate_time = #{record.operateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.memo != null" >
+        memo = #{record.memo,jdbcType=VARCHAR},
+      </if>
       <if test="record.createTime != null" >
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -237,7 +301,13 @@
       prize_pool = #{record.prizePool,jdbcType=INTEGER},
       reference = #{record.reference,jdbcType=VARCHAR},
       requestId = #{record.requestid,jdbcType=VARCHAR},
-      create_time = #{record.createTime,jdbcType=TIMESTAMP}
+      operator_id = #{record.operatorId,jdbcType=VARCHAR},
+      operator_name = #{record.operatorName,jdbcType=VARCHAR},
+      redeem_status = #{record.redeemStatus,jdbcType=TINYINT},
+      operate_time = #{record.operateTime,jdbcType=TIMESTAMP},
+      memo = #{record.memo,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -269,8 +339,26 @@
       <if test="requestid != null" >
         requestId = #{requestid,jdbcType=VARCHAR},
       </if>
+      <if test="operatorId != null" >
+        operator_id = #{operatorId,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorName != null" >
+        operator_name = #{operatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="redeemStatus != null" >
+        redeem_status = #{redeemStatus,jdbcType=TINYINT},
+      </if>
+      <if test="operateTime != null" >
+        operate_time = #{operateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memo != null" >
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null" >
         create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -285,7 +373,13 @@
       prize_pool = #{prizePool,jdbcType=INTEGER},
       reference = #{reference,jdbcType=VARCHAR},
       requestId = #{requestid,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
+      operator_id = #{operatorId,jdbcType=VARCHAR},
+      operator_name = #{operatorName,jdbcType=VARCHAR},
+      redeem_status = #{redeemStatus,jdbcType=TINYINT},
+      operate_time = #{operateTime,jdbcType=TIMESTAMP},
+      memo = #{memo,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

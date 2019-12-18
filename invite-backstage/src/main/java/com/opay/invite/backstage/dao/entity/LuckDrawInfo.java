@@ -22,7 +22,19 @@ public class LuckDrawInfo implements Serializable {
 
     private String requestid;
 
+    private String operatorId;
+
+    private String operatorName;
+
+    private Byte redeemStatus;
+
+    private LocalDateTime operateTime;
+
+    private String memo;
+
     private LocalDateTime createTime;
+
+    private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
 
@@ -98,11 +110,59 @@ public class LuckDrawInfo implements Serializable {
         this.requestid = requestid;
     }
 
+    public String getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(String operatorId) {
+        this.operatorId = operatorId;
+    }
+
+    public String getOperatorName() {
+        return operatorName;
+    }
+
+    public void setOperatorName(String operatorName) {
+        this.operatorName = operatorName;
+    }
+
+    public Byte getRedeemStatus() {
+        return redeemStatus;
+    }
+
+    public void setRedeemStatus(Byte redeemStatus) {
+        this.redeemStatus = redeemStatus;
+    }
+
+    public LocalDateTime getOperateTime() {
+        return operateTime;
+    }
+
+    public void setOperateTime(LocalDateTime operateTime) {
+        this.operateTime = operateTime;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
     public LocalDateTime getCreateTime() {
         return createTime;
     }
 
     public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
     }
 }

@@ -12,10 +12,8 @@ import lombok.Data;
  */
 @Data
 @ApiModel(value = "操作员登陆", description = "操作员请求登陆接口")
-public class LoginReqDto {
+public class LoginReqDto extends BaseReqDto {
 
-    @ApiModelProperty(value = "登陆操作员id")
-    private String operatorId;
 
     @ApiModelProperty(value = "操作员密码")
     private String loginPwd;

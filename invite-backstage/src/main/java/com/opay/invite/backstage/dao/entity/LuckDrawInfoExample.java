@@ -705,6 +705,336 @@ public class LuckDrawInfoExample {
             return (Criteria) this;
         }
 
+        public Criteria andOperatorIdIsNull() {
+            addCriterion("operator_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdIsNotNull() {
+            addCriterion("operator_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdEqualTo(String value) {
+            addCriterion("operator_id =", value, "operatorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdNotEqualTo(String value) {
+            addCriterion("operator_id <>", value, "operatorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdGreaterThan(String value) {
+            addCriterion("operator_id >", value, "operatorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdGreaterThanOrEqualTo(String value) {
+            addCriterion("operator_id >=", value, "operatorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdLessThan(String value) {
+            addCriterion("operator_id <", value, "operatorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdLessThanOrEqualTo(String value) {
+            addCriterion("operator_id <=", value, "operatorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdLike(String value) {
+            addCriterion("operator_id like", value, "operatorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdNotLike(String value) {
+            addCriterion("operator_id not like", value, "operatorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdIn(List<String> values) {
+            addCriterion("operator_id in", values, "operatorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdNotIn(List<String> values) {
+            addCriterion("operator_id not in", values, "operatorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdBetween(String value1, String value2) {
+            addCriterion("operator_id between", value1, value2, "operatorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIdNotBetween(String value1, String value2) {
+            addCriterion("operator_id not between", value1, value2, "operatorId");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameIsNull() {
+            addCriterion("operator_name is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameIsNotNull() {
+            addCriterion("operator_name is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameEqualTo(String value) {
+            addCriterion("operator_name =", value, "operatorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameNotEqualTo(String value) {
+            addCriterion("operator_name <>", value, "operatorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameGreaterThan(String value) {
+            addCriterion("operator_name >", value, "operatorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameGreaterThanOrEqualTo(String value) {
+            addCriterion("operator_name >=", value, "operatorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameLessThan(String value) {
+            addCriterion("operator_name <", value, "operatorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameLessThanOrEqualTo(String value) {
+            addCriterion("operator_name <=", value, "operatorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameLike(String value) {
+            addCriterion("operator_name like", value, "operatorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameNotLike(String value) {
+            addCriterion("operator_name not like", value, "operatorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameIn(List<String> values) {
+            addCriterion("operator_name in", values, "operatorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameNotIn(List<String> values) {
+            addCriterion("operator_name not in", values, "operatorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameBetween(String value1, String value2) {
+            addCriterion("operator_name between", value1, value2, "operatorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNameNotBetween(String value1, String value2) {
+            addCriterion("operator_name not between", value1, value2, "operatorName");
+            return (Criteria) this;
+        }
+
+        public Criteria andRedeemStatusIsNull() {
+            addCriterion("redeem_status is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRedeemStatusIsNotNull() {
+            addCriterion("redeem_status is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRedeemStatusEqualTo(Byte value) {
+            addCriterion("redeem_status =", value, "redeemStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andRedeemStatusNotEqualTo(Byte value) {
+            addCriterion("redeem_status <>", value, "redeemStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andRedeemStatusGreaterThan(Byte value) {
+            addCriterion("redeem_status >", value, "redeemStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andRedeemStatusGreaterThanOrEqualTo(Byte value) {
+            addCriterion("redeem_status >=", value, "redeemStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andRedeemStatusLessThan(Byte value) {
+            addCriterion("redeem_status <", value, "redeemStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andRedeemStatusLessThanOrEqualTo(Byte value) {
+            addCriterion("redeem_status <=", value, "redeemStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andRedeemStatusIn(List<Byte> values) {
+            addCriterion("redeem_status in", values, "redeemStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andRedeemStatusNotIn(List<Byte> values) {
+            addCriterion("redeem_status not in", values, "redeemStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andRedeemStatusBetween(Byte value1, Byte value2) {
+            addCriterion("redeem_status between", value1, value2, "redeemStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andRedeemStatusNotBetween(Byte value1, Byte value2) {
+            addCriterion("redeem_status not between", value1, value2, "redeemStatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperateTimeIsNull() {
+            addCriterion("operate_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperateTimeIsNotNull() {
+            addCriterion("operate_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperateTimeEqualTo(LocalDateTime value) {
+            addCriterion("operate_time =", value, "operateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperateTimeNotEqualTo(LocalDateTime value) {
+            addCriterion("operate_time <>", value, "operateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperateTimeGreaterThan(LocalDateTime value) {
+            addCriterion("operate_time >", value, "operateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperateTimeGreaterThanOrEqualTo(LocalDateTime value) {
+            addCriterion("operate_time >=", value, "operateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperateTimeLessThan(LocalDateTime value) {
+            addCriterion("operate_time <", value, "operateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperateTimeLessThanOrEqualTo(LocalDateTime value) {
+            addCriterion("operate_time <=", value, "operateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperateTimeIn(List<LocalDateTime> values) {
+            addCriterion("operate_time in", values, "operateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperateTimeNotIn(List<LocalDateTime> values) {
+            addCriterion("operate_time not in", values, "operateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperateTimeBetween(LocalDateTime value1, LocalDateTime value2) {
+            addCriterion("operate_time between", value1, value2, "operateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperateTimeNotBetween(LocalDateTime value1, LocalDateTime value2) {
+            addCriterion("operate_time not between", value1, value2, "operateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoIsNull() {
+            addCriterion("memo is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoIsNotNull() {
+            addCriterion("memo is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoEqualTo(String value) {
+            addCriterion("memo =", value, "memo");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoNotEqualTo(String value) {
+            addCriterion("memo <>", value, "memo");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoGreaterThan(String value) {
+            addCriterion("memo >", value, "memo");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoGreaterThanOrEqualTo(String value) {
+            addCriterion("memo >=", value, "memo");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoLessThan(String value) {
+            addCriterion("memo <", value, "memo");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoLessThanOrEqualTo(String value) {
+            addCriterion("memo <=", value, "memo");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoLike(String value) {
+            addCriterion("memo like", value, "memo");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoNotLike(String value) {
+            addCriterion("memo not like", value, "memo");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoIn(List<String> values) {
+            addCriterion("memo in", values, "memo");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoNotIn(List<String> values) {
+            addCriterion("memo not in", values, "memo");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoBetween(String value1, String value2) {
+            addCriterion("memo between", value1, value2, "memo");
+            return (Criteria) this;
+        }
+
+        public Criteria andMemoNotBetween(String value1, String value2) {
+            addCriterion("memo not between", value1, value2, "memo");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;
@@ -762,6 +1092,66 @@ public class LuckDrawInfoExample {
 
         public Criteria andCreateTimeNotBetween(LocalDateTime value1, LocalDateTime value2) {
             addCriterion("create_time not between", value1, value2, "createTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeIsNull() {
+            addCriterion("update_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeIsNotNull() {
+            addCriterion("update_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeEqualTo(LocalDateTime value) {
+            addCriterion("update_time =", value, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeNotEqualTo(LocalDateTime value) {
+            addCriterion("update_time <>", value, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeGreaterThan(LocalDateTime value) {
+            addCriterion("update_time >", value, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeGreaterThanOrEqualTo(LocalDateTime value) {
+            addCriterion("update_time >=", value, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeLessThan(LocalDateTime value) {
+            addCriterion("update_time <", value, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeLessThanOrEqualTo(LocalDateTime value) {
+            addCriterion("update_time <=", value, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeIn(List<LocalDateTime> values) {
+            addCriterion("update_time in", values, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeNotIn(List<LocalDateTime> values) {
+            addCriterion("update_time not in", values, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeBetween(LocalDateTime value1, LocalDateTime value2) {
+            addCriterion("update_time between", value1, value2, "updateTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andUpdateTimeNotBetween(LocalDateTime value1, LocalDateTime value2) {
+            addCriterion("update_time not between", value1, value2, "updateTime");
             return (Criteria) this;
         }
     }

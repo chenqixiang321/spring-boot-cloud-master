@@ -6,6 +6,8 @@ import com.opay.invite.backstage.exception.BackstageExceptionEnum;
 import com.opay.invite.backstage.service.OperatorService;
 import com.opay.invite.backstage.service.dto.LoginReqDto;
 import com.opay.invite.backstage.service.dto.LoginRespDto;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,8 +24,9 @@ import javax.annotation.Resource;
  * @date 2019/12/17 14:35
  */
 @Slf4j
+@Api(value = "操作员API")
 @RestController
-@RequestMapping(value = "operator")
+@RequestMapping(value = "/operator")
 public class OperatorController {
 
     @Resource
@@ -31,6 +34,7 @@ public class OperatorController {
 
 
     @PostMapping(value = "/login")
+    @ApiOperation(value = "操作员登陆", notes = "操作员登陆接口")
     public LoginRespDto login(@RequestBody LoginReqDto loginReqDto) {
 
         log.info("操作员请求登陆， 请求参数：{}", JSON.toJSONString(loginReqDto));
