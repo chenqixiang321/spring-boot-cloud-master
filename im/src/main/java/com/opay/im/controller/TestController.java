@@ -31,11 +31,11 @@ public class TestController {
 
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> map = new HashMap<>();
-        map.put("sendUserId", "1");
-        map.put("sendNickName", "");
-        map.put("openUserId", "");
-        map.put("openNickName", "");
-        map.put("envelopId", "");
+        map.put("sendUserId", "156619121267002134");
+        map.put("sendNickName", "haha");
+        map.put("openUserId", "UNG1000004001");
+        map.put("openNickName", "haha");
+        map.put("envelopId", "285");
         map.put("targetId", "UNG1000004001");
         map.put("status", "0");
         rongCloudService.sendMessage("UNG1000004001", "156619121267002134", mapper.writeValueAsString(map), mapper.writeValueAsString(map));

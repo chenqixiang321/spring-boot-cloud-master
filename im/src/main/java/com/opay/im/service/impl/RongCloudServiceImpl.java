@@ -249,13 +249,13 @@ public class RongCloudServiceImpl implements RongCloudService {
     @Override
     public void sendMessage(String fromUserId, String toUserId, String content, String extra) throws Exception {
         String[] targetIds = {toUserId};
-        InfoNtfMessage infoNtfMessage = new InfoNtfMessage(content, extra);
+//        InfoNtfMessage infoNtfMessage = new InfoNtfMessage(content, extra);
 //        TxtMessage txtMessage = new TxtMessage("hello", "helloExtra");
         RedEnvelopeMessage ms = new RedEnvelopeMessage(content);
         PrivateMessage privateMessage = new PrivateMessage()
                 .setSenderId(fromUserId)
                 .setTargetId(targetIds)
-                .setContent(infoNtfMessage)
+                .setContent(ms)
                 .setObjectName("app:red-envelope-receipt");
         ResponseResult privateResult = getRongCloud().message.msgPrivate.send(privateMessage);
         if (privateResult.getCode() != 200) {

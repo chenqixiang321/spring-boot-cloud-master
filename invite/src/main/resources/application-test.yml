@@ -174,8 +174,15 @@ opay:
         expression: "0 50 11 * * ?"
         jobClass: "com.opay.invite.job.InitPrizePoolJob"
       second-luck-draw:
-        expression: "0 50 19 * * ?"
+        expression: "0 50 15 * * ?"
         jobClass: "com.opay.invite.job.InitPrizePoolJob"
+  luckDraw:
+    callBack: http://t-api.iminvite.pos.operapay.com/invite/callback/bonus
+    merchantId: 256619120522011
+    aesKey: gepy7T6jTldRMq7A
+    iv: qazwert12345!@#$
+    publickey: OPAYPUB15755298483140.9696556588602406
+    privatekey: OPAYPRV15755298483140.06665533965779369
 
 management:
   endpoints:
@@ -214,20 +221,13 @@ prize-pool:
   firstGrandPrizeTimeUp: "4:00:00"
   secondGrandPrizeTimeUp: "8:00:00"
   secondPoolRate: 4
-  count: 100
-  firstPoolStart: 1
-  firstPoolEnd: 6
-  secondPoolStart: 7
-  secondPoolEnd: 23
+  count: 20
+  firstPoolStart: 14
+  firstPoolEnd: 15
+  secondPoolStart: 16
+  secondPoolEnd: 17
   firstPool:
-    - {id: 2,prize: 10,prob: 0.01}
-    - {id: 3,prize: 5,prob: 0.04}
-    - {id: 4,prize: 2,prob: 0.05}
-    - {id: 5,prize: 1,prob: 0.20}
-    - {id: 6,prize: 0,prob: 0.70}
+    - {id: 3,prize: 5,prob: 0.5}
+    - {id: 5,prize: 1,prob: 0.5}
   secondPool:
-    - {id: 1,prize: phone,prob: 0.01}
-    - {id: 3,prize: 5,prob: 0.04}
-    - {id: 4,prize: 2,prob: 0.05}
-    - {id: 5,prize: 1,prob: 0.20}
-    - {id: 6,prize: 0,prob: 0.70}
+    - {id: 2,prize: 10,prob: 1}

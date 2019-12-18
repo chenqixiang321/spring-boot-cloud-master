@@ -24,4 +24,6 @@ public interface LuckDrawInfoMapper {
     List<LuckDrawInfoModel> selectLuckDrawInfoList(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime);
 
     List<LuckDrawInfoModel> selectLuckDrawInfoListByOpayId(String opayId);
+
+    int updateBonusStatus(@Param("reference") String reference, @Param("status") int status);
 }

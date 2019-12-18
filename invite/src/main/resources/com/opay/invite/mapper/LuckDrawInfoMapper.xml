@@ -170,4 +170,8 @@
         <include refid="Base_Column_List"/>
         from luck_draw_info where opay_id=#{opayId} order by create_time desc
     </select>
+
+    <update id="updateBonusStatus">
+        update luck_draw_info set status=#{status} where reference=#{reference}
+    </update>
 </mapper>

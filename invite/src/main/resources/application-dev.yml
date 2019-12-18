@@ -160,6 +160,13 @@ opay:
       second-luck-draw:
         expression: "0 50 19 * * ?"
         jobClass: "com.opay.invite.job.InitPrizePoolJob"
+  luckDraw:
+    callBack: http://t-api.iminvite.pos.operapay.com/invite/callback/bonus
+    merchantId: 256619120522011
+    aesKey: gepy7T6jTldRMq7A
+    iv: qazwert12345!@#$
+    publickey: OPAYPUB15755298483140.9696556588602406
+    privatekey: OPAYPRV15755298483140.06665533965779369
 management:
   endpoints:
     web:

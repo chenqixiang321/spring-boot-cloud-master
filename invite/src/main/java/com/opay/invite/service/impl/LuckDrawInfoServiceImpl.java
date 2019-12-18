@@ -2,7 +2,6 @@ package com.opay.invite.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
-import com.opay.invite.config.OpayConfig;
 import com.opay.invite.config.PrizePoolConfig;
 import com.opay.invite.exception.InviteException;
 import com.opay.invite.mapper.LuckDrawInfoMapper;
@@ -17,8 +16,10 @@ import com.opay.invite.service.IncrKeyService;
 import com.opay.invite.service.LuckDrawInfoService;
 import com.opay.invite.service.OpayApiService;
 import com.opay.invite.service.RpcService;
+import com.opay.invite.stateconfig.BonusStatus;
 import com.opay.invite.transferconfig.OrderType;
 import com.opay.invite.transferconfig.PayChannel;
+import com.opay.invite.transferconfig.TransferConfig;
 import com.opay.invite.utils.AESUtil;
 import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.DateFormatter;
@@ -27,7 +28,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cloud.openfeign.ribbon.FeignRibbonClientAutoConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -59,16 +59,15 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
     @Autowired
     private PrizePoolConfig prizePoolConfig;
     @Autowired
-    private OpayConfig opayConfig;
+    private TransferConfig opayConfig;
     @Autowired
     private OpayApiService opayApiService;
     @Autowired
     private IncrKeyService incrKeyService;
     @Autowired
     private RpcService rpcService;
-    @Value("${transfer.opay.transferNotify}")
-    private String transferNotify;
-
+    @Value("${opay.luckDraw.callBack}")
+    private String bonusCallBack;
     @Override
     public int deleteByPrimaryKey(Long id) {
         return luckDrawInfoMapper.deleteByPrimaryKey(id);
@@ -171,10 +170,10 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             luckDrawInfoResponse.setPrizeId(pm.getId());
             if (CommonUtil.isInteger(prize) && !"0".equals(prize)) {
                 String requestId = incrKeyService.getIncrKey();
-                String reference = incrKeyService.getIncrKey();
+                String reference = incrKeyService.getIncrKey("LD");
                 luckDrawInfoModel.setRequestId(requestId);
                 luckDrawInfoModel.setReference(reference);
-                Map<String, String> data = rpcService.getParamMap(opayConfig.getMerchantId(), opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), transferNotify, PayChannel.BalancePayment.getPayChannel());
+                Map<String, String> data = rpcService.getParamMap(opayConfig.getMerchantId(), opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), bonusCallBack, PayChannel.BalancePayment.getPayChannel());
                 log.info("request to createOrder {}", data);
                 OpayApiResultResponse<String> opayApiResultResponse = opayApiService.createOrder(opayConfig.getMerchantId(), requestId, data, opayConfig.getAesKey(), opayConfig.getIv());
                 String opayData = AESUtil.decrypt(opayApiResultResponse.getData(), opayConfig.getAesKey());
@@ -185,11 +184,11 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
                     throw new InviteException(opayApiResultResponse.getMessage());
                 }
                 if ("SUCCESS".equals(aMap.get("status"))) {
-                    luckDrawInfoModel.setStatus(1);
+                    luckDrawInfoModel.setStatus(BonusStatus.SUCCESS);
                 } else if ("FAIL".equals(aMap.get("status"))) {
-                    luckDrawInfoModel.setStatus(3);
+                    luckDrawInfoModel.setStatus(BonusStatus.FAIL);
                 } else {
-                    luckDrawInfoModel.setStatus(2);
+                    luckDrawInfoModel.setStatus(BonusStatus.PENDING);
                 }
                 luckDrawInfoModel.setOrderNo(aMap.get("orderNo"));
                 luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
@@ -224,6 +223,11 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             }
         }
         return prizeInfo;
+    }
+
+    @Override
+    public int updateBonusStatus(String reference, int status) {
+        return luckDrawInfoMapper.updateBonusStatus(reference, status);
     }
 }
 

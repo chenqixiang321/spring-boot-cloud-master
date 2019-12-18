@@ -35,6 +35,7 @@ public class AliasMethodService {
     @Value("${prize-pool.count}")
     private int prizePoolCount;
 
+    @PostConstruct
     public void init() {
         for (int i = 0; i < prizePoolConfig.getFirstPool().size(); i++) {
             PrizeModel prizeModel = prizePoolConfig.getFirstPool().get(i);
