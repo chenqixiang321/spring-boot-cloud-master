@@ -17,6 +17,6 @@ import lombok.ToString;
 public class LuckyMoneyPayStatusResponse {
 
     @ApiModelProperty(value = "支付状态,0:未支付 1:支付成功 2;失败 3:支付中")
-    private int status;
+    private Integer status;
 
 }

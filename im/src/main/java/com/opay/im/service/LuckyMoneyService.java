@@ -33,7 +33,7 @@ public interface LuckyMoneyService {
 
     int updatePayStatus(OPayCallBackResponse oPayCallBackResponse) throws Exception;
 
-    int selectPayStatus(String opayId, String reference) throws Exception;
+    Integer selectPayStatus(String opayId, String reference) throws Exception;
 
     LuckyMoneyModel selectLuckyMoneyByOpayId(Long id, String opayId) throws Exception;
 

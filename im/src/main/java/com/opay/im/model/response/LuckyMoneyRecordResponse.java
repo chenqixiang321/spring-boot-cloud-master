@@ -31,7 +31,7 @@ public class LuckyMoneyRecordResponse {
     private Integer grabQuantity;
     @ApiModelProperty(value = "已抢金额")
     private BigDecimal grabAmount;
-    @ApiModelProperty(value = "已n秒")
+    @ApiModelProperty(value = "已抢了n秒")
     private long seconds;
 
     @ApiModelProperty(value = "谁抢了")

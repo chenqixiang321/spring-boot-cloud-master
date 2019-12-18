@@ -54,5 +54,5 @@ public class LuckyMoneyInfoResponse {
     private Integer quantity;
 
     @ApiModelProperty(value = "红包状态0:未抢,1:已抢 ,2:过期")
-    private int status;
+    private String status;
 }

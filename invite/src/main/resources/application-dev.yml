@@ -199,9 +199,9 @@ prize-pool:
   secondPoolRate: 4
   count: 100
   firstPoolStart: 1
-  firstPoolEnd: 14
-  secondPoolStart: 14
-  secondPoolEnd: 22
+  firstPoolEnd: 6
+  secondPoolStart: 7
+  secondPoolEnd: 23
   firstPool:
     - {id: 2,prize: 10,prob: 0.01}
     - {id: 3,prize: 5,prob: 0.04}

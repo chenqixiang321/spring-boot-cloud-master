@@ -64,6 +64,9 @@
       <if test="version != null">
         version,
       </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="luckMoneyId != null">
@@ -86,6 +89,9 @@
       </if>
       <if test="version != null">
         #{version,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>

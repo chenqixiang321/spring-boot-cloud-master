@@ -1,8 +1,6 @@
 package com.opay.invite.controller;
 
-import com.opay.invite.config.PrizePoolConfig;
 import com.opay.invite.model.LoginUser;
-import com.opay.invite.model.PrizeModel;
 import com.opay.invite.model.request.MyLuckDrawListRequest;
 import com.opay.invite.model.response.LuckDrawCountResponse;
 import com.opay.invite.model.response.LuckDrawInfoResponse;
@@ -13,7 +11,6 @@ import com.opay.invite.model.response.SuccessResponse;
 import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.LuckDrawInfoService;
-import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.DateFormatter;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,7 +18,6 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,14 +25,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping(value = "/luckDraw")

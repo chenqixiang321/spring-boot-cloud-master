@@ -2,6 +2,7 @@ package com.opay.im.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opay.im.common.SystemCode;
+import com.opay.im.constant.LuckyMoneyStatus;
 import com.opay.im.exception.ImException;
 import com.opay.im.exception.LuckMoneyExpiredException;
 import com.opay.im.exception.LuckMoneyGoneException;
@@ -232,7 +233,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public int selectPayStatus(String opayId, String reference) throws Exception {
+    public Integer selectPayStatus(String opayId, String reference) throws Exception {
         return luckyMoneyMapper.selectPayStatus(opayId, reference);
     }
 
@@ -247,7 +248,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         LuckyMoneyInfoResponse luckyMoneyInfoResponse = new LuckyMoneyInfoResponse();
         Object luckyMoney = redisTemplate.opsForValue().get("luckyMoney:" + senderOpayId);
         if (luckyMoney == null) {
-            luckyMoneyInfoResponse.setStatus(2);
+            luckyMoneyInfoResponse.setStatus(LuckyMoneyStatus.EXPIRED.getCode());
             return luckyMoneyInfoResponse;
         }
         LuckyMoneyModel luckyMoneyModelData = selectLuckyMoneyByOpayId(id, senderOpayId);
@@ -257,10 +258,10 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         BeanUtils.copyProperties(luckyMoneyModelData, luckyMoneyInfoResponse);
         LuckyMoneyRecordModel luckyMoneyRecordModel = luckyMoneyRecordMapper.selectLuckyMoneyRecordByOpayId(id, receivedOpayId);
         if (luckyMoneyRecordModel == null) {
-            luckyMoneyInfoResponse.setStatus(0);
+            luckyMoneyInfoResponse.setStatus(LuckyMoneyStatus.NOT_GRABBED.getCode());
         } else {
             luckyMoneyInfoResponse.setGrabAmount(luckyMoneyRecordModel.getAmount());
-            luckyMoneyInfoResponse.setStatus(1);
+            luckyMoneyInfoResponse.setStatus(LuckyMoneyStatus.GRABBED.getCode());
         }
 
         return luckyMoneyInfoResponse;
@@ -299,7 +300,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         luckyMoneyRecordResponse.setAmount(amount);
         luckyMoneyRecordResponse.setGrabAmount(grabAmount);
         if (endTime != null) {
-            luckyMoneyRecordResponse.setSeconds((startTime.getTime() - endTime.getTime()) / 1000);
+            luckyMoneyRecordResponse.setSeconds((endTime.getTime() - startTime.getTime()) / 1000);
         }
         luckyMoneyRecordResponse.setLuckyMoneyRecordListResponse(luckyMoneyRecordListResponses);
         return luckyMoneyRecordResponse;

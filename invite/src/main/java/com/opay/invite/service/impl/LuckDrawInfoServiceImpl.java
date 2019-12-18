@@ -1,5 +1,6 @@
 package com.opay.invite.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.opay.invite.config.OpayConfig;
 import com.opay.invite.config.PrizePoolConfig;
@@ -18,6 +19,7 @@ import com.opay.invite.service.OpayApiService;
 import com.opay.invite.service.RpcService;
 import com.opay.invite.transferconfig.OrderType;
 import com.opay.invite.transferconfig.PayChannel;
+import com.opay.invite.utils.AESUtil;
 import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.DateFormatter;
 import org.springframework.beans.BeanUtils;
@@ -165,14 +167,16 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             luckDrawInfoModel.setPrizePool(prizePoolResponse.getPool());
             luckDrawInfoResponse.setPrize(luckDrawInfoModel.getPrize());
             luckDrawInfoResponse.setPrizeId(pm.getId());
-            if (CommonUtil.isInteger(prize)) {
+            if (CommonUtil.isInteger(prize) && !"0".equals(prize)) {
                 String requestId = incrKeyService.getIncrKey();
                 String reference = incrKeyService.getIncrKey();
                 luckDrawInfoModel.setRequestId(requestId);
                 luckDrawInfoModel.setReference(reference);
                 Map<String, String> data = rpcService.getParamMap(opayConfig.getMerchantId(), opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), transferNotify, PayChannel.BalancePayment.getPayChannel());
-                OpayApiResultResponse opayApiResultResponse = opayApiService.createOrder(opayConfig.getMerchantId(), requestId, data, opayConfig.getAesKey(), opayConfig.getIv());
-                if (!"00000".equals(opayApiResultResponse.getCode())) {
+                OpayApiResultResponse<String> opayApiResultResponse = opayApiService.createOrder(opayConfig.getMerchantId(), requestId, data, opayConfig.getAesKey(), opayConfig.getIv());
+                String opayData = AESUtil.decrypt(opayApiResultResponse.getData(), opayConfig.getAesKey());
+                Map<String, String> aMap = JSONObject.parseObject(opayData, Map.class);
+                if (!"00000".equals(opayApiResultResponse.getCode()) && !"SUCCESS".equals(aMap.get("status"))) {
                     throw new InviteException(opayApiResultResponse.getMessage());
                 }
                 luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
