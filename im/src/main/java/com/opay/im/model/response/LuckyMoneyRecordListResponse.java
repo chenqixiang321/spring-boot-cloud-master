@@ -11,14 +11,14 @@ import lombok.ToString;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@ApiModel(value = "view查看红包")
+@ApiModel(value = "view查看红包-每人抢到的钱数")
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class LuckyMoneyRecordListResponse {
-    @ApiModelProperty(value = "null")
+    @ApiModelProperty(value = "单号")
     private Long id;
 
     /**
