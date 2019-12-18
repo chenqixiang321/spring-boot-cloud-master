@@ -12,10 +12,12 @@
         <result column="prize_level" jdbcType="INTEGER" property="prizeLevel"/>
         <result column="prize_pool" jdbcType="INTEGER" property="prizePool"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="order_no" jdbcType="VARCHAR" property="orderNo"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        id, opay_id, opay_name, opay_phone, prize, prize_level, prize_pool, create_time
+        id, opay_id, opay_name, opay_phone, prize, prize_level, prize_pool, create_time, order_no, `status`
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         <!--@mbg.generated-->
@@ -73,6 +75,12 @@
             <if test="requestId != null">
                 requestId,
             </if>
+            <if test="orderNo != null">
+                order_no,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -104,6 +112,12 @@
             </if>
             <if test="requestId != null">
                 #{requestId,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNo != null">
+                #{orderNo,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
             </if>
         </trim>
     </insert>
@@ -147,7 +161,8 @@
     <select id="selectLuckDrawInfoList" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from luck_draw_info where create_time between #{beginTime} and #{endTime} and prize in ("phone","100","50","10") order by prize_level asc limit 10
+        from luck_draw_info where create_time between #{beginTime} and #{endTime} and prize in ("phone","100","50","10")
+        order by prize_level asc limit 10
     </select>
 
     <select id="selectLuckDrawInfoListByOpayId" resultMap="BaseResultMap" parameterType="java.lang.String">

@@ -22,6 +22,7 @@ import com.opay.invite.transferconfig.PayChannel;
 import com.opay.invite.utils.AESUtil;
 import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.DateFormatter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@Slf4j
 public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
     private Map<Integer, PrizeModel> prizeInfo = null;
     @Resource
@@ -173,12 +175,23 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
                 luckDrawInfoModel.setRequestId(requestId);
                 luckDrawInfoModel.setReference(reference);
                 Map<String, String> data = rpcService.getParamMap(opayConfig.getMerchantId(), opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), transferNotify, PayChannel.BalancePayment.getPayChannel());
+                log.info("request to createOrder {}", data);
                 OpayApiResultResponse<String> opayApiResultResponse = opayApiService.createOrder(opayConfig.getMerchantId(), requestId, data, opayConfig.getAesKey(), opayConfig.getIv());
                 String opayData = AESUtil.decrypt(opayApiResultResponse.getData(), opayConfig.getAesKey());
+                log.info("response from createOrder {}", opayData);
                 Map<String, String> aMap = JSONObject.parseObject(opayData, Map.class);
-                if (!"00000".equals(opayApiResultResponse.getCode()) && !"SUCCESS".equals(aMap.get("status"))) {
+                if (!"00000".equals(opayApiResultResponse.getCode())) {
+                    luckDrawInfoModel.setStatus(3);
                     throw new InviteException(opayApiResultResponse.getMessage());
                 }
+                if ("SUCCESS".equals(aMap.get("status"))) {
+                    luckDrawInfoModel.setStatus(1);
+                } else if ("FAIL".equals(aMap.get("status"))) {
+                    luckDrawInfoModel.setStatus(3);
+                } else {
+                    luckDrawInfoModel.setStatus(2);
+                }
+                luckDrawInfoModel.setOrderNo(aMap.get("orderNo"));
                 luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
             } else {
                 luckDrawInfoMapper.insertSelective(luckDrawInfoModel);

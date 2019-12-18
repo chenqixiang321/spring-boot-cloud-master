@@ -61,4 +61,8 @@ public class LuckDrawInfoModel {
     private String requestId;
     @ApiModelProperty(value = "reference", hidden = true)
     private String reference;
+    @ApiModelProperty(value = "OPay订单号", hidden = true)
+    private String orderNo;
+    @ApiModelProperty(value = "订单状态,SUCCESS、PENDING、FAIL。状态为PENDING需发起查单", hidden = true)
+    private int status;
 }

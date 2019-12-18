@@ -2,6 +2,7 @@ package com.opay.im.service.impl;
 
 import com.opay.im.exception.ImException;
 import com.opay.im.mapper.UserTokenMapper;
+import com.opay.im.model.RedEnvelopeMessage;
 import com.opay.im.model.UserTokenModel;
 import com.opay.im.model.response.BlackListUserIdsResponse;
 import com.opay.im.service.RongCloudService;
@@ -24,7 +25,6 @@ import io.rong.models.response.TokenResult;
 import io.rong.models.user.UserModel;
 import io.rong.util.CodeUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -250,11 +250,13 @@ public class RongCloudServiceImpl implements RongCloudService {
     public void sendMessage(String fromUserId, String toUserId, String content, String extra) throws Exception {
         String[] targetIds = {toUserId};
         InfoNtfMessage infoNtfMessage = new InfoNtfMessage(content, extra);
+//        TxtMessage txtMessage = new TxtMessage("hello", "helloExtra");
+        RedEnvelopeMessage ms = new RedEnvelopeMessage(content);
         PrivateMessage privateMessage = new PrivateMessage()
                 .setSenderId(fromUserId)
                 .setTargetId(targetIds)
-                .setObjectName("app:red-envelope-receipt")
-                .setContent(infoNtfMessage);
+                .setContent(infoNtfMessage)
+                .setObjectName("app:red-envelope-receipt");
         ResponseResult privateResult = getRongCloud().message.msgPrivate.send(privateMessage);
         if (privateResult.getCode() != 200) {
             throw new ImException(privateResult.errorMessage);

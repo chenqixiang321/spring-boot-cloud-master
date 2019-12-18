@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -60,8 +59,7 @@ public class LuckyMoneyController {
         luckyMoneyResponse.setPublicKey(publickey);
         return new ResultResponse(luckyMoneyResponse);
     }
-    @Autowired
-    private RongCloudService rongCloudService;
+
     @ApiOperation(value = "轮询红包支付状态", notes = "轮询红包支付状态 0:未支付 1:支付成功 2;失败 3:支付中")
     @GetMapping("{reference}")
     @ApiImplicitParams({
@@ -69,19 +67,6 @@ public class LuckyMoneyController {
     })
     public ResultResponse<LuckyMoneyPayStatusResponse> getLuckyMoneyPayStatus(@PathVariable String reference) throws Exception {
         LuckyMoneyPayStatusResponse luckyMoneyPayStatusResponse = new LuckyMoneyPayStatusResponse(luckyMoneyService.selectPayStatus(String.valueOf(request.getAttribute("opayId")), reference));
-
-//        ObjectMapper mapper = new ObjectMapper();
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("sendUserId", "1");
-//        map.put("sendNickName", "");
-//        map.put("openUserId", "");
-//        map.put("openNickName", "");
-//        map.put("envelopId", "");
-//        map.put("targetId", "UNG1000004001");
-//        map.put("status", "0");
-//        rongCloudService.sendMessage("UNG1000004001", "156619121267002134", mapper.writeValueAsString(map), mapper.writeValueAsString(map));
-//        rongCloudService.sendMessage("156619121267002134", "UNG1000004001", mapper.writeValueAsString(map), mapper.writeValueAsString(map));
-
         return new ResultResponse(luckyMoneyPayStatusResponse);
     }
 
