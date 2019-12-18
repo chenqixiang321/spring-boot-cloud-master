@@ -17,6 +17,7 @@ import com.opay.im.model.response.GrabLuckyMoneyResponse;
 import com.opay.im.model.response.GrabLuckyMoneyResult;
 import com.opay.im.model.response.LuckyMoneyDetailResponse;
 import com.opay.im.model.response.LuckyMoneyInfoResponse;
+import com.opay.im.model.response.LuckyMoneyRecordListResponse;
 import com.opay.im.model.response.LuckyMoneyRecordResponse;
 import com.opay.im.model.response.LuckyMoneyResponse;
 import com.opay.im.model.response.opaycallback.OPayCallBackResponse;
@@ -131,6 +132,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             luckyMoneyRecordModel = new LuckyMoneyRecordModel();
             luckyMoneyRecordModel.setLuckMoneyId(luckyMoneyModel.getId());
             luckyMoneyRecordModel.setAmount(getRandomMoney(moneyPackage));
+            luckyMoneyRecordModel.setCreateTime(date);
             luckyMoneyRecordMapper.insertSelective(luckyMoneyRecordModel);
             amounts.add(String.valueOf(luckyMoneyRecordModel.getAmount()));
             amountIds.add(String.valueOf(luckyMoneyRecordModel.getId()));
@@ -265,16 +267,42 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public List<LuckyMoneyRecordResponse> selectLuckyMoneyView(Long id) throws Exception {
-        List<LuckyMoneyRecordResponse> luckyMoneyRecordResponses = new ArrayList<>();
-        List<LuckyMoneyRecordModel> LuckyMoneyRecords = luckyMoneyRecordMapper.selectLuckyMoneyRecord(id);
-        LuckyMoneyRecordResponse luckyMoneyRecordResponse;
-        for (LuckyMoneyRecordModel luckyMoneyRecordModel : LuckyMoneyRecords) {
-            luckyMoneyRecordResponse = new LuckyMoneyRecordResponse();
-            BeanUtils.copyProperties(luckyMoneyRecordModel, luckyMoneyRecordResponse);
-            luckyMoneyRecordResponses.add(luckyMoneyRecordResponse);
+    public LuckyMoneyRecordResponse selectLuckyMoneyView(Long id) throws Exception {
+        LuckyMoneyRecordResponse luckyMoneyRecordResponse = new LuckyMoneyRecordResponse();
+        List<LuckyMoneyRecordModel> luckyMoneyRecords = luckyMoneyRecordMapper.selectLuckyMoneyRecord(id);
+        if (luckyMoneyRecords.isEmpty()) {
+            return luckyMoneyRecordResponse;
         }
-        return luckyMoneyRecordResponses;
+        List<LuckyMoneyRecordListResponse> luckyMoneyRecordListResponses = new ArrayList<>();
+        LuckyMoneyRecordListResponse luckyMoneyRecordListResponse;
+        int quantity = luckyMoneyRecords.size();
+        int grabQuantity = 0;
+        BigDecimal grabAmount = new BigDecimal(0);
+        BigDecimal amount = new BigDecimal(0);
+        Date startTime = luckyMoneyRecords.get(0).getCreateTime();
+        Date endTime = null;
+        Long LuckMoneyId = luckyMoneyRecords.get(0).getLuckMoneyId();
+        for (LuckyMoneyRecordModel luckyMoneyRecordModel : luckyMoneyRecords) {
+            if (luckyMoneyRecordModel.getGetTime() != null) {
+                grabQuantity++;
+                endTime = luckyMoneyRecordModel.getGetTime();
+                grabAmount = grabAmount.add(luckyMoneyRecordModel.getAmount());
+                luckyMoneyRecordListResponse = new LuckyMoneyRecordListResponse();
+                BeanUtils.copyProperties(luckyMoneyRecordModel, luckyMoneyRecordListResponse);
+                luckyMoneyRecordListResponses.add(luckyMoneyRecordListResponse);
+            }
+            amount = amount.add(luckyMoneyRecordModel.getAmount());
+        }
+        luckyMoneyRecordResponse.setLuckMoneyId(LuckMoneyId);
+        luckyMoneyRecordResponse.setGrabQuantity(grabQuantity);
+        luckyMoneyRecordResponse.setQuantity(quantity);
+        luckyMoneyRecordResponse.setAmount(amount);
+        luckyMoneyRecordResponse.setGrabAmount(grabAmount);
+        if (endTime != null) {
+            luckyMoneyRecordResponse.setSeconds((startTime.getTime() - endTime.getTime()) / 1000);
+        }
+        luckyMoneyRecordResponse.setLuckyMoneyRecordListResponse(luckyMoneyRecordListResponses);
+        return luckyMoneyRecordResponse;
     }
 
     private BigDecimal getRandomMoney(RedPackage _redPackage) {

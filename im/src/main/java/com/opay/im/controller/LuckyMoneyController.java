@@ -93,7 +93,7 @@ public class LuckyMoneyController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "红包ID", required = true, paramType = "path", dataType = "Long")
     })
-    public ResultResponse<List<LuckyMoneyRecordResponse>> getViewLuckyMoney(@PathVariable long id) throws Exception {
+    public ResultResponse<LuckyMoneyRecordResponse> getViewLuckyMoney(@PathVariable long id) throws Exception {
         return new ResultResponse(luckyMoneyService.selectLuckyMoneyView(id));
     }
 }

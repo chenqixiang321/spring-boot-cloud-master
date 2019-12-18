@@ -1,4 +1,4 @@
-package com.opay.im.model;
+package com.opay.im.model.response;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,21 +11,15 @@ import lombok.ToString;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@ApiModel(value = "com-opay-im-model-LuckyMoneyRecord")
+@ApiModel(value = "view查看红包")
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class LuckyMoneyRecordModel {
+public class LuckyMoneyRecordListResponse {
     @ApiModelProperty(value = "null")
     private Long id;
-
-    /**
-     * 红包id
-     */
-    @ApiModelProperty(value = "红包id")
-    private Long luckMoneyId;
 
     /**
      * 发送者的opay_id
@@ -56,16 +50,4 @@ public class LuckyMoneyRecordModel {
      */
     @ApiModelProperty(value = "抢到红包时间")
     private Date getTime;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty(value="创建时间")
-    private Date createTime;
-
-    /**
-     * 版本
-     */
-    @ApiModelProperty(value = "版本")
-    private Long version;
 }

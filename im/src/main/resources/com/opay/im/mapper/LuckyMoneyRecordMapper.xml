@@ -11,11 +11,12 @@
     <result column="opay_phone" jdbcType="VARCHAR" property="opayPhone" />
     <result column="amount" jdbcType="DECIMAL" property="amount" />
     <result column="get_time" jdbcType="TIMESTAMP" property="getTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="version" jdbcType="BIGINT" property="version" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, luck_money_id, opay_id, opay_name, opay_phone, amount, get_time, version
+    id, luck_money_id, opay_id, opay_name, opay_phone, amount, get_time, create_time, version
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     <!--@mbg.generated-->
@@ -133,7 +134,7 @@
     select
     <include refid="Base_Column_List" />
     from lucky_money_record
-    where luck_money_id = #{luckMoneyId,jdbcType=BIGINT} and get_time is not null
+    where luck_money_id = #{luckMoneyId,jdbcType=BIGINT}
   </select>
 
   <select id="selectLuckyMoneyRecordByOpayId" resultMap="BaseResultMap">

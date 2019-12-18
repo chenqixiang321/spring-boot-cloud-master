@@ -10,6 +10,7 @@ import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @ApiModel(value = "view查看红包")
 @Getter
@@ -18,42 +19,21 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LuckyMoneyRecordResponse {
-    @ApiModelProperty(value = "null")
-    private Long id;
 
-    /**
-     * 红包id
-     */
     @ApiModelProperty(value = "红包id")
     private Long luckMoneyId;
 
-    /**
-     * 发送者的opay_id
-     */
-    @ApiModelProperty(value = "抢到者的opay_id")
-    private String opayId;
-
-    /**
-     * 发送者的opay名字
-     */
-    @ApiModelProperty(value = "抢到者的opay名字")
-    private String opayName;
-
-    /**
-     * 发送者的手机号
-     */
-    @ApiModelProperty(value = "抢到者的手机号")
-    private String opayPhone;
-
-    /**
-     * 红包金额
-     */
-    @ApiModelProperty(value = "抢到红包金额")
+    @ApiModelProperty(value = "红包个数")
+    private Integer quantity;
+    @ApiModelProperty(value = "金额")
     private BigDecimal amount;
+    @ApiModelProperty(value = "已抢红包个数")
+    private Integer grabQuantity;
+    @ApiModelProperty(value = "已抢金额")
+    private BigDecimal grabAmount;
+    @ApiModelProperty(value = "已n秒")
+    private long seconds;
 
-    /**
-     * 抢到红包时间
-     */
-    @ApiModelProperty(value = "抢到红包时间")
-    private Date getTime;
+    @ApiModelProperty(value = "谁抢了")
+    private List<LuckyMoneyRecordListResponse> luckyMoneyRecordListResponse;
 }

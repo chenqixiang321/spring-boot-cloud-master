@@ -39,5 +39,5 @@ public interface LuckyMoneyService {
 
     LuckyMoneyInfoResponse selectLuckyMoneyDetailByOpayId(Long id,String senderOpayId, String receivedOpayId) throws Exception;
 
-    List<LuckyMoneyRecordResponse> selectLuckyMoneyView(Long id) throws Exception;
+    LuckyMoneyRecordResponse selectLuckyMoneyView(Long id) throws Exception;
 }
