@@ -76,7 +76,10 @@ public class LuckDrawController {
             if (hour < firstPoolStart) {
                 luckDrawResponse.setNextStartTime(DateFormatter.formatDateByZone(date, timeZone) + " " + firstPoolStart + ":00:00");
                 luckDrawResponse.setNextEndTime(DateFormatter.formatDateByZone(date, timeZone) + " " + firstPoolEnd + ":00:00");
-            } else if (hour >= secondPoolEnd) {
+            }else if(firstPoolEnd<=hour && hour<secondPoolStart){
+                luckDrawResponse.setCurrentStartTime(DateFormatter.formatDateByZone(date, timeZone) + " " + secondPoolStart + ":00:00");
+                luckDrawResponse.setCurrentEndTime(DateFormatter.formatDateByZone(date, timeZone) + " " + secondPoolEnd + ":00:00");
+            }else if (hour >= secondPoolEnd) {
                 Date afterDate = DateFormatter.getDateAfter(date, 1);
                 luckDrawResponse.setNextStartTime(DateFormatter.formatDateByZone(afterDate, timeZone) + " " + firstPoolStart + ":00:00");
                 luckDrawResponse.setNextEndTime(DateFormatter.formatDateByZone(afterDate, timeZone) + " " + firstPoolEnd + ":00:00");
