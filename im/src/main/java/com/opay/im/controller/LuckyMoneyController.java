@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/luckyMoney")
@@ -92,7 +93,7 @@ public class LuckyMoneyController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "红包ID", required = true, paramType = "path", dataType = "Long")
     })
-    public ResultResponse<LuckyMoneyRecordResponse> getViewLuckyMoney(@PathVariable long id) throws Exception {
+    public ResultResponse<List<LuckyMoneyRecordResponse>> getViewLuckyMoney(@PathVariable long id) throws Exception {
         return new ResultResponse(luckyMoneyService.selectLuckyMoneyView(id));
     }
 }
