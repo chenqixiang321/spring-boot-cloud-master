@@ -4,6 +4,7 @@ import com.opay.invite.backstage.dao.entity.OpayActiveTixian;
 import com.opay.invite.backstage.dao.entity.OpayActiveTixianExample;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface OpayActiveTixianMapper {
@@ -28,4 +29,7 @@ public interface OpayActiveTixianMapper {
     int updateByPrimaryKeySelective(OpayActiveTixian record);
 
     int updateByPrimaryKey(OpayActiveTixian record);
+
+    BigDecimal sumAmountByTypeAndStatus(@Param("type") Byte type, @Param("status") Byte status, @Param("opayId") String opayId);
+
 }

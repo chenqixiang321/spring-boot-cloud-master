@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.opay.invite.backstage.dao.mapper.OpayUserOrderMapper" >
-  <resultMap id="BaseResultMap" type="com.opay.invite.backstage.dao.entity.OpayUserOrder" >
-    <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
-    <result column="amount" property="amount" jdbcType="DECIMAL" />
-    <result column="actual_amount" property="actualAmount" jdbcType="DECIMAL" />
-    <result column="create_at" property="createAt" jdbcType="TIMESTAMP" />
-    <result column="order_time" property="orderTime" jdbcType="VARCHAR" />
-    <result column="opay_id" property="opayId" jdbcType="VARCHAR" />
-    <result column="type" property="type" jdbcType="BIT" />
-    <result column="status" property="status" jdbcType="BIT" />
-    <result column="month" property="month" jdbcType="INTEGER" />
-    <result column="day" property="day" jdbcType="INTEGER" />
-  </resultMap>
-  <sql id="Example_Where_Clause" >
-    <where >
-      <foreach collection="oredCriteria" item="criteria" separator="or" >
-        <if test="criteria.valid" >
-          <trim prefix="(" suffix=")" prefixOverrides="and" >
-            <foreach collection="criteria.criteria" item="criterion" >
-              <choose >
-                <when test="criterion.noValue" >
-                  and ${criterion.condition}
+<mapper namespace="com.opay.invite.backstage.dao.mapper.OpayUserOrderMapper">
+    <resultMap id="BaseResultMap" type="com.opay.invite.backstage.dao.entity.OpayUserOrder">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="order_id" property="orderId" jdbcType="VARCHAR"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="actual_amount" property="actualAmount" jdbcType="DECIMAL"/>
+        <result column="create_at" property="createAt" jdbcType="TIMESTAMP"/>
+        <result column="order_time" property="orderTime" jdbcType="VARCHAR"/>
+        <result column="opay_id" property="opayId" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="TINYINT"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="month" property="month" jdbcType="INTEGER"/>
+        <result column="day" property="day" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
                 </when>
                 <when test="criterion.singleValue" >
                   and ${criterion.condition} #{criterion.value}
@@ -109,12 +109,12 @@
   <insert id="insert" parameterType="com.opay.invite.backstage.dao.entity.OpayUserOrder" >
     insert into opay_user_order (id, order_id, amount, 
       actual_amount, create_at, order_time, 
-      opay_id, type, status, month, 
-      day)
+      opay_id, type, status, 
+      month, day)
     values (#{id,jdbcType=INTEGER}, #{orderId,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, 
       #{actualAmount,jdbcType=DECIMAL}, #{createAt,jdbcType=TIMESTAMP}, #{orderTime,jdbcType=VARCHAR}, 
-      #{opayId,jdbcType=VARCHAR}, #{type,jdbcType=BIT}, #{status,jdbcType=BIT}, #{month,jdbcType=INTEGER}, 
-      #{day,jdbcType=INTEGER})
+      #{opayId,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, 
+      #{month,jdbcType=INTEGER}, #{day,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.opay.invite.backstage.dao.entity.OpayUserOrder" >
     insert into opay_user_order
@@ -176,10 +176,10 @@
         #{opayId,jdbcType=VARCHAR},
       </if>
       <if test="type != null" >
-        #{type,jdbcType=BIT},
+          #{type,jdbcType=TINYINT},
       </if>
       <if test="status != null" >
-        #{status,jdbcType=BIT},
+          #{status,jdbcType=TINYINT},
       </if>
       <if test="month != null" >
         #{month,jdbcType=INTEGER},
@@ -220,10 +220,10 @@
         opay_id = #{record.opayId,jdbcType=VARCHAR},
       </if>
       <if test="record.type != null" >
-        type = #{record.type,jdbcType=BIT},
+          type = #{record.type,jdbcType=TINYINT},
       </if>
       <if test="record.status != null" >
-        status = #{record.status,jdbcType=BIT},
+          status = #{record.status,jdbcType=TINYINT},
       </if>
       <if test="record.month != null" >
         month = #{record.month,jdbcType=INTEGER},
@@ -237,21 +237,21 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update opay_user_order
-    set id = #{record.id,jdbcType=INTEGER},
+      update opay_user_order
+      set id = #{record.id,jdbcType=INTEGER},
       order_id = #{record.orderId,jdbcType=VARCHAR},
       amount = #{record.amount,jdbcType=DECIMAL},
       actual_amount = #{record.actualAmount,jdbcType=DECIMAL},
       create_at = #{record.createAt,jdbcType=TIMESTAMP},
       order_time = #{record.orderTime,jdbcType=VARCHAR},
       opay_id = #{record.opayId,jdbcType=VARCHAR},
-      type = #{record.type,jdbcType=BIT},
-      status = #{record.status,jdbcType=BIT},
+      type = #{record.type,jdbcType=TINYINT},
+      status = #{record.status,jdbcType=TINYINT},
       month = #{record.month,jdbcType=INTEGER},
       day = #{record.day,jdbcType=INTEGER}
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
+      <if test="_parameter != null">
+          <include refid="Update_By_Example_Where_Clause"/>
+      </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.opay.invite.backstage.dao.entity.OpayUserOrder" >
     update opay_user_order
@@ -275,10 +275,10 @@
         opay_id = #{opayId,jdbcType=VARCHAR},
       </if>
       <if test="type != null" >
-        type = #{type,jdbcType=BIT},
+          type = #{type,jdbcType=TINYINT},
       </if>
       <if test="status != null" >
-        status = #{status,jdbcType=BIT},
+          status = #{status,jdbcType=TINYINT},
       </if>
       <if test="month != null" >
         month = #{month,jdbcType=INTEGER},
@@ -297,8 +297,8 @@
       create_at = #{createAt,jdbcType=TIMESTAMP},
       order_time = #{orderTime,jdbcType=VARCHAR},
       opay_id = #{opayId,jdbcType=VARCHAR},
-      type = #{type,jdbcType=BIT},
-      status = #{status,jdbcType=BIT},
+      type = #{type,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
       month = #{month,jdbcType=INTEGER},
       day = #{day,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}

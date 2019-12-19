@@ -1,15 +1,24 @@
 package com.opay.invite.backstage.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.opay.invite.backstage.constant.DateTimeConstant;
+import com.opay.invite.backstage.dao.entity.InviteOperator;
+import com.opay.invite.backstage.dao.entity.InviteOperatorExample;
 import com.opay.invite.backstage.dao.entity.LuckDrawInfo;
 import com.opay.invite.backstage.dao.entity.LuckDrawInfoExample;
+import com.opay.invite.backstage.dao.mapper.InviteOperatorMapper;
 import com.opay.invite.backstage.dao.mapper.LuckDrawInfoMapper;
+import com.opay.invite.backstage.exception.BackstageException;
+import com.opay.invite.backstage.exception.BackstageExceptionEnum;
 import com.opay.invite.backstage.service.LuckDrawInfoService;
+import com.opay.invite.backstage.service.dto.DrawOperateReqDto;
 import com.opay.invite.backstage.service.dto.DrawRecordDto;
 import com.opay.invite.backstage.service.dto.DrawRecordReqDto;
 import com.opay.invite.backstage.service.dto.DrawRecordRespDto;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +33,14 @@ import java.util.stream.Collectors;
  * @author liuzhihang
  * @date 2019/12/17 19:05
  */
+@Slf4j
 @Service(value = "luckDrawInfoService")
 public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
 
     @Resource
     private LuckDrawInfoMapper luckDrawInfoMapper;
+    @Resource
+    private InviteOperatorMapper inviteOperatorMapper;
 
     @Override
     public DrawRecordRespDto drawRecord(DrawRecordReqDto reqDto) {
@@ -75,5 +87,37 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         respDto.setPages(luckDrawInfoPage.getPages());
 
         return respDto;
+    }
+
+    @Override
+    public void drawOperate(DrawOperateReqDto reqDto) throws BackstageException {
+
+        InviteOperatorExample operatorExample = new InviteOperatorExample();
+        operatorExample.createCriteria().andOperatorIdEqualTo(reqDto.getOperatorId());
+
+        List<InviteOperator> operatorList = inviteOperatorMapper.selectByExample(operatorExample);
+        if (CollectionUtils.isEmpty(operatorList)) {
+            throw new BackstageException(BackstageExceptionEnum.OPERATOR_NOT_EXIST);
+        }
+
+
+        LuckDrawInfoExample example = new LuckDrawInfoExample();
+        example.createCriteria().andIdEqualTo(reqDto.getId()).andRedeemStatusEqualTo((byte) 0);
+
+        LuckDrawInfo record = new LuckDrawInfo();
+        record.setRedeemStatus((byte) 1);
+        record.setOperateTime(LocalDateTime.now());
+        record.setOperatorId(reqDto.getOperatorId());
+        record.setOpayName(operatorList.get(0).getOperatorName());
+
+        int i = luckDrawInfoMapper.updateByExampleSelective(record, example);
+
+        if (i != 1) {
+            log.error("操作员审核失败，原因：数据库update失败，请求参数:{}，id:{}, oldRedeemStatus: 0",
+                    JSON.toJSONString(record), reqDto.getId());
+            throw new BackstageException(BackstageExceptionEnum.FAIL);
+        }
+
+
     }
 }

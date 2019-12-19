@@ -1,8 +1,8 @@
 package com.opay.invite.backstage.dao.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class OpayMasterPupilAwardExample {
@@ -376,52 +376,52 @@ public class OpayMasterPupilAwardExample {
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtEqualTo(Date value) {
+        public Criteria andCreateAtEqualTo(LocalDateTime value) {
             addCriterion("create_at =", value, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtNotEqualTo(Date value) {
+        public Criteria andCreateAtNotEqualTo(LocalDateTime value) {
             addCriterion("create_at <>", value, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtGreaterThan(Date value) {
+        public Criteria andCreateAtGreaterThan(LocalDateTime value) {
             addCriterion("create_at >", value, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtGreaterThanOrEqualTo(Date value) {
+        public Criteria andCreateAtGreaterThanOrEqualTo(LocalDateTime value) {
             addCriterion("create_at >=", value, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtLessThan(Date value) {
+        public Criteria andCreateAtLessThan(LocalDateTime value) {
             addCriterion("create_at <", value, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtLessThanOrEqualTo(Date value) {
+        public Criteria andCreateAtLessThanOrEqualTo(LocalDateTime value) {
             addCriterion("create_at <=", value, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtIn(List<Date> values) {
+        public Criteria andCreateAtIn(List<LocalDateTime> values) {
             addCriterion("create_at in", values, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtNotIn(List<Date> values) {
+        public Criteria andCreateAtNotIn(List<LocalDateTime> values) {
             addCriterion("create_at not in", values, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtBetween(Date value1, Date value2) {
+        public Criteria andCreateAtBetween(LocalDateTime value1, LocalDateTime value2) {
             addCriterion("create_at between", value1, value2, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtNotBetween(Date value1, Date value2) {
+        public Criteria andCreateAtNotBetween(LocalDateTime value1, LocalDateTime value2) {
             addCriterion("create_at not between", value1, value2, "createAt");
             return (Criteria) this;
         }
@@ -436,52 +436,52 @@ public class OpayMasterPupilAwardExample {
             return (Criteria) this;
         }
 
-        public Criteria andStatusEqualTo(Boolean value) {
+        public Criteria andStatusEqualTo(Byte value) {
             addCriterion("status =", value, "status");
             return (Criteria) this;
         }
 
-        public Criteria andStatusNotEqualTo(Boolean value) {
+        public Criteria andStatusNotEqualTo(Byte value) {
             addCriterion("status <>", value, "status");
             return (Criteria) this;
         }
 
-        public Criteria andStatusGreaterThan(Boolean value) {
+        public Criteria andStatusGreaterThan(Byte value) {
             addCriterion("status >", value, "status");
             return (Criteria) this;
         }
 
-        public Criteria andStatusGreaterThanOrEqualTo(Boolean value) {
+        public Criteria andStatusGreaterThanOrEqualTo(Byte value) {
             addCriterion("status >=", value, "status");
             return (Criteria) this;
         }
 
-        public Criteria andStatusLessThan(Boolean value) {
+        public Criteria andStatusLessThan(Byte value) {
             addCriterion("status <", value, "status");
             return (Criteria) this;
         }
 
-        public Criteria andStatusLessThanOrEqualTo(Boolean value) {
+        public Criteria andStatusLessThanOrEqualTo(Byte value) {
             addCriterion("status <=", value, "status");
             return (Criteria) this;
         }
 
-        public Criteria andStatusIn(List<Boolean> values) {
+        public Criteria andStatusIn(List<Byte> values) {
             addCriterion("status in", values, "status");
             return (Criteria) this;
         }
 
-        public Criteria andStatusNotIn(List<Boolean> values) {
+        public Criteria andStatusNotIn(List<Byte> values) {
             addCriterion("status not in", values, "status");
             return (Criteria) this;
         }
 
-        public Criteria andStatusBetween(Boolean value1, Boolean value2) {
+        public Criteria andStatusBetween(Byte value1, Byte value2) {
             addCriterion("status between", value1, value2, "status");
             return (Criteria) this;
         }
 
-        public Criteria andStatusNotBetween(Boolean value1, Boolean value2) {
+        public Criteria andStatusNotBetween(Byte value1, Byte value2) {
             addCriterion("status not between", value1, value2, "status");
             return (Criteria) this;
         }
@@ -496,52 +496,52 @@ public class OpayMasterPupilAwardExample {
             return (Criteria) this;
         }
 
-        public Criteria andActionEqualTo(Boolean value) {
+        public Criteria andActionEqualTo(Byte value) {
             addCriterion("action =", value, "action");
             return (Criteria) this;
         }
 
-        public Criteria andActionNotEqualTo(Boolean value) {
+        public Criteria andActionNotEqualTo(Byte value) {
             addCriterion("action <>", value, "action");
             return (Criteria) this;
         }
 
-        public Criteria andActionGreaterThan(Boolean value) {
+        public Criteria andActionGreaterThan(Byte value) {
             addCriterion("action >", value, "action");
             return (Criteria) this;
         }
 
-        public Criteria andActionGreaterThanOrEqualTo(Boolean value) {
+        public Criteria andActionGreaterThanOrEqualTo(Byte value) {
             addCriterion("action >=", value, "action");
             return (Criteria) this;
         }
 
-        public Criteria andActionLessThan(Boolean value) {
+        public Criteria andActionLessThan(Byte value) {
             addCriterion("action <", value, "action");
             return (Criteria) this;
         }
 
-        public Criteria andActionLessThanOrEqualTo(Boolean value) {
+        public Criteria andActionLessThanOrEqualTo(Byte value) {
             addCriterion("action <=", value, "action");
             return (Criteria) this;
         }
 
-        public Criteria andActionIn(List<Boolean> values) {
+        public Criteria andActionIn(List<Byte> values) {
             addCriterion("action in", values, "action");
             return (Criteria) this;
         }
 
-        public Criteria andActionNotIn(List<Boolean> values) {
+        public Criteria andActionNotIn(List<Byte> values) {
             addCriterion("action not in", values, "action");
             return (Criteria) this;
         }
 
-        public Criteria andActionBetween(Boolean value1, Boolean value2) {
+        public Criteria andActionBetween(Byte value1, Byte value2) {
             addCriterion("action between", value1, value2, "action");
             return (Criteria) this;
         }
 
-        public Criteria andActionNotBetween(Boolean value1, Boolean value2) {
+        public Criteria andActionNotBetween(Byte value1, Byte value2) {
             addCriterion("action not between", value1, value2, "action");
             return (Criteria) this;
         }
@@ -616,52 +616,52 @@ public class OpayMasterPupilAwardExample {
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeEqualTo(Boolean value) {
+        public Criteria andMarkTypeEqualTo(Byte value) {
             addCriterion("mark_type =", value, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeNotEqualTo(Boolean value) {
+        public Criteria andMarkTypeNotEqualTo(Byte value) {
             addCriterion("mark_type <>", value, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeGreaterThan(Boolean value) {
+        public Criteria andMarkTypeGreaterThan(Byte value) {
             addCriterion("mark_type >", value, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeGreaterThanOrEqualTo(Boolean value) {
+        public Criteria andMarkTypeGreaterThanOrEqualTo(Byte value) {
             addCriterion("mark_type >=", value, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeLessThan(Boolean value) {
+        public Criteria andMarkTypeLessThan(Byte value) {
             addCriterion("mark_type <", value, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeLessThanOrEqualTo(Boolean value) {
+        public Criteria andMarkTypeLessThanOrEqualTo(Byte value) {
             addCriterion("mark_type <=", value, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeIn(List<Boolean> values) {
+        public Criteria andMarkTypeIn(List<Byte> values) {
             addCriterion("mark_type in", values, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeNotIn(List<Boolean> values) {
+        public Criteria andMarkTypeNotIn(List<Byte> values) {
             addCriterion("mark_type not in", values, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeBetween(Boolean value1, Boolean value2) {
+        public Criteria andMarkTypeBetween(Byte value1, Byte value2) {
             addCriterion("mark_type between", value1, value2, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeNotBetween(Boolean value1, Boolean value2) {
+        public Criteria andMarkTypeNotBetween(Byte value1, Byte value2) {
             addCriterion("mark_type not between", value1, value2, "markType");
             return (Criteria) this;
         }
@@ -806,52 +806,52 @@ public class OpayMasterPupilAwardExample {
             return (Criteria) this;
         }
 
-        public Criteria andMasterTypeEqualTo(Boolean value) {
+        public Criteria andMasterTypeEqualTo(Byte value) {
             addCriterion("master_type =", value, "masterType");
             return (Criteria) this;
         }
 
-        public Criteria andMasterTypeNotEqualTo(Boolean value) {
+        public Criteria andMasterTypeNotEqualTo(Byte value) {
             addCriterion("master_type <>", value, "masterType");
             return (Criteria) this;
         }
 
-        public Criteria andMasterTypeGreaterThan(Boolean value) {
+        public Criteria andMasterTypeGreaterThan(Byte value) {
             addCriterion("master_type >", value, "masterType");
             return (Criteria) this;
         }
 
-        public Criteria andMasterTypeGreaterThanOrEqualTo(Boolean value) {
+        public Criteria andMasterTypeGreaterThanOrEqualTo(Byte value) {
             addCriterion("master_type >=", value, "masterType");
             return (Criteria) this;
         }
 
-        public Criteria andMasterTypeLessThan(Boolean value) {
+        public Criteria andMasterTypeLessThan(Byte value) {
             addCriterion("master_type <", value, "masterType");
             return (Criteria) this;
         }
 
-        public Criteria andMasterTypeLessThanOrEqualTo(Boolean value) {
+        public Criteria andMasterTypeLessThanOrEqualTo(Byte value) {
             addCriterion("master_type <=", value, "masterType");
             return (Criteria) this;
         }
 
-        public Criteria andMasterTypeIn(List<Boolean> values) {
+        public Criteria andMasterTypeIn(List<Byte> values) {
             addCriterion("master_type in", values, "masterType");
             return (Criteria) this;
         }
 
-        public Criteria andMasterTypeNotIn(List<Boolean> values) {
+        public Criteria andMasterTypeNotIn(List<Byte> values) {
             addCriterion("master_type not in", values, "masterType");
             return (Criteria) this;
         }
 
-        public Criteria andMasterTypeBetween(Boolean value1, Boolean value2) {
+        public Criteria andMasterTypeBetween(Byte value1, Byte value2) {
             addCriterion("master_type between", value1, value2, "masterType");
             return (Criteria) this;
         }
 
-        public Criteria andMasterTypeNotBetween(Boolean value1, Boolean value2) {
+        public Criteria andMasterTypeNotBetween(Byte value1, Byte value2) {
             addCriterion("master_type not between", value1, value2, "masterType");
             return (Criteria) this;
         }

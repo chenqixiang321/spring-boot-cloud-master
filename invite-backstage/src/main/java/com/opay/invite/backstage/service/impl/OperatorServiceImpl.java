@@ -9,7 +9,6 @@ import com.opay.invite.backstage.service.OperatorService;
 import com.opay.invite.backstage.service.dto.LoginReqDto;
 import com.opay.invite.backstage.service.dto.LoginRespDto;
 import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,7 +28,7 @@ public class OperatorServiceImpl implements OperatorService {
     @Override
     public LoginRespDto login(LoginReqDto reqDto) throws BackstageException {
 
-
+        LoginRespDto respDto = new LoginRespDto();
         InviteOperatorExample example = new InviteOperatorExample();
         example.createCriteria().andOperatorIdEqualTo(reqDto.getOperatorId());
 
@@ -43,8 +42,7 @@ public class OperatorServiceImpl implements OperatorService {
         if (!inviteOperator.getLoginPwd().equals(reqDto.getLoginPwd())) {
             throw new BackstageException(BackstageExceptionEnum.PWD_ERROR);
         }
-
-        // 预留返回
-        return null;
+        respDto.setOperateName(inviteOperator.getOperatorName());
+        return respDto;
     }
 }

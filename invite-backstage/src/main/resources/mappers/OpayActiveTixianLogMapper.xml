@@ -5,14 +5,14 @@
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="opay_id" property="opayId" jdbcType="VARCHAR" />
     <result column="amount" property="amount" jdbcType="DECIMAL" />
-    <result column="type" property="type" jdbcType="BIT" />
+    <result column="type" property="type" jdbcType="TINYINT"/>
     <result column="create_at" property="createAt" jdbcType="TIMESTAMP" />
     <result column="tixian_id" property="tixianId" jdbcType="BIGINT" />
     <result column="month" property="month" jdbcType="INTEGER" />
     <result column="day" property="day" jdbcType="INTEGER" />
     <result column="device_id" property="deviceId" jdbcType="VARCHAR" />
     <result column="ip" property="ip" jdbcType="VARCHAR" />
-    <result column="mark" property="mark" jdbcType="BIT" />
+      <result column="mark" property="mark" jdbcType="TINYINT"/>
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -111,9 +111,9 @@
       month, day, device_id, 
       ip, mark)
     values (#{id,jdbcType=BIGINT}, #{opayId,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, 
-      #{type,jdbcType=BIT}, #{createAt,jdbcType=TIMESTAMP}, #{tixianId,jdbcType=BIGINT}, 
+      #{type,jdbcType=TINYINT}, #{createAt,jdbcType=TIMESTAMP}, #{tixianId,jdbcType=BIGINT}, 
       #{month,jdbcType=INTEGER}, #{day,jdbcType=INTEGER}, #{deviceId,jdbcType=VARCHAR}, 
-      #{ip,jdbcType=VARCHAR}, #{mark,jdbcType=BIT})
+      #{ip,jdbcType=VARCHAR}, #{mark,jdbcType=TINYINT})
   </insert>
   <insert id="insertSelective" parameterType="com.opay.invite.backstage.dao.entity.OpayActiveTixianLog" >
     insert into opay_active_tixian_log
@@ -163,7 +163,7 @@
         #{amount,jdbcType=DECIMAL},
       </if>
       <if test="type != null" >
-        #{type,jdbcType=BIT},
+          #{type,jdbcType=TINYINT},
       </if>
       <if test="createAt != null" >
         #{createAt,jdbcType=TIMESTAMP},
@@ -184,7 +184,7 @@
         #{ip,jdbcType=VARCHAR},
       </if>
       <if test="mark != null" >
-        #{mark,jdbcType=BIT},
+          #{mark,jdbcType=TINYINT},
       </if>
     </trim>
   </insert>
@@ -207,7 +207,7 @@
         amount = #{record.amount,jdbcType=DECIMAL},
       </if>
       <if test="record.type != null" >
-        type = #{record.type,jdbcType=BIT},
+          type = #{record.type,jdbcType=TINYINT},
       </if>
       <if test="record.createAt != null" >
         create_at = #{record.createAt,jdbcType=TIMESTAMP},
@@ -228,7 +228,7 @@
         ip = #{record.ip,jdbcType=VARCHAR},
       </if>
       <if test="record.mark != null" >
-        mark = #{record.mark,jdbcType=BIT},
+          mark = #{record.mark,jdbcType=TINYINT},
       </if>
     </set>
     <if test="_parameter != null" >
@@ -236,21 +236,21 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update opay_active_tixian_log
-    set id = #{record.id,jdbcType=BIGINT},
+      update opay_active_tixian_log
+      set id = #{record.id,jdbcType=BIGINT},
       opay_id = #{record.opayId,jdbcType=VARCHAR},
       amount = #{record.amount,jdbcType=DECIMAL},
-      type = #{record.type,jdbcType=BIT},
+      type = #{record.type,jdbcType=TINYINT},
       create_at = #{record.createAt,jdbcType=TIMESTAMP},
       tixian_id = #{record.tixianId,jdbcType=BIGINT},
       month = #{record.month,jdbcType=INTEGER},
       day = #{record.day,jdbcType=INTEGER},
       device_id = #{record.deviceId,jdbcType=VARCHAR},
       ip = #{record.ip,jdbcType=VARCHAR},
-      mark = #{record.mark,jdbcType=BIT}
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
+      mark = #{record.mark,jdbcType=TINYINT}
+      <if test="_parameter != null">
+          <include refid="Update_By_Example_Where_Clause"/>
+      </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.opay.invite.backstage.dao.entity.OpayActiveTixianLog" >
     update opay_active_tixian_log
@@ -262,7 +262,7 @@
         amount = #{amount,jdbcType=DECIMAL},
       </if>
       <if test="type != null" >
-        type = #{type,jdbcType=BIT},
+          type = #{type,jdbcType=TINYINT},
       </if>
       <if test="createAt != null" >
         create_at = #{createAt,jdbcType=TIMESTAMP},
@@ -283,7 +283,7 @@
         ip = #{ip,jdbcType=VARCHAR},
       </if>
       <if test="mark != null" >
-        mark = #{mark,jdbcType=BIT},
+          mark = #{mark,jdbcType=TINYINT},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -292,14 +292,14 @@
     update opay_active_tixian_log
     set opay_id = #{opayId,jdbcType=VARCHAR},
       amount = #{amount,jdbcType=DECIMAL},
-      type = #{type,jdbcType=BIT},
+      type = #{type,jdbcType=TINYINT},
       create_at = #{createAt,jdbcType=TIMESTAMP},
       tixian_id = #{tixianId,jdbcType=BIGINT},
       month = #{month,jdbcType=INTEGER},
       day = #{day,jdbcType=INTEGER},
       device_id = #{deviceId,jdbcType=VARCHAR},
       ip = #{ip,jdbcType=VARCHAR},
-      mark = #{mark,jdbcType=BIT}
+      mark = #{mark,jdbcType=TINYINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

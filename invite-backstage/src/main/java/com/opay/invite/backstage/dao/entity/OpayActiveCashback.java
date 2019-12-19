@@ -2,7 +2,7 @@ package com.opay.invite.backstage.dao.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class OpayActiveCashback implements Serializable {
     private Long id;
@@ -17,11 +17,11 @@ public class OpayActiveCashback implements Serializable {
 
     private BigDecimal totalAmount;
 
-    private Boolean status;
+    private Byte status;
 
-    private Date createAt;
+    private LocalDateTime createAt;
 
-    private Date updateAt;
+    private LocalDateTime updateAt;
 
     private static final long serialVersionUID = 1L;
 
@@ -73,27 +73,27 @@ public class OpayActiveCashback implements Serializable {
         this.totalAmount = totalAmount;
     }
 
-    public Boolean getStatus() {
+    public Byte getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(Byte status) {
         this.status = status;
     }
 
-    public Date getCreateAt() {
+    public LocalDateTime getCreateAt() {
         return createAt;
     }
 
-    public void setCreateAt(Date createAt) {
+    public void setCreateAt(LocalDateTime createAt) {
         this.createAt = createAt;
     }
 
-    public Date getUpdateAt() {
+    public LocalDateTime getUpdateAt() {
         return updateAt;
     }
 
-    public void setUpdateAt(Date updateAt) {
+    public void setUpdateAt(LocalDateTime updateAt) {
         this.updateAt = updateAt;
     }
 }

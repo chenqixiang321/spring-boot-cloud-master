@@ -9,7 +9,7 @@
     <result column="master_phone" property="masterPhone" jdbcType="VARCHAR" />
     <result column="create_at" property="createAt" jdbcType="TIMESTAMP" />
     <result column="master_parent_id" property="masterParentId" jdbcType="VARCHAR" />
-    <result column="mark_type" property="markType" jdbcType="BIT" />
+    <result column="mark_type" property="markType" jdbcType="TINYINT"/>
     <result column="month" property="month" jdbcType="INTEGER" />
     <result column="day" property="day" jdbcType="INTEGER" />
   </resultMap>
@@ -112,7 +112,7 @@
       day)
     values (#{id,jdbcType=BIGINT}, #{masterId,jdbcType=VARCHAR}, #{pupilId,jdbcType=VARCHAR}, 
       #{pupilPhone,jdbcType=VARCHAR}, #{masterPhone,jdbcType=VARCHAR}, #{createAt,jdbcType=TIMESTAMP}, 
-      #{masterParentId,jdbcType=VARCHAR}, #{markType,jdbcType=BIT}, #{month,jdbcType=INTEGER}, 
+      #{masterParentId,jdbcType=VARCHAR}, #{markType,jdbcType=TINYINT}, #{month,jdbcType=INTEGER}, 
       #{day,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.opay.invite.backstage.dao.entity.OpayInviteRelation" >
@@ -172,7 +172,7 @@
         #{masterParentId,jdbcType=VARCHAR},
       </if>
       <if test="markType != null" >
-        #{markType,jdbcType=BIT},
+          #{markType,jdbcType=TINYINT},
       </if>
       <if test="month != null" >
         #{month,jdbcType=INTEGER},
@@ -213,7 +213,7 @@
         master_parent_id = #{record.masterParentId,jdbcType=VARCHAR},
       </if>
       <if test="record.markType != null" >
-        mark_type = #{record.markType,jdbcType=BIT},
+          mark_type = #{record.markType,jdbcType=TINYINT},
       </if>
       <if test="record.month != null" >
         month = #{record.month,jdbcType=INTEGER},
@@ -227,20 +227,20 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update opay_invite_relation
-    set id = #{record.id,jdbcType=BIGINT},
+      update opay_invite_relation
+      set id = #{record.id,jdbcType=BIGINT},
       master_id = #{record.masterId,jdbcType=VARCHAR},
       pupil_id = #{record.pupilId,jdbcType=VARCHAR},
       pupil_phone = #{record.pupilPhone,jdbcType=VARCHAR},
       master_phone = #{record.masterPhone,jdbcType=VARCHAR},
       create_at = #{record.createAt,jdbcType=TIMESTAMP},
       master_parent_id = #{record.masterParentId,jdbcType=VARCHAR},
-      mark_type = #{record.markType,jdbcType=BIT},
+      mark_type = #{record.markType,jdbcType=TINYINT},
       month = #{record.month,jdbcType=INTEGER},
       day = #{record.day,jdbcType=INTEGER}
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
+      <if test="_parameter != null">
+          <include refid="Update_By_Example_Where_Clause"/>
+      </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.opay.invite.backstage.dao.entity.OpayInviteRelation" >
     update opay_invite_relation
@@ -264,7 +264,7 @@
         master_parent_id = #{masterParentId,jdbcType=VARCHAR},
       </if>
       <if test="markType != null" >
-        mark_type = #{markType,jdbcType=BIT},
+          mark_type = #{markType,jdbcType=TINYINT},
       </if>
       <if test="month != null" >
         month = #{month,jdbcType=INTEGER},
@@ -283,7 +283,7 @@
       master_phone = #{masterPhone,jdbcType=VARCHAR},
       create_at = #{createAt,jdbcType=TIMESTAMP},
       master_parent_id = #{masterParentId,jdbcType=VARCHAR},
-      mark_type = #{markType,jdbcType=BIT},
+      mark_type = #{markType,jdbcType=TINYINT},
       month = #{month,jdbcType=INTEGER},
       day = #{day,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}

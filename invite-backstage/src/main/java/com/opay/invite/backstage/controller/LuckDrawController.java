@@ -5,6 +5,7 @@ import com.opay.invite.backstage.exception.BackstageException;
 import com.opay.invite.backstage.exception.BackstageExceptionEnum;
 import com.opay.invite.backstage.service.LuckDrawInfoService;
 import com.opay.invite.backstage.service.dto.BaseRespDto;
+import com.opay.invite.backstage.service.dto.DrawOperateReqDto;
 import com.opay.invite.backstage.service.dto.DrawRecordReqDto;
 import com.opay.invite.backstage.service.dto.DrawRecordRespDto;
 import io.swagger.annotations.Api;
@@ -59,10 +60,31 @@ public class LuckDrawController {
 
     }
 
-    @PostMapping(value = "/operateDraw")
-    public BaseRespDto operateDraw() {
+    @PostMapping(value = "/drawOperate")
+    @ApiOperation(value = "审核记录", notes = "审核中奖纪录")
+    public BaseRespDto drawOperate(@RequestBody DrawOperateReqDto drawOperateReqDto) {
+        BaseRespDto baseRespDto = new BaseRespDto();
+        try {
+            if (drawOperateReqDto == null) {
+                throw new BackstageException(BackstageExceptionEnum.PARAMETER_EMPTY);
+            }
+            if (StringUtils.isBlank(drawOperateReqDto.getOperatorId())) {
+                throw new BackstageException(BackstageExceptionEnum.OPERATOR_ID_ERROR);
+            }
+            if (drawOperateReqDto.getId() == null) {
+                throw new BackstageException(BackstageExceptionEnum.DRAW_RECORD_ID_EMPTY);
+            }
+            luckDrawInfoService.drawOperate(drawOperateReqDto);
 
-        return null;
+
+        } catch (BackstageException e) {
+            log.error("请求查询中奖记录， 失败", e);
+            baseRespDto.buildError(e);
+        } catch (Exception e) {
+            log.error("请求查询中奖记录， 失败", e);
+            baseRespDto.buildFail();
+        }
+        return baseRespDto;
     }
 
 

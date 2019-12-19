@@ -2,7 +2,7 @@ package com.opay.invite.backstage.dao.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class OpayMasterPupilAward implements Serializable {
     private Long id;
@@ -13,21 +13,21 @@ public class OpayMasterPupilAward implements Serializable {
 
     private BigDecimal reward;
 
-    private Date createAt;
+    private LocalDateTime createAt;
 
-    private Boolean status;
+    private Byte status;
 
-    private Boolean action;
+    private Byte action;
 
     private BigDecimal amount;
 
-    private Boolean markType;
+    private Byte markType;
 
     private String stepJson;
 
     private BigDecimal masterReward;
 
-    private Boolean masterType;
+    private Byte masterType;
 
     private Integer month;
 
@@ -69,27 +69,27 @@ public class OpayMasterPupilAward implements Serializable {
         this.reward = reward;
     }
 
-    public Date getCreateAt() {
+    public LocalDateTime getCreateAt() {
         return createAt;
     }
 
-    public void setCreateAt(Date createAt) {
+    public void setCreateAt(LocalDateTime createAt) {
         this.createAt = createAt;
     }
 
-    public Boolean getStatus() {
+    public Byte getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(Byte status) {
         this.status = status;
     }
 
-    public Boolean getAction() {
+    public Byte getAction() {
         return action;
     }
 
-    public void setAction(Boolean action) {
+    public void setAction(Byte action) {
         this.action = action;
     }
 
@@ -101,11 +101,11 @@ public class OpayMasterPupilAward implements Serializable {
         this.amount = amount;
     }
 
-    public Boolean getMarkType() {
+    public Byte getMarkType() {
         return markType;
     }
 
-    public void setMarkType(Boolean markType) {
+    public void setMarkType(Byte markType) {
         this.markType = markType;
     }
 
@@ -125,11 +125,11 @@ public class OpayMasterPupilAward implements Serializable {
         this.masterReward = masterReward;
     }
 
-    public Boolean getMasterType() {
+    public Byte getMasterType() {
         return masterType;
     }
 
-    public void setMasterType(Boolean masterType) {
+    public void setMasterType(Byte masterType) {
         this.masterType = masterType;
     }
 

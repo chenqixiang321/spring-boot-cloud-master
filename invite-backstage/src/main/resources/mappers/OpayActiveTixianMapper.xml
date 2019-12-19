@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.opay.invite.backstage.dao.mapper.OpayActiveTixianMapper" >
-  <resultMap id="BaseResultMap" type="com.opay.invite.backstage.dao.entity.OpayActiveTixian" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="opay_id" property="opayId" jdbcType="VARCHAR" />
-    <result column="amount" property="amount" jdbcType="DECIMAL" />
-    <result column="type" property="type" jdbcType="BIT" />
-    <result column="create_at" property="createAt" jdbcType="TIMESTAMP" />
-    <result column="status" property="status" jdbcType="BIT" />
-    <result column="month" property="month" jdbcType="INTEGER" />
-    <result column="day" property="day" jdbcType="INTEGER" />
-    <result column="device_id" property="deviceId" jdbcType="VARCHAR" />
-    <result column="ip" property="ip" jdbcType="VARCHAR" />
-    <result column="trade_no" property="tradeNo" jdbcType="VARCHAR" />
-    <result column="reference" property="reference" jdbcType="VARCHAR" />
-    <result column="update_at" property="updateAt" jdbcType="TIMESTAMP" />
-    <result column="operator" property="operator" jdbcType="VARCHAR" />
+  <resultMap id="BaseResultMap" type="com.opay.invite.backstage.dao.entity.OpayActiveTixian">
+      <id column="id" property="id" jdbcType="BIGINT"/>
+      <result column="opay_id" property="opayId" jdbcType="VARCHAR"/>
+      <result column="amount" property="amount" jdbcType="DECIMAL"/>
+      <result column="type" property="type" jdbcType="TINYINT"/>
+      <result column="create_at" property="createAt" jdbcType="TIMESTAMP"/>
+      <result column="status" property="status" jdbcType="TINYINT"/>
+      <result column="month" property="month" jdbcType="INTEGER"/>
+      <result column="day" property="day" jdbcType="INTEGER"/>
+      <result column="device_id" property="deviceId" jdbcType="VARCHAR"/>
+      <result column="ip" property="ip" jdbcType="VARCHAR"/>
+      <result column="trade_no" property="tradeNo" jdbcType="VARCHAR"/>
+      <result column="reference" property="reference" jdbcType="VARCHAR"/>
+      <result column="update_at" property="updateAt" jdbcType="TIMESTAMP"/>
+      <result column="operator" property="operator" jdbcType="VARCHAR"/>
+      <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP"/>
+      <result column="memo" property="memo" jdbcType="VARCHAR"/>
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -77,7 +79,7 @@
   </sql>
   <sql id="Base_Column_List" >
     id, opay_id, amount, type, create_at, status, month, day, device_id, ip, trade_no, 
-    reference, update_at, operator
+    reference, update_at, operator, operate_time, memo
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.opay.invite.backstage.dao.entity.OpayActiveTixianExample" >
     select
@@ -111,15 +113,17 @@
   </delete>
   <insert id="insert" parameterType="com.opay.invite.backstage.dao.entity.OpayActiveTixian" >
     insert into opay_active_tixian (id, opay_id, amount, 
-      type, create_at, status, month, 
-      day, device_id, ip, 
-      trade_no, reference, update_at, 
-      operator)
+      type, create_at, status, 
+      month, day, device_id, 
+      ip, trade_no, reference, 
+      update_at, operator, operate_time, 
+      memo)
     values (#{id,jdbcType=BIGINT}, #{opayId,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, 
-      #{type,jdbcType=BIT}, #{createAt,jdbcType=TIMESTAMP}, #{status,jdbcType=BIT}, #{month,jdbcType=INTEGER}, 
-      #{day,jdbcType=INTEGER}, #{deviceId,jdbcType=VARCHAR}, #{ip,jdbcType=VARCHAR}, 
-      #{tradeNo,jdbcType=VARCHAR}, #{reference,jdbcType=VARCHAR}, #{updateAt,jdbcType=TIMESTAMP}, 
-      #{operator,jdbcType=VARCHAR})
+      #{type,jdbcType=TINYINT}, #{createAt,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, 
+      #{month,jdbcType=INTEGER}, #{day,jdbcType=INTEGER}, #{deviceId,jdbcType=VARCHAR}, 
+      #{ip,jdbcType=VARCHAR}, #{tradeNo,jdbcType=VARCHAR}, #{reference,jdbcType=VARCHAR}, 
+      #{updateAt,jdbcType=TIMESTAMP}, #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, 
+      #{memo,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.opay.invite.backstage.dao.entity.OpayActiveTixian" >
     insert into opay_active_tixian
@@ -148,24 +152,30 @@
       <if test="day != null" >
         day,
       </if>
-      <if test="deviceId != null" >
-        device_id,
-      </if>
-      <if test="ip != null" >
-        ip,
-      </if>
-      <if test="tradeNo != null" >
-        trade_no,
-      </if>
-      <if test="reference != null" >
-        reference,
-      </if>
-      <if test="updateAt != null" >
-        update_at,
-      </if>
-      <if test="operator != null" >
-        operator,
-      </if>
+        <if test="deviceId != null">
+            device_id,
+        </if>
+        <if test="ip != null">
+            ip,
+        </if>
+        <if test="tradeNo != null">
+            trade_no,
+        </if>
+        <if test="reference != null">
+            reference,
+        </if>
+        <if test="updateAt != null">
+            update_at,
+        </if>
+        <if test="operator != null">
+            operator,
+        </if>
+        <if test="operateTime != null">
+            operate_time,
+        </if>
+        <if test="memo != null">
+            memo,
+        </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -178,13 +188,13 @@
         #{amount,jdbcType=DECIMAL},
       </if>
       <if test="type != null" >
-        #{type,jdbcType=BIT},
+          #{type,jdbcType=TINYINT},
       </if>
       <if test="createAt != null" >
         #{createAt,jdbcType=TIMESTAMP},
       </if>
       <if test="status != null" >
-        #{status,jdbcType=BIT},
+          #{status,jdbcType=TINYINT},
       </if>
       <if test="month != null" >
         #{month,jdbcType=INTEGER},
@@ -192,90 +202,103 @@
       <if test="day != null" >
         #{day,jdbcType=INTEGER},
       </if>
-      <if test="deviceId != null" >
-        #{deviceId,jdbcType=VARCHAR},
-      </if>
-      <if test="ip != null" >
-        #{ip,jdbcType=VARCHAR},
-      </if>
-      <if test="tradeNo != null" >
-        #{tradeNo,jdbcType=VARCHAR},
-      </if>
-      <if test="reference != null" >
-        #{reference,jdbcType=VARCHAR},
-      </if>
-      <if test="updateAt != null" >
-        #{updateAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="operator != null" >
-        #{operator,jdbcType=VARCHAR},
-      </if>
+        <if test="deviceId != null">
+            #{deviceId,jdbcType=VARCHAR},
+        </if>
+        <if test="ip != null">
+            #{ip,jdbcType=VARCHAR},
+        </if>
+        <if test="tradeNo != null">
+            #{tradeNo,jdbcType=VARCHAR},
+        </if>
+        <if test="reference != null">
+            #{reference,jdbcType=VARCHAR},
+        </if>
+        <if test="updateAt != null">
+            #{updateAt,jdbcType=TIMESTAMP},
+        </if>
+        <if test="operator != null">
+            #{operator,jdbcType=VARCHAR},
+        </if>
+        <if test="operateTime != null">
+            #{operateTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="memo != null">
+            #{memo,jdbcType=VARCHAR},
+        </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.opay.invite.backstage.dao.entity.OpayActiveTixianExample" resultType="java.lang.Integer" >
-    select count(*) from opay_active_tixian
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
-    </if>
-  </select>
-  <update id="updateByExampleSelective" parameterType="map" >
-    update opay_active_tixian
-    <set >
-      <if test="record.id != null" >
-        id = #{record.id,jdbcType=BIGINT},
-      </if>
-      <if test="record.opayId != null" >
-        opay_id = #{record.opayId,jdbcType=VARCHAR},
-      </if>
-      <if test="record.amount != null" >
-        amount = #{record.amount,jdbcType=DECIMAL},
-      </if>
-      <if test="record.type != null" >
-        type = #{record.type,jdbcType=BIT},
-      </if>
-      <if test="record.createAt != null" >
-        create_at = #{record.createAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="record.status != null" >
-        status = #{record.status,jdbcType=BIT},
-      </if>
+    <select id="countByExample" parameterType="com.opay.invite.backstage.dao.entity.OpayActiveTixianExample"
+            resultType="java.lang.Integer">
+        select count(*) from opay_active_tixian
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update opay_active_tixian
+        <set>
+            <if test="record.id != null">
+                id = #{record.id,jdbcType=BIGINT},
+            </if>
+            <if test="record.opayId != null">
+                opay_id = #{record.opayId,jdbcType=VARCHAR},
+            </if>
+            <if test="record.amount != null">
+                amount = #{record.amount,jdbcType=DECIMAL},
+            </if>
+            <if test="record.type != null">
+                type = #{record.type,jdbcType=TINYINT},
+            </if>
+            <if test="record.createAt != null">
+                create_at = #{record.createAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.status != null">
+                status = #{record.status,jdbcType=TINYINT},
+            </if>
       <if test="record.month != null" >
         month = #{record.month,jdbcType=INTEGER},
       </if>
       <if test="record.day != null" >
         day = #{record.day,jdbcType=INTEGER},
       </if>
-      <if test="record.deviceId != null" >
-        device_id = #{record.deviceId,jdbcType=VARCHAR},
-      </if>
-      <if test="record.ip != null" >
-        ip = #{record.ip,jdbcType=VARCHAR},
-      </if>
-      <if test="record.tradeNo != null" >
-        trade_no = #{record.tradeNo,jdbcType=VARCHAR},
-      </if>
-      <if test="record.reference != null" >
-        reference = #{record.reference,jdbcType=VARCHAR},
-      </if>
-      <if test="record.updateAt != null" >
-        update_at = #{record.updateAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="record.operator != null" >
-        operator = #{record.operator,jdbcType=VARCHAR},
-      </if>
-    </set>
+            <if test="record.deviceId != null">
+                device_id = #{record.deviceId,jdbcType=VARCHAR},
+            </if>
+            <if test="record.ip != null">
+                ip = #{record.ip,jdbcType=VARCHAR},
+            </if>
+            <if test="record.tradeNo != null">
+                trade_no = #{record.tradeNo,jdbcType=VARCHAR},
+            </if>
+            <if test="record.reference != null">
+                reference = #{record.reference,jdbcType=VARCHAR},
+            </if>
+            <if test="record.updateAt != null">
+                update_at = #{record.updateAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.operator != null">
+                operator = #{record.operator,jdbcType=VARCHAR},
+            </if>
+            <if test="record.operateTime != null">
+                operate_time = #{record.operateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.memo != null">
+                memo = #{record.memo,jdbcType=VARCHAR},
+            </if>
+        </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update opay_active_tixian
-    set id = #{record.id,jdbcType=BIGINT},
+      update opay_active_tixian
+      set id = #{record.id,jdbcType=BIGINT},
       opay_id = #{record.opayId,jdbcType=VARCHAR},
       amount = #{record.amount,jdbcType=DECIMAL},
-      type = #{record.type,jdbcType=BIT},
+      type = #{record.type,jdbcType=TINYINT},
       create_at = #{record.createAt,jdbcType=TIMESTAMP},
-      status = #{record.status,jdbcType=BIT},
+      status = #{record.status,jdbcType=TINYINT},
       month = #{record.month,jdbcType=INTEGER},
       day = #{record.day,jdbcType=INTEGER},
       device_id = #{record.deviceId,jdbcType=VARCHAR},
@@ -283,10 +306,12 @@
       trade_no = #{record.tradeNo,jdbcType=VARCHAR},
       reference = #{record.reference,jdbcType=VARCHAR},
       update_at = #{record.updateAt,jdbcType=TIMESTAMP},
-      operator = #{record.operator,jdbcType=VARCHAR}
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
+      operator = #{record.operator,jdbcType=VARCHAR},
+      operate_time = #{record.operateTime,jdbcType=TIMESTAMP},
+      memo = #{record.memo,jdbcType=VARCHAR}
+      <if test="_parameter != null">
+          <include refid="Update_By_Example_Where_Clause"/>
+      </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.opay.invite.backstage.dao.entity.OpayActiveTixian" >
     update opay_active_tixian
@@ -298,13 +323,13 @@
         amount = #{amount,jdbcType=DECIMAL},
       </if>
       <if test="type != null" >
-        type = #{type,jdbcType=BIT},
+          type = #{type,jdbcType=TINYINT},
       </if>
       <if test="createAt != null" >
         create_at = #{createAt,jdbcType=TIMESTAMP},
       </if>
       <if test="status != null" >
-        status = #{status,jdbcType=BIT},
+          status = #{status,jdbcType=TINYINT},
       </if>
       <if test="month != null" >
         month = #{month,jdbcType=INTEGER},
@@ -312,24 +337,30 @@
       <if test="day != null" >
         day = #{day,jdbcType=INTEGER},
       </if>
-      <if test="deviceId != null" >
-        device_id = #{deviceId,jdbcType=VARCHAR},
-      </if>
-      <if test="ip != null" >
-        ip = #{ip,jdbcType=VARCHAR},
-      </if>
-      <if test="tradeNo != null" >
-        trade_no = #{tradeNo,jdbcType=VARCHAR},
-      </if>
-      <if test="reference != null" >
-        reference = #{reference,jdbcType=VARCHAR},
-      </if>
-      <if test="updateAt != null" >
-        update_at = #{updateAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="operator != null" >
-        operator = #{operator,jdbcType=VARCHAR},
-      </if>
+        <if test="deviceId != null">
+            device_id = #{deviceId,jdbcType=VARCHAR},
+        </if>
+        <if test="ip != null">
+            ip = #{ip,jdbcType=VARCHAR},
+        </if>
+        <if test="tradeNo != null">
+            trade_no = #{tradeNo,jdbcType=VARCHAR},
+        </if>
+        <if test="reference != null">
+            reference = #{reference,jdbcType=VARCHAR},
+        </if>
+        <if test="updateAt != null">
+            update_at = #{updateAt,jdbcType=TIMESTAMP},
+        </if>
+        <if test="operator != null">
+            operator = #{operator,jdbcType=VARCHAR},
+        </if>
+        <if test="operateTime != null">
+            operate_time = #{operateTime,jdbcType=TIMESTAMP},
+        </if>
+        <if test="memo != null">
+            memo = #{memo,jdbcType=VARCHAR},
+        </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -337,9 +368,9 @@
     update opay_active_tixian
     set opay_id = #{opayId,jdbcType=VARCHAR},
       amount = #{amount,jdbcType=DECIMAL},
-      type = #{type,jdbcType=BIT},
+      type = #{type,jdbcType=TINYINT},
       create_at = #{createAt,jdbcType=TIMESTAMP},
-      status = #{status,jdbcType=BIT},
+      status = #{status,jdbcType=TINYINT},
       month = #{month,jdbcType=INTEGER},
       day = #{day,jdbcType=INTEGER},
       device_id = #{deviceId,jdbcType=VARCHAR},
@@ -347,7 +378,19 @@
       trade_no = #{tradeNo,jdbcType=VARCHAR},
       reference = #{reference,jdbcType=VARCHAR},
       update_at = #{updateAt,jdbcType=TIMESTAMP},
-      operator = #{operator,jdbcType=VARCHAR}
+      operator = #{operator,jdbcType=VARCHAR},
+      operate_time = #{operateTime,jdbcType=TIMESTAMP},
+      memo = #{memo,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+
+    <!--  以下为自定义SQL -->
+    <select id="sumAmountByTypeAndStatus" resultType="java.math.BigDecimal">
+
+        select sum(amount) where opay_id = #{opayId} and `type` = #{type} and `status` = #{status};
+
+    </select>
+
+
 </mapper>

@@ -9,7 +9,7 @@ public class OpayUserTask implements Serializable {
 
     private Integer day;
 
-    private Boolean type;
+    private Byte type;
 
     private static final long serialVersionUID = 1L;
 
@@ -37,11 +37,11 @@ public class OpayUserTask implements Serializable {
         this.day = day;
     }
 
-    public Boolean getType() {
+    public Byte getType() {
         return type;
     }
 
-    public void setType(Boolean type) {
+    public void setType(Byte type) {
         this.type = type;
     }
 }

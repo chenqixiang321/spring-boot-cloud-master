@@ -13,10 +13,10 @@ import java.util.List;
  * @date 2019/12/17 18:24
  */
 @Data
-@ApiModel(value = "抽奖记录", description = "查询抽奖记录返回结果")
-public class DrawRecordRespDto extends BasePageRespDto {
+@ApiModel(value = "提现列表返回", description = "提现列表返回参数")
+public class WithdrawRecordRespDto extends BasePageRespDto {
 
-    @ApiModelProperty(value = "抽奖记录列表对象")
-    private List<DrawRecordDto> drawRecordDtoList;
+    @ApiModelProperty(value = "提现列表对象")
+    private List<WithdrawRecordDto> withdrawRecordDtoList;
 
 }

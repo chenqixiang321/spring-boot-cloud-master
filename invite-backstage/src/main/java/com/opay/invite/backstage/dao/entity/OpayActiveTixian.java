@@ -2,7 +2,7 @@ package com.opay.invite.backstage.dao.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class OpayActiveTixian implements Serializable {
     private Long id;
@@ -11,11 +11,11 @@ public class OpayActiveTixian implements Serializable {
 
     private BigDecimal amount;
 
-    private Boolean type;
+    private Byte type;
 
-    private Date createAt;
+    private LocalDateTime createAt;
 
-    private Boolean status;
+    private Byte status;
 
     private Integer month;
 
@@ -29,9 +29,13 @@ public class OpayActiveTixian implements Serializable {
 
     private String reference;
 
-    private Date updateAt;
+    private LocalDateTime updateAt;
 
     private String operator;
+
+    private LocalDateTime operateTime;
+
+    private String memo;
 
     private static final long serialVersionUID = 1L;
 
@@ -59,27 +63,27 @@ public class OpayActiveTixian implements Serializable {
         this.amount = amount;
     }
 
-    public Boolean getType() {
+    public Byte getType() {
         return type;
     }
 
-    public void setType(Boolean type) {
+    public void setType(Byte type) {
         this.type = type;
     }
 
-    public Date getCreateAt() {
+    public LocalDateTime getCreateAt() {
         return createAt;
     }
 
-    public void setCreateAt(Date createAt) {
+    public void setCreateAt(LocalDateTime createAt) {
         this.createAt = createAt;
     }
 
-    public Boolean getStatus() {
+    public Byte getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(Byte status) {
         this.status = status;
     }
 
@@ -131,11 +135,11 @@ public class OpayActiveTixian implements Serializable {
         this.reference = reference;
     }
 
-    public Date getUpdateAt() {
+    public LocalDateTime getUpdateAt() {
         return updateAt;
     }
 
-    public void setUpdateAt(Date updateAt) {
+    public void setUpdateAt(LocalDateTime updateAt) {
         this.updateAt = updateAt;
     }
 
@@ -145,5 +149,21 @@ public class OpayActiveTixian implements Serializable {
 
     public void setOperator(String operator) {
         this.operator = operator;
+    }
+
+    public LocalDateTime getOperateTime() {
+        return operateTime;
+    }
+
+    public void setOperateTime(LocalDateTime operateTime) {
+        this.operateTime = operateTime;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
     }
 }

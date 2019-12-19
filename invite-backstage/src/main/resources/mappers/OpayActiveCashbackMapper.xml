@@ -8,7 +8,7 @@
     <result column="version" property="version" jdbcType="INTEGER" />
     <result column="amount" property="amount" jdbcType="DECIMAL" />
     <result column="total_amount" property="totalAmount" jdbcType="DECIMAL" />
-    <result column="status" property="status" jdbcType="BIT" />
+    <result column="status" property="status" jdbcType="TINYINT"/>
     <result column="create_at" property="createAt" jdbcType="TIMESTAMP" />
     <result column="update_at" property="updateAt" jdbcType="TIMESTAMP" />
   </resultMap>
@@ -110,7 +110,7 @@
       )
     values (#{id,jdbcType=BIGINT}, #{opayId,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
       #{version,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, #{totalAmount,jdbcType=DECIMAL}, 
-      #{status,jdbcType=BIT}, #{createAt,jdbcType=TIMESTAMP}, #{updateAt,jdbcType=TIMESTAMP}
+      #{status,jdbcType=TINYINT}, #{createAt,jdbcType=TIMESTAMP}, #{updateAt,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.opay.invite.backstage.dao.entity.OpayActiveCashback" >
@@ -164,7 +164,7 @@
         #{totalAmount,jdbcType=DECIMAL},
       </if>
       <if test="status != null" >
-        #{status,jdbcType=BIT},
+          #{status,jdbcType=TINYINT},
       </if>
       <if test="createAt != null" >
         #{createAt,jdbcType=TIMESTAMP},
@@ -202,7 +202,7 @@
         total_amount = #{record.totalAmount,jdbcType=DECIMAL},
       </if>
       <if test="record.status != null" >
-        status = #{record.status,jdbcType=BIT},
+          status = #{record.status,jdbcType=TINYINT},
       </if>
       <if test="record.createAt != null" >
         create_at = #{record.createAt,jdbcType=TIMESTAMP},
@@ -216,19 +216,19 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update opay_active_cashback
-    set id = #{record.id,jdbcType=BIGINT},
+      update opay_active_cashback
+      set id = #{record.id,jdbcType=BIGINT},
       opay_id = #{record.opayId,jdbcType=VARCHAR},
       phone = #{record.phone,jdbcType=VARCHAR},
       version = #{record.version,jdbcType=INTEGER},
       amount = #{record.amount,jdbcType=DECIMAL},
       total_amount = #{record.totalAmount,jdbcType=DECIMAL},
-      status = #{record.status,jdbcType=BIT},
+      status = #{record.status,jdbcType=TINYINT},
       create_at = #{record.createAt,jdbcType=TIMESTAMP},
       update_at = #{record.updateAt,jdbcType=TIMESTAMP}
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
+      <if test="_parameter != null">
+          <include refid="Update_By_Example_Where_Clause"/>
+      </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="com.opay.invite.backstage.dao.entity.OpayActiveCashback" >
     update opay_active_cashback
@@ -249,7 +249,7 @@
         total_amount = #{totalAmount,jdbcType=DECIMAL},
       </if>
       <if test="status != null" >
-        status = #{status,jdbcType=BIT},
+          status = #{status,jdbcType=TINYINT},
       </if>
       <if test="createAt != null" >
         create_at = #{createAt,jdbcType=TIMESTAMP},
@@ -267,7 +267,7 @@
       version = #{version,jdbcType=INTEGER},
       amount = #{amount,jdbcType=DECIMAL},
       total_amount = #{totalAmount,jdbcType=DECIMAL},
-      status = #{status,jdbcType=BIT},
+      status = #{status,jdbcType=TINYINT},
       create_at = #{createAt,jdbcType=TIMESTAMP},
       update_at = #{updateAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}

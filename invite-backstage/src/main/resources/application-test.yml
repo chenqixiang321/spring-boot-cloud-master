@@ -161,3 +161,5 @@ transfer:
     userRecordUrl: /api/im/queryUserRecordByPhone
     transferNotify: http://t-api.iminvite.pos.operapay.com/invite/api/transferNotify
 
+mybatis:
+  mapper-locations: classpath:mappers/*.xml

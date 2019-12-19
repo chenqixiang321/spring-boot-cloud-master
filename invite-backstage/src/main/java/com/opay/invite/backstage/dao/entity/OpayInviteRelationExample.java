@@ -585,52 +585,52 @@ public class OpayInviteRelationExample {
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeEqualTo(Boolean value) {
+        public Criteria andMarkTypeEqualTo(Byte value) {
             addCriterion("mark_type =", value, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeNotEqualTo(Boolean value) {
+        public Criteria andMarkTypeNotEqualTo(Byte value) {
             addCriterion("mark_type <>", value, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeGreaterThan(Boolean value) {
+        public Criteria andMarkTypeGreaterThan(Byte value) {
             addCriterion("mark_type >", value, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeGreaterThanOrEqualTo(Boolean value) {
+        public Criteria andMarkTypeGreaterThanOrEqualTo(Byte value) {
             addCriterion("mark_type >=", value, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeLessThan(Boolean value) {
+        public Criteria andMarkTypeLessThan(Byte value) {
             addCriterion("mark_type <", value, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeLessThanOrEqualTo(Boolean value) {
+        public Criteria andMarkTypeLessThanOrEqualTo(Byte value) {
             addCriterion("mark_type <=", value, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeIn(List<Boolean> values) {
+        public Criteria andMarkTypeIn(List<Byte> values) {
             addCriterion("mark_type in", values, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeNotIn(List<Boolean> values) {
+        public Criteria andMarkTypeNotIn(List<Byte> values) {
             addCriterion("mark_type not in", values, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeBetween(Boolean value1, Boolean value2) {
+        public Criteria andMarkTypeBetween(Byte value1, Byte value2) {
             addCriterion("mark_type between", value1, value2, "markType");
             return (Criteria) this;
         }
 
-        public Criteria andMarkTypeNotBetween(Boolean value1, Boolean value2) {
+        public Criteria andMarkTypeNotBetween(Byte value1, Byte value2) {
             addCriterion("mark_type not between", value1, value2, "markType");
             return (Criteria) this;
         }

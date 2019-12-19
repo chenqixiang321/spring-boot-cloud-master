@@ -19,9 +19,9 @@ public class OpayUserOrder implements Serializable {
 
     private String opayId;
 
-    private Boolean type;
+    private Byte type;
 
-    private Boolean status;
+    private Byte status;
 
     private Integer month;
 
@@ -85,19 +85,19 @@ public class OpayUserOrder implements Serializable {
         this.opayId = opayId;
     }
 
-    public Boolean getType() {
+    public Byte getType() {
         return type;
     }
 
-    public void setType(Boolean type) {
+    public void setType(Byte type) {
         this.type = type;
     }
 
-    public Boolean getStatus() {
+    public Byte getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(Byte status) {
         this.status = status;
     }
 

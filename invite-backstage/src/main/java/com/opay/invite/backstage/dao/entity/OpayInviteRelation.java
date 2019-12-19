@@ -18,7 +18,7 @@ public class OpayInviteRelation implements Serializable {
 
     private String masterParentId;
 
-    private Boolean markType;
+    private Byte markType;
 
     private Integer month;
 
@@ -82,11 +82,11 @@ public class OpayInviteRelation implements Serializable {
         this.masterParentId = masterParentId;
     }
 
-    public Boolean getMarkType() {
+    public Byte getMarkType() {
         return markType;
     }
 
-    public void setMarkType(Boolean markType) {
+    public void setMarkType(Byte markType) {
         this.markType = markType;
     }
 

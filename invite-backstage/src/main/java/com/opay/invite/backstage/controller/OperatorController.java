@@ -43,7 +43,7 @@ public class OperatorController {
 
         try {
             checkParam(loginReqDto);
-            operatorService.login(loginReqDto);
+            respDto = operatorService.login(loginReqDto);
             respDto.buildSuccess();
         } catch (BackstageException e) {
             log.error("操作员登陆失败", e);

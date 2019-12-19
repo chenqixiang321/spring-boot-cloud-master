@@ -306,52 +306,52 @@ public class OpayActiveTixianLogExample {
             return (Criteria) this;
         }
 
-        public Criteria andTypeEqualTo(Boolean value) {
+        public Criteria andTypeEqualTo(Byte value) {
             addCriterion("type =", value, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeNotEqualTo(Boolean value) {
+        public Criteria andTypeNotEqualTo(Byte value) {
             addCriterion("type <>", value, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeGreaterThan(Boolean value) {
+        public Criteria andTypeGreaterThan(Byte value) {
             addCriterion("type >", value, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeGreaterThanOrEqualTo(Boolean value) {
+        public Criteria andTypeGreaterThanOrEqualTo(Byte value) {
             addCriterion("type >=", value, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeLessThan(Boolean value) {
+        public Criteria andTypeLessThan(Byte value) {
             addCriterion("type <", value, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeLessThanOrEqualTo(Boolean value) {
+        public Criteria andTypeLessThanOrEqualTo(Byte value) {
             addCriterion("type <=", value, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeIn(List<Boolean> values) {
+        public Criteria andTypeIn(List<Byte> values) {
             addCriterion("type in", values, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeNotIn(List<Boolean> values) {
+        public Criteria andTypeNotIn(List<Byte> values) {
             addCriterion("type not in", values, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeBetween(Boolean value1, Boolean value2) {
+        public Criteria andTypeBetween(Byte value1, Byte value2) {
             addCriterion("type between", value1, value2, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeNotBetween(Boolean value1, Boolean value2) {
+        public Criteria andTypeNotBetween(Byte value1, Byte value2) {
             addCriterion("type not between", value1, value2, "type");
             return (Criteria) this;
         }
@@ -746,52 +746,52 @@ public class OpayActiveTixianLogExample {
             return (Criteria) this;
         }
 
-        public Criteria andMarkEqualTo(Boolean value) {
+        public Criteria andMarkEqualTo(Byte value) {
             addCriterion("mark =", value, "mark");
             return (Criteria) this;
         }
 
-        public Criteria andMarkNotEqualTo(Boolean value) {
+        public Criteria andMarkNotEqualTo(Byte value) {
             addCriterion("mark <>", value, "mark");
             return (Criteria) this;
         }
 
-        public Criteria andMarkGreaterThan(Boolean value) {
+        public Criteria andMarkGreaterThan(Byte value) {
             addCriterion("mark >", value, "mark");
             return (Criteria) this;
         }
 
-        public Criteria andMarkGreaterThanOrEqualTo(Boolean value) {
+        public Criteria andMarkGreaterThanOrEqualTo(Byte value) {
             addCriterion("mark >=", value, "mark");
             return (Criteria) this;
         }
 
-        public Criteria andMarkLessThan(Boolean value) {
+        public Criteria andMarkLessThan(Byte value) {
             addCriterion("mark <", value, "mark");
             return (Criteria) this;
         }
 
-        public Criteria andMarkLessThanOrEqualTo(Boolean value) {
+        public Criteria andMarkLessThanOrEqualTo(Byte value) {
             addCriterion("mark <=", value, "mark");
             return (Criteria) this;
         }
 
-        public Criteria andMarkIn(List<Boolean> values) {
+        public Criteria andMarkIn(List<Byte> values) {
             addCriterion("mark in", values, "mark");
             return (Criteria) this;
         }
 
-        public Criteria andMarkNotIn(List<Boolean> values) {
+        public Criteria andMarkNotIn(List<Byte> values) {
             addCriterion("mark not in", values, "mark");
             return (Criteria) this;
         }
 
-        public Criteria andMarkBetween(Boolean value1, Boolean value2) {
+        public Criteria andMarkBetween(Byte value1, Byte value2) {
             addCriterion("mark between", value1, value2, "mark");
             return (Criteria) this;
         }
 
-        public Criteria andMarkNotBetween(Boolean value1, Boolean value2) {
+        public Criteria andMarkNotBetween(Byte value1, Byte value2) {
             addCriterion("mark not between", value1, value2, "mark");
             return (Criteria) this;
         }

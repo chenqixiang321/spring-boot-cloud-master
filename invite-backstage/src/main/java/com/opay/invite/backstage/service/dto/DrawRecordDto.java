@@ -8,7 +8,6 @@ import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * 抽奖记录 （中奖记录）
@@ -20,6 +19,9 @@ import java.time.LocalDateTime;
 @Data
 @ApiModel(value = "抽奖记录DTO", description = "抽奖记录列表内容")
 public class DrawRecordDto implements Serializable {
+
+    @ApiModelProperty(value = "本条中奖记录数据库主键ID")
+    private Long id;
 
     @ApiModelProperty(value = "中奖者opayId")
     private String opayId;
@@ -54,7 +56,7 @@ public class DrawRecordDto implements Serializable {
 
         BeanUtils.copyProperties(luckDrawInfo, this);
         this.createTime = luckDrawInfo.getCreateTime().format(DateTimeConstant.FORMAT_TIME);
-        this.operatorTime = luckDrawInfo.getOperateTime().format(DateTimeConstant.FORMAT_TIME);
+        this.operatorTime = luckDrawInfo.getOperateTime() == null ? null : luckDrawInfo.getOperateTime().format(DateTimeConstant.FORMAT_TIME);
         return this;
     }
 

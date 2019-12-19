@@ -11,7 +11,7 @@ public class OpayActiveTixianLog implements Serializable {
 
     private BigDecimal amount;
 
-    private Boolean type;
+    private Byte type;
 
     private Date createAt;
 
@@ -25,7 +25,7 @@ public class OpayActiveTixianLog implements Serializable {
 
     private String ip;
 
-    private Boolean mark;
+    private Byte mark;
 
     private static final long serialVersionUID = 1L;
 
@@ -53,11 +53,11 @@ public class OpayActiveTixianLog implements Serializable {
         this.amount = amount;
     }
 
-    public Boolean getType() {
+    public Byte getType() {
         return type;
     }
 
-    public void setType(Boolean type) {
+    public void setType(Byte type) {
         this.type = type;
     }
 
@@ -109,11 +109,11 @@ public class OpayActiveTixianLog implements Serializable {
         this.ip = ip;
     }
 
-    public Boolean getMark() {
+    public Byte getMark() {
         return mark;
     }
 
-    public void setMark(Boolean mark) {
+    public void setMark(Byte mark) {
         this.mark = mark;
     }
 }
