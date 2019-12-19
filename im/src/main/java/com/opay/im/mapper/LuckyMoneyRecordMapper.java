@@ -4,6 +4,7 @@ import com.opay.im.model.LuckyMoneyRecordModel;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -23,4 +24,8 @@ public interface LuckyMoneyRecordMapper {
     List<LuckyMoneyRecordModel> selectLuckyMoneyRecord(Long luckMoneyId);
 
     LuckyMoneyRecordModel selectLuckyMoneyRecordByOpayId(@Param("luckMoneyId") Long luckMoneyId, @Param("opayId") String opayId);
+
+    List<LuckyMoneyRecordModel> selectListByCreateTime(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    void updateStatusAndReferenceById(@Param("recordStatus") byte recordStatus, @Param("reference") String reference, @Param("id") Long id, @Param("version") Long version);
 }

@@ -90,3 +90,10 @@ feign:
   httpclient:
     connectionTimeout: 50000
     timeToLive: 1
+
+
+task:
+  executeIp: 52.210.41.16
+  minusHour:
+    start: 25
+    end: 24

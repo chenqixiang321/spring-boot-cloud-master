@@ -79,3 +79,10 @@ prometheus:
   client:
     enabled: true
     basePackage: com.opay.im
+
+
+task:
+  executeIp: 54.76.254.65
+  minusHour:
+    start: 25
+    end: 24

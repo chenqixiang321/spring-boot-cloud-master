@@ -84,4 +84,9 @@ feign:
   httpclient:
     connectionTimeout: 5000
 
+task:
+  executeIp: 10.249.250.171
+  minusHour:
+    start: 25
+    end: 24
 
