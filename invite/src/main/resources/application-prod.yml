@@ -48,7 +48,26 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+1
-
+  quartz:
+    properties:
+      scheduler:
+        instanceName: opay.invite
+        instanceId: AUTO
+      jobStore:
+        misfireThreshold: 60000
+        class: org.quartz.impl.jdbcjobstore.JobStoreTX
+        driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+        dataSource: qrtz
+        tablePrefix: QRTZ_
+        isClustered: true
+        clusterCheckinInterval: 2000
+      dataSource:
+        qrtz:
+          driver: "com.mysql.jdbc.Driver"
+          validationQuery: "select 1"
+          URL: "jdbc:mysql://opay-im.c7vkdm90b2v9.eu-west-1.rds.amazonaws.com:3306/opay_invite?useUnicode=true&characterEncoding=utf-8"
+          user: "root"
+          password: "ff3NKWQpY5hEq7xzOLuX"
 config:
   opay:
     domain: http://internal-campaignapiinternal-1831570749.eu-west-1.elb.amazonaws.com
