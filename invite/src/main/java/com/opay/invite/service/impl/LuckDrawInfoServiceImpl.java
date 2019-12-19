@@ -98,12 +98,6 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         return luckDrawInfoMapper.updateByPrimaryKey(record);
     }
 
-
-    public static void main(String[] args) {
-        String name = "aaa bb cc";
-        System.out.println(name.split(" ")[1]);
-    }
-
     @Override
     @Cacheable(value = "luckDrawInfoList@600", unless = "#result == null")
     public List<LuckDrawListResponse> selectLuckDrawInfoList() throws Exception {

@@ -2,6 +2,7 @@ package com.opay.im.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opay.im.common.SystemCode;
+import com.opay.im.config.OpayConfig;
 import com.opay.im.constant.LuckyMoneyStatus;
 import com.opay.im.exception.ImException;
 import com.opay.im.exception.LuckMoneyExpiredException;
@@ -15,6 +16,7 @@ import com.opay.im.model.LuckyMoneyModel;
 import com.opay.im.model.LuckyMoneyRecordModel;
 import com.opay.im.model.request.GrabLuckyMoneyRequest;
 import com.opay.im.model.request.LuckyMoneyRequest;
+import com.opay.im.model.request.OpayAcceptLuckyMoneyRequest;
 import com.opay.im.model.response.GrabLuckyMoneyResponse;
 import com.opay.im.model.response.GrabLuckyMoneyResult;
 import com.opay.im.model.response.LuckyMoneyDetailResponse;
@@ -22,6 +24,7 @@ import com.opay.im.model.response.LuckyMoneyInfoResponse;
 import com.opay.im.model.response.LuckyMoneyRecordListResponse;
 import com.opay.im.model.response.LuckyMoneyRecordResponse;
 import com.opay.im.model.response.LuckyMoneyResponse;
+import com.opay.im.model.response.OpayApiResultResponse;
 import com.opay.im.model.response.opaycallback.OPayCallBackResponse;
 import com.opay.im.model.response.opaycallback.PayloadResponse;
 import com.opay.im.service.ChatGroupMemberService;
@@ -32,6 +35,7 @@ import com.opay.im.service.RongCloudService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -78,6 +82,8 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     private RongCloudService rongCloudService;
     @Autowired
     private OpayApiService opayApiService;
+    @Autowired
+    private OpayConfig opayConfig;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -147,7 +153,6 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         if (!sendLuckyMoneyResult) {
             throw new LuckMoneyLimitException("Today's red envelope amount has reached the limit");
         }
-        //opayApiService.acceptRedPacket();
         LuckyMoneyResponse luckyMoneyResponse = new LuckyMoneyResponse();
         luckyMoneyResponse.setId(luckyMoneyModel.getId());
         luckyMoneyResponse.setReference("SLM:" + luckyMoneyModel.getId() + ":" + reference);
@@ -195,13 +200,15 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         grabLuckyMoneyResponse.setShow(luckyMoneyModelData.getShow());
         grabLuckyMoneyResponse.setTheme(luckyMoneyModelData.getTheme());
         if (grabLuckyMoneyResult.getCode() == 0) {
+            String reference = incrKeyService.getIncrKey("LM");
             LuckyMoneyRecordModel luckyMoneyRecordModel = new LuckyMoneyRecordModel();
             luckyMoneyRecordModel.setId(grabLuckyMoneyResult.getId());
             luckyMoneyRecordModel.setOpayPhone(grabLuckyMoneyRequest.getCurrentPhone());
             luckyMoneyRecordModel.setOpayName(grabLuckyMoneyRequest.getCurrentOpayName());
             luckyMoneyRecordModel.setOpayId(grabLuckyMoneyRequest.getCurrentOpayId());
             luckyMoneyRecordModel.setGetTime(new Date());
-            luckyMoneyRecordMapper.updateByPrimaryKeySelective(luckyMoneyRecordModel);
+            luckyMoneyRecordModel.setReference(reference);
+
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> map = new HashMap<>();
             map.put("sendUserId", luckyMoneyModelData.getOpayId());
@@ -211,6 +218,33 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             map.put("envelopeId", grabLuckyMoneyRequest.getId());
             map.put("targetId", grabLuckyMoneyRequest.getTargetId());
             map.put("status", "1");//0:未抢,1:已抢 ,2:过期
+            String requestId = incrKeyService.getIncrKey();
+            OpayAcceptLuckyMoneyRequest opayAcceptLuckyMoneyRequest = new OpayAcceptLuckyMoneyRequest();
+            opayAcceptLuckyMoneyRequest.setAccepterId(grabLuckyMoneyRequest.getCurrentOpayId());
+            opayAcceptLuckyMoneyRequest.setAmount((grabLuckyMoneyResult.getAmount().multiply(new BigDecimal(100))).longValue());
+            opayAcceptLuckyMoneyRequest.setMessage(luckyMoneyModelData.getShow());
+            opayAcceptLuckyMoneyRequest.setMerchartOrderNo("RLM:" + grabLuckyMoneyRequest.getId() + ":" + reference);
+            opayAcceptLuckyMoneyRequest.setSendOrderNo(luckyMoneyModelData.getTransactionId());
+            opayAcceptLuckyMoneyRequest.setClientSource("App");
+            OpayApiResultResponse<Map> opayApiResultResponse = opayApiService.acceptRedPacket(opayConfig.getMerchantId(), requestId, opayAcceptLuckyMoneyRequest, opayConfig.getAesKey(), opayConfig.getIv());
+            if ("00000".equals(opayApiResultResponse.getCode())) {
+                Map<String, String> resultMap = opayApiResultResponse.getData();
+                if ("PENDING".equals(resultMap.get("orderStatus"))) {
+                    luckyMoneyRecordModel.setGetStatus(3);
+                } else if ("FAIL".equals(resultMap.get("orderStatus"))) {
+                    luckyMoneyRecordModel.setGetStatus(2);
+                    redisTemplate.opsForSet().add(grabLuckyMoneyResult.getId());
+                    redisTemplate.opsForHash().delete(String.format("luckyMoney:set:%s:%s:%s:%s", luckyMoneyModelData.getId(), String.valueOf(luckyMoneyModelData.getTargetType()), luckyMoneyModelData.getOpayId(), luckyMoneyModelData.getTargetId()), "grab_user:" + grabLuckyMoneyRequest.getCurrentOpayId());
+                    throw new ImException(resultMap.get("errorMsg"));
+                } else {
+                    luckyMoneyRecordModel.setGetStatus(1);
+                }
+            } else {
+                redisTemplate.opsForSet().add(grabLuckyMoneyResult.getId());
+                redisTemplate.opsForHash().delete(String.format("luckyMoney:set:%s:%s:%s:%s", luckyMoneyModelData.getId(), String.valueOf(luckyMoneyModelData.getTargetType()), luckyMoneyModelData.getOpayId(), luckyMoneyModelData.getTargetId()), "grab_user:" + grabLuckyMoneyRequest.getCurrentOpayId());
+                throw new ImException("grab lucky money error");
+            }
+            luckyMoneyRecordMapper.updateByPrimaryKeySelective(luckyMoneyRecordModel);
             rongCloudService.sendMessage(grabLuckyMoneyRequest.getTargetId(), grabLuckyMoneyRequest.getSenderId(), mapper.writeValueAsString(map), "");
             rongCloudService.sendMessage(grabLuckyMoneyRequest.getSenderId(), grabLuckyMoneyRequest.getTargetId(), mapper.writeValueAsString(map), "");
             return grabLuckyMoneyResponse;
@@ -224,7 +258,8 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public int updatePayStatus(OPayCallBackResponse oPayCallBackResponse) throws Exception {
+    @CacheEvict(value = "luckyMoneyInfo", key = "#id")
+    public int updatePayStatus(Long id, OPayCallBackResponse oPayCallBackResponse) throws Exception {
         PayloadResponse payload = oPayCallBackResponse.getPayload();
         LuckyMoneyModel luckyMoneyModel = new LuckyMoneyModel();
         if ("successful".equals(payload.getStatus())) {
@@ -331,19 +366,6 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         return luckyMoneyRecordResponse;
     }
 
-
-    public static void main(String[] args) {
-        RedPackage moneyPackage = new RedPackage();
-        moneyPackage.remainMoney = new BigDecimal(100);
-        moneyPackage.remainSize = 10;
-        BigDecimal num = new BigDecimal(0);
-        for (int i = 0; i < moneyPackage.remainSize; i++) {
-            moneyPackage.remainMoney = moneyPackage.remainMoney.subtract(num);
-            num = getRandomMoney(moneyPackage);
-            moneyPackage.remainSize=moneyPackage.remainSize-1;
-        }
-
-    }
 
     private static BigDecimal getRandomMoney(RedPackage _redPackage) {
         // remainSize 剩余的红包数量

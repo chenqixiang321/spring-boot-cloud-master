@@ -33,7 +33,7 @@ if tonumber(day_max_value) + tonumber(amount) > tonumber(day_max) then
 end
 for i = 1, #amounts do
     redis.call("hset", lucky_money_key_set, amountIds[i], amounts[i])
-    redis.call("rpush", lucky_money_key_list, amountIds[i])
+    redis.call("sadd", lucky_money_key_list, amountIds[i])
 end
 redis.call("hset", lucky_money_key_set, "payStatus", 0)
 redis.call("set", lucky_money_max, day_max_value + amount)

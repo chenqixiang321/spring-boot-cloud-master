@@ -1,8 +1,10 @@
 package com.opay.im.controller;
 
 import com.opay.im.config.OpayConfig;
+import com.opay.im.model.LuckyMoneyRecordModel;
 import com.opay.im.model.response.opaycallback.OPayCallBackResponse;
 import com.opay.im.model.response.opaycallback.PayloadResponse;
+import com.opay.im.service.LuckyMoneyRecordService;
 import com.opay.im.service.LuckyMoneyService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,8 @@ public class OPayCallBackController {
     @Autowired
     private LuckyMoneyService luckyMoneyService;
     @Autowired
+    private LuckyMoneyRecordService luckyMoneyRecordService;
+    @Autowired
     private OpayConfig opayConfig;
 
     @ApiOperation(value = "opay回调", notes = "自测用")
@@ -36,9 +40,12 @@ public class OPayCallBackController {
         String data = "{Amount:\"" + payload.getAmount() + "\",Currency:\"" + payload.getCurrency() + "\",Reference:\"" + payload.getReference() + "\",Refunded:" + (payload.isRefunded() ? "t" : "f") + ",Status:\"" + payload.getStatus() + "\",Timestamp:\"" + payload.getTimestamp() + "\",Token:\"" + payload.getToken() + "\",TransactionID:\"" + payload.getTransactionId() + "\"}";
         if (oPayCallBackResponse.getSha512().equals(HexUtils.toHexString(hmacSha3(data, opayConfig.getPrivatekey())))) {
             try {
-                String business = oPayCallBackResponse.getPayload().getReference().split(":")[0];
-                if("SLM".equals(business)){ //发红包
-                    luckyMoneyService.updatePayStatus(oPayCallBackResponse);
+                String[] references = oPayCallBackResponse.getPayload().getReference().split(":");
+                String business = references[0];
+                if ("SLM".equals(business)) { //发红包
+                    luckyMoneyService.updatePayStatus(Long.parseLong(references[1]), oPayCallBackResponse);
+                } else if ("RLM".equals(business)) {
+                    luckyMoneyRecordService.updateGetStatus(Long.parseLong(references[1]), oPayCallBackResponse);
                 }
 
             } catch (Exception e) {

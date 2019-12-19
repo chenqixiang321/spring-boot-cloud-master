@@ -120,6 +120,15 @@
       <if test="version != null">
         version = #{version,jdbcType=BIGINT},
       </if>
+      <if test="getStatus != null">
+        get_status = #{getStatus,jdbcType=TINYINT},
+      </if>
+      <if test="transactionId != null">
+        ttransaction_id = #{transactionId,jdbcType=VARCHAR},
+      </if>
+      <if test="reference != null">
+        reference = #{reference,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>

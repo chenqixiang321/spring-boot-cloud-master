@@ -31,13 +31,13 @@ public interface LuckyMoneyService {
 
     GrabLuckyMoneyResponse grabLuckyMoney(GrabLuckyMoneyRequest grabLuckyMoneyRequest) throws Exception;
 
-    int updatePayStatus(OPayCallBackResponse oPayCallBackResponse) throws Exception;
+    int updatePayStatus(Long id, OPayCallBackResponse oPayCallBackResponse) throws Exception;
 
     Integer selectPayStatus(String opayId, String reference) throws Exception;
 
     LuckyMoneyModel selectLuckyMoneyByOpayId(Long id) throws Exception;
 
-    LuckyMoneyInfoResponse selectLuckyMoneyDetailByOpayId(Long id,String senderOpayId, String receivedOpayId) throws Exception;
+    LuckyMoneyInfoResponse selectLuckyMoneyDetailByOpayId(Long id, String senderOpayId, String receivedOpayId) throws Exception;
 
     LuckyMoneyRecordResponse selectLuckyMoneyView(Long id) throws Exception;
 }

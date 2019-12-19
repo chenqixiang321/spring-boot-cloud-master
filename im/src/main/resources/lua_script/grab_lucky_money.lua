@@ -10,7 +10,7 @@ if redis.call("hget", lucky_money_key_set, "payStatus") ~= 1 then
 end
 local grab_user = redis.call("hget", lucky_money_key_set, "grab_user:" .. grab_user_id)
 if grab_user == nil or grab_user == false then
-    local id = redis.call("lpop", lucky_money_key_list)
+    local id = redis.call("spop", lucky_money_key_list)
     if id == false or id == nil then
         return "[\"com.opay.im.model.response.GrabLuckyMoneyResult\",{\"code\":2,\"message\":\"The lucky money has been robbed\"}]"
     end

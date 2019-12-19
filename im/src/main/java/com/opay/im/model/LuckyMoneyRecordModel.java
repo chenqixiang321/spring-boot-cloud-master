@@ -68,4 +68,13 @@ public class LuckyMoneyRecordModel {
      */
     @ApiModelProperty(value = "版本")
     private Long version;
+
+    @ApiModelProperty(value = "reference")
+    private String reference;
+
+    @ApiModelProperty(value = "获取红包状态1:成功 2:失败 3:PENDING")
+    private int getStatus;
+
+    @ApiModelProperty(value="transactionId")
+    private String transactionId;
 }
