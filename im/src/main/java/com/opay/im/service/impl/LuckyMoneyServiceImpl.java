@@ -64,6 +64,8 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     private DefaultRedisScript<Boolean> sendLuckyMoney;
     @Resource(name = "grabLuckyMoney")
     private DefaultRedisScript<GrabLuckyMoneyResult> grabLuckyMoney;
+    @Resource(name = "resetLuckyMoney")
+    private DefaultRedisScript<Boolean> resetLuckyMoney;
     @Value("${im.luckyMoney.singleMax}")
     private int singleMax;
     @Value("${im.luckyMoney.dayMax}")
@@ -185,7 +187,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         } else {
             grabLuckyMoneyRequest.setTargetId(grabLuckyMoneyRequest.getCurrentOpayId());
         }
-        List<String> keys = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getSenderId(), "string");//grabLuckyMoneyRequest.getTargetId());
+        List<String> keys = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getSenderId(), grabLuckyMoneyRequest.getTargetId());
         GrabLuckyMoneyResult grabLuckyMoneyResult = (GrabLuckyMoneyResult) redisTemplate.execute(grabLuckyMoney, keys, grabLuckyMoneyRequest.getCurrentOpayId());
         LuckyMoneyModel luckyMoneyModelData = selectLuckyMoneyByOpayId(grabLuckyMoneyRequest.getId());
         if (luckyMoneyModelData == null) {
@@ -233,15 +235,15 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                     luckyMoneyRecordModel.setGetStatus(3);
                 } else if ("FAIL".equals(resultMap.get("orderStatus"))) {
                     luckyMoneyRecordModel.setGetStatus(2);
-                    redisTemplate.opsForSet().add(grabLuckyMoneyResult.getId());
-                    redisTemplate.opsForHash().delete(String.format("luckyMoney:set:%s:%s:%s:%s", luckyMoneyModelData.getId(), String.valueOf(luckyMoneyModelData.getTargetType()), luckyMoneyModelData.getOpayId(), luckyMoneyModelData.getTargetId()), "grab_user:" + grabLuckyMoneyRequest.getCurrentOpayId());
+                    List<String> keys2 = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getSenderId(), grabLuckyMoneyRequest.getTargetId());
+                    redisTemplate.execute(resetLuckyMoney, keys2, grabLuckyMoneyResult.getId(), grabLuckyMoneyRequest.getCurrentOpayId());
                     throw new ImException(resultMap.get("errorMsg"));
                 } else {
                     luckyMoneyRecordModel.setGetStatus(1);
                 }
             } else {
-                redisTemplate.opsForList().leftPush(String.format("luckyMoney:list:%s:%s:%s:%s", luckyMoneyModelData.getId(), String.valueOf(luckyMoneyModelData.getTargetType()), luckyMoneyModelData.getOpayId(), luckyMoneyModelData.getTargetId()), grabLuckyMoneyResult.getId());
-                redisTemplate.opsForHash().delete(String.format("luckyMoney:set:%s:%s:%s:%s", luckyMoneyModelData.getId(), String.valueOf(luckyMoneyModelData.getTargetType()), luckyMoneyModelData.getOpayId(), luckyMoneyModelData.getTargetId()), "grab_user:" + grabLuckyMoneyRequest.getCurrentOpayId());
+                List<String> keys2 = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getSenderId(), grabLuckyMoneyRequest.getTargetId());
+                redisTemplate.execute(resetLuckyMoney, keys2, grabLuckyMoneyResult.getId(), grabLuckyMoneyRequest.getCurrentOpayId());
                 throw new ImException("grab lucky money error");
             }
             luckyMoneyRecordMapper.updateByPrimaryKeySelective(luckyMoneyRecordModel);

@@ -6,6 +6,7 @@ import com.opay.im.model.response.opaycallback.PayloadResponse;
 import com.opay.im.service.LuckyMoneyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -13,6 +14,9 @@ import javax.annotation.Resource;
 import com.opay.im.model.LuckyMoneyRecordModel;
 import com.opay.im.mapper.LuckyMoneyRecordMapper;
 import com.opay.im.service.LuckyMoneyRecordService;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class LuckyMoneyRecordServiceImpl implements LuckyMoneyRecordService {
@@ -23,6 +27,8 @@ public class LuckyMoneyRecordServiceImpl implements LuckyMoneyRecordService {
     private RedisTemplate redisTemplate;
     @Autowired
     private LuckyMoneyService luckyMoneyService;
+    @Resource(name = "resetLuckyMoney")
+    private DefaultRedisScript<Boolean> resetLuckyMoney;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -64,8 +70,9 @@ public class LuckyMoneyRecordServiceImpl implements LuckyMoneyRecordService {
             luckyMoneyRecordModel.setGetStatus(1);
         } else if ("failed".equals(payload.getStatus())) {
             LuckyMoneyModel luckyMoneyModelData = luckyMoneyService.selectLuckyMoneyByOpayId(luckyMoneyId);
-            redisTemplate.opsForList().leftPush(String.format("luckyMoney:list:%s:%s:%s:%s", luckyMoneyModelData.getId(), String.valueOf(luckyMoneyModelData.getTargetType()), luckyMoneyModelData.getOpayId(), luckyMoneyModelData.getTargetId()), luckyMoneyRecordId);
-            redisTemplate.opsForHash().delete(String.format("luckyMoney:set:%s:%s:%s:%s", luckyMoneyModelData.getId(), String.valueOf(luckyMoneyModelData.getTargetType()), luckyMoneyModelData.getOpayId(), luckyMoneyModelData.getTargetId()), "grab_user:" + luckyMoneyModelData.getOpayId());
+            LuckyMoneyRecordModel lmr = luckyMoneyRecordMapper.selectByPrimaryKey(luckyMoneyRecordId);
+            List<String> keys2 = Arrays.asList(String.valueOf(luckyMoneyModelData.getId()), String.valueOf(luckyMoneyModelData.getTargetType()), luckyMoneyModelData.getOpayId(), luckyMoneyModelData.getTargetId());
+            redisTemplate.execute(resetLuckyMoney, keys2, luckyMoneyRecordId, lmr.getOpayId());
             luckyMoneyRecordModel.setGetStatus(2);
         } else {
             luckyMoneyRecordModel.setGetStatus(3);

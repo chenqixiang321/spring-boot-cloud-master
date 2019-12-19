@@ -26,6 +26,14 @@ public class LuaConfiguration {
         return redisScript;
     }
 
+    @Bean(name = "resetLuckyMoney")
+    public DefaultRedisScript<Boolean> resetLuckyMoney() {
+        DefaultRedisScript<Boolean> redisScript = new DefaultRedisScript<>();
+        redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua_script/reset_lucky_money.lua")));
+        redisScript.setResultType(Boolean.class);
+        return redisScript;
+    }
+
     @Bean(name = "incrKey")
     public DefaultRedisScript<Long> incrKey() {
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
