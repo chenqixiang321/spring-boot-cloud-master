@@ -331,7 +331,21 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         return luckyMoneyRecordResponse;
     }
 
-    private BigDecimal getRandomMoney(RedPackage _redPackage) {
+
+    public static void main(String[] args) {
+        RedPackage moneyPackage = new RedPackage();
+        moneyPackage.remainMoney = new BigDecimal(100);
+        moneyPackage.remainSize = 10;
+        BigDecimal num = new BigDecimal(0);
+        for (int i = 0; i < moneyPackage.remainSize; i++) {
+            moneyPackage.remainMoney = moneyPackage.remainMoney.subtract(num);
+            num = getRandomMoney(moneyPackage);
+            moneyPackage.remainSize=moneyPackage.remainSize-1;
+        }
+
+    }
+
+    private static BigDecimal getRandomMoney(RedPackage _redPackage) {
         // remainSize 剩余的红包数量
         // remainMoney 剩余的钱
         if (_redPackage.remainSize == 1) {

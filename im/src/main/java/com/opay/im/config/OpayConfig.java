@@ -10,4 +10,10 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 @Getter
 public class OpayConfig {
+    private String domain;
+    private String merchantId;
+    private String aesKey;
+    private String iv;
+    private String publickey;
+    private String privatekey;
 }

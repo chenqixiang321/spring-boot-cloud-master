@@ -1,5 +1,6 @@
 package com.opay.im.controller;
 
+import com.opay.im.config.OpayConfig;
 import com.opay.im.model.response.opaycallback.OPayCallBackResponse;
 import com.opay.im.model.response.opaycallback.PayloadResponse;
 import com.opay.im.service.LuckyMoneyService;
@@ -23,17 +24,17 @@ import java.nio.charset.Charset;
 @RequestMapping(value = "/callback")
 public class OPayCallBackController {
 
-    @Value("${config.opay.privatekey}")
-    private String privatekey;
     @Autowired
     private LuckyMoneyService luckyMoneyService;
+    @Autowired
+    private OpayConfig opayConfig;
 
     @ApiOperation(value = "opay回调", notes = "自测用")
     @PostMapping
     public void callBack(@RequestBody OPayCallBackResponse oPayCallBackResponse) {
         PayloadResponse payload = oPayCallBackResponse.getPayload();
         String data = "{Amount:\"" + payload.getAmount() + "\",Currency:\"" + payload.getCurrency() + "\",Reference:\"" + payload.getReference() + "\",Refunded:" + (payload.isRefunded() ? "t" : "f") + ",Status:\"" + payload.getStatus() + "\",Timestamp:\"" + payload.getTimestamp() + "\",Token:\"" + payload.getToken() + "\",TransactionID:\"" + payload.getTransactionId() + "\"}";
-        if (oPayCallBackResponse.getSha512().equals(HexUtils.toHexString(hmacSha3(data, privatekey)))) {
+        if (oPayCallBackResponse.getSha512().equals(HexUtils.toHexString(hmacSha3(data, opayConfig.getPrivatekey())))) {
             try {
                 String business = oPayCallBackResponse.getPayload().getReference().split(":")[0];
                 if("SLM".equals(business)){ //发红包

@@ -2,6 +2,7 @@ package com.opay.im.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opay.im.common.SystemCode;
+import com.opay.im.config.OpayConfig;
 import com.opay.im.model.request.GrabLuckyMoneyRequest;
 import com.opay.im.model.request.LuckyMoneyDetailRequest;
 import com.opay.im.model.request.LuckyMoneyRequest;
@@ -41,9 +42,8 @@ public class LuckyMoneyController {
     private HttpServletRequest request;
     @Autowired
     private LuckyMoneyService luckyMoneyService;
-    @Value("${config.opay.publickey}")
-    private String publickey;
-
+    @Autowired
+    private OpayConfig opayConfig;
     @ApiOperation(value = "生成红包", notes = "生成红包")
     @PostMapping
     public ResultResponse<LuckyMoneyResponse> createLuckyMoney(@RequestBody @Validated @ApiParam(name = "生成红包", value = "传入json格式", required = true) LuckyMoneyRequest createLuckyMoney) throws Exception {
@@ -56,7 +56,7 @@ public class LuckyMoneyController {
             }
         }
         LuckyMoneyResponse luckyMoneyResponse = luckyMoneyService.sendLuckyMoney(createLuckyMoney);
-        luckyMoneyResponse.setPublicKey(publickey);
+        luckyMoneyResponse.setPublicKey(opayConfig.getPublickey());
         return new ResultResponse(luckyMoneyResponse);
     }
 
