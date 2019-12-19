@@ -1,6 +1,5 @@
 package com.opay.invite.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.opay.invite.config.PrizePoolConfig;
 import com.opay.invite.exception.InviteException;
@@ -9,6 +8,7 @@ import com.opay.invite.model.LuckDrawInfoModel;
 import com.opay.invite.model.PrizeModel;
 import com.opay.invite.model.response.LuckDrawInfoResponse;
 import com.opay.invite.model.response.LuckDrawListResponse;
+import com.opay.invite.model.response.OpayApiOrderResultResponse;
 import com.opay.invite.model.response.OpayApiResultResponse;
 import com.opay.invite.model.response.PrizePoolResponse;
 import com.opay.invite.service.AliasMethodService;
@@ -20,7 +20,6 @@ import com.opay.invite.stateconfig.BonusStatus;
 import com.opay.invite.transferconfig.OrderType;
 import com.opay.invite.transferconfig.PayChannel;
 import com.opay.invite.transferconfig.TransferConfig;
-import com.opay.invite.utils.AESUtil;
 import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.DateFormatter;
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +67,7 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
     private RpcService rpcService;
     @Value("${opay.luckDraw.callBack}")
     private String bonusCallBack;
+
     @Override
     public int deleteByPrimaryKey(Long id) {
         return luckDrawInfoMapper.deleteByPrimaryKey(id);
@@ -175,22 +175,21 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
                 luckDrawInfoModel.setReference(reference);
                 Map<String, String> data = rpcService.getParamMap(opayConfig.getMerchantId(), opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), bonusCallBack, PayChannel.BalancePayment.getPayChannel());
                 log.info("request to createOrder {}", data);
-                OpayApiResultResponse<String> opayApiResultResponse = opayApiService.createOrder(opayConfig.getMerchantId(), requestId, data, opayConfig.getAesKey(), opayConfig.getIv());
-                String opayData = AESUtil.decrypt(opayApiResultResponse.getData(), opayConfig.getAesKey());
-                log.info("response from createOrder {}", opayData);
-                Map<String, String> aMap = JSONObject.parseObject(opayData, Map.class);
+                OpayApiResultResponse<OpayApiOrderResultResponse> opayApiResultResponse = opayApiService.createOrder(opayConfig.getMerchantId(), requestId, data, opayConfig.getAesKey(), opayConfig.getIv());
+                log.info("response from createOrder {}", opayApiResultResponse.toString());
                 if (!"00000".equals(opayApiResultResponse.getCode())) {
                     luckDrawInfoModel.setStatus(3);
                     throw new InviteException(opayApiResultResponse.getMessage());
                 }
-                if ("SUCCESS".equals(aMap.get("status"))) {
+                String status = opayApiResultResponse.getData().getStatus();
+                if ("SUCCESS".equals(status)) {
                     luckDrawInfoModel.setStatus(BonusStatus.SUCCESS);
-                } else if ("FAIL".equals(aMap.get("status"))) {
+                } else if ("FAIL".equals(status)) {
                     luckDrawInfoModel.setStatus(BonusStatus.FAIL);
                 } else {
                     luckDrawInfoModel.setStatus(BonusStatus.PENDING);
                 }
-                luckDrawInfoModel.setOrderNo(aMap.get("orderNo"));
+                luckDrawInfoModel.setOrderNo(status);
                 luckDrawInfoMapper.insertSelective(luckDrawInfoModel);
             } else {
                 luckDrawInfoMapper.insertSelective(luckDrawInfoModel);

@@ -205,7 +205,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             map.put("openNickName", grabLuckyMoneyRequest.getCurrentOpayName());
             map.put("envelopId", grabLuckyMoneyRequest.getId());
             map.put("targetId", grabLuckyMoneyRequest.getTargetId());
-            map.put("status", "0");
+            map.put("status", "1");//0:未抢,1:已抢 ,2:过期
             rongCloudService.sendMessage(grabLuckyMoneyRequest.getTargetId(), grabLuckyMoneyRequest.getSenderId(), mapper.writeValueAsString(map), "");
             rongCloudService.sendMessage(grabLuckyMoneyRequest.getSenderId(), grabLuckyMoneyRequest.getTargetId(), mapper.writeValueAsString(map), "");
             return grabLuckyMoneyResponse;

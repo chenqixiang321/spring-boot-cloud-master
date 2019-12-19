@@ -4,10 +4,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @ApiModel(value = "返回结果")
 @Getter
 @Setter
+@ToString
 public class OpayApiResultResponse<T> {
     @ApiModelProperty(value = "错误码")
     private String code;

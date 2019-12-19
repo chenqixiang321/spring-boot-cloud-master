@@ -19,6 +19,7 @@ if share_current_value == false then
     share_current_value = 0
 end
 if login_current_value == false then
+    redis.call("hset", invite_share_count_key, "login_current", 1)
     login_current_value = 1
 end
 if invite_current_value == false then
@@ -28,10 +29,10 @@ if prize_pool_count == false then
     prize_pool_count = 0
 end
 if tonumber(prize_pool_count) <= 0 then
-    return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"Prize pool is empty\",\"activityCount\":0,\"loginCount\":" .. login_current_value .. ",\"shareCount\":"..share_current_value..",\"inviteCount\":"..invite_current_value.."}]"
+    return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"Prize pool is empty\",\"activityCount\":0,\"loginCount\":" .. login_current_value .. ",\"shareCount\":" .. share_current_value .. ",\"inviteCount\":" .. invite_current_value .. "}]"
 else
     if tonumber(share_current_value) <= 0 and tonumber(invite_current_value) <= 0 and tonumber(login_current_value) <= 0 then
-        return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"The number of draws has been exhausted\",\"activityCount\":" .. prize_pool_count .. ",\"loginCount\":" .. login_current_value .. ",\"shareCount\":"..share_current_value..",\"inviteCount\":"..invite_current_value.."}]"
+        return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"The number of draws has been exhausted\",\"activityCount\":" .. prize_pool_count .. ",\"loginCount\":" .. login_current_value .. ",\"shareCount\":" .. share_current_value .. ",\"inviteCount\":" .. invite_current_value .. "}]"
     else
         local prize_key = first_prize_key
         local luck_draw_count = redis.call("hget", invite_share_count_key, luck_draw_key)
@@ -57,21 +58,21 @@ else
         end
         redis.call("decr", "prize_pool:count")
         if pool == 2 and prize == 0 and tonumber(grand_prize_index) < tonumber(prize_pool_count) and grand_prize_time_up == "false" then
-            return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"success\",\"pool\":" .. pool .. ",\"activityCount\":" .. (prize_pool_count - 1) .. ",\"loginCount\":" .. login_current_value .. ",\"shareCount\":"..share_current_value..",\"inviteCount\":"..invite_current_value.."}]"
+            return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"success\",\"pool\":" .. pool .. ",\"activityCount\":" .. (prize_pool_count - 1) .. ",\"loginCount\":" .. login_current_value .. ",\"shareCount\":" .. share_current_value .. ",\"inviteCount\":" .. invite_current_value .. "}]"
         end
         if (tonumber(grand_prize_index) > tonumber(prize_pool_count) or grand_prize_time_up == "true") and tonumber(redis.call("get", "prize_pool:second:0")) > 0 then
             redis.call("decr", "prize_pool:second:0")
-            return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"success\",\"pool\":2,\"prize\":0,\"activityCount\":" .. (prize_pool_count - 1) .. ",\"loginCount\":" .. login_current_value .. ",\"shareCount\":"..share_current_value..",\"inviteCount\":"..invite_current_value.."}]"
+            return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"success\",\"pool\":2,\"prize\":0,\"activityCount\":" .. (prize_pool_count - 1) .. ",\"loginCount\":" .. login_current_value .. ",\"shareCount\":" .. share_current_value .. ",\"inviteCount\":" .. invite_current_value .. "}]"
         end
         local prize_count = redis.call("get", prize_key)
         if prize_count == false then
-            return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"success\",\"pool\":" .. pool .. ",\"activityCount\":" .. (prize_pool_count - 1) .. ",\"loginCount\":" .. login_current_value .. ",\"shareCount\":"..share_current_value..",\"inviteCount\":"..invite_current_value.."}]"
+            return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"success\",\"pool\":" .. pool .. ",\"activityCount\":" .. (prize_pool_count - 1) .. ",\"loginCount\":" .. login_current_value .. ",\"shareCount\":" .. share_current_value .. ",\"inviteCount\":" .. invite_current_value .. "}]"
         else
             if tonumber(prize_count) > 0 then
                 redis.call("decr", prize_key)
-                return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"success\",\"pool\":" .. pool .. ",\"prize\":" .. prize .. ",\"activityCount\":" .. (prize_pool_count - 1) .. ",\"loginCount\":".. login_current_value .. ",\"shareCount\":"..share_current_value..",\"inviteCount\":"..invite_current_value.."}]"
+                return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"success\",\"pool\":" .. pool .. ",\"prize\":" .. prize .. ",\"activityCount\":" .. (prize_pool_count - 1) .. ",\"loginCount\":" .. login_current_value .. ",\"shareCount\":" .. share_current_value .. ",\"inviteCount\":" .. invite_current_value .. "}]"
             else
-                return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"success\",\"pool\":" .. pool .. ",\"activityCount\":" .. (prize_pool_count - 1) .. ",\"loginCount\":".. login_current_value .. ",\"shareCount\":"..share_current_value..",\"inviteCount\":"..invite_current_value.."}]"
+                return "[\"com.opay.invite.model.response.PrizePoolResponse\",{\"message\":\"success\",\"pool\":" .. pool .. ",\"activityCount\":" .. (prize_pool_count - 1) .. ",\"loginCount\":" .. login_current_value .. ",\"shareCount\":" .. share_current_value .. ",\"inviteCount\":" .. invite_current_value .. "}]"
             end
         end
     end
