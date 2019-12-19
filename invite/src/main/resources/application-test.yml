@@ -190,11 +190,18 @@ opay:
         expression: "05 56 12 * * ?"
         jobClass: "com.opay.invite.job.RewardJob"
       first-luck-draw:
-        expression: "0 50 6 * * ?"
+        expression: "0 50 1 * * ?"
         jobClass: "com.opay.invite.job.InitPrizePoolJob"
       second-luck-draw:
-        expression: "0 50 8 * * ?"
+        expression: "0 50 3 * * ?"
         jobClass: "com.opay.invite.job.InitPrizePoolJob"
+#  luckDraw:
+#    callBack: http://t-api.iminvite.pos.operapay.com/invite/callback/bonus
+#    merchantId: 9552000218
+#    aesKey: HKFbWOqM5Kd3a7N9
+#    iv: qazwert12345!@#$
+#    publickey: OPAYPUB15767581742580.8873746461850968
+#    privatekey: OPAYPRV15767581742580.6213051058973535
   luckDraw:
     callBack: http://t-api.iminvite.pos.operapay.com/invite/callback/bonus
     merchantId: 256619120522011
@@ -217,7 +224,17 @@ prometheus:
     basePackage: com.opay.invite
 
 #prize-pool:
+#  inviteLimit: 100
+#  shareLimit: 3 #每天分享上线
+#  grandPrizeIndex: 1000 #还剩n次时,开出大奖
+#  firstGrandPrizeTimeUp: "10:50:00"
+#  secondGrandPrizeTimeUp: "10:50:00"
+#  secondPoolRate: 4
 #  count: 100000
+#  firstPoolStart: 2
+#  firstPoolEnd: 3
+#  secondPoolStart: 4
+#  secondPoolEnd: 5
 #  firstPool:
 #    - {prize: 10,prob: 0.00015}
 #    - {prize: 5,prob: 0.0002}
