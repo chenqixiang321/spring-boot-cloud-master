@@ -171,10 +171,10 @@ opay:
         expression: "05 56 12 * * ?"
         jobClass: "com.opay.invite.job.RewardJob"
       first-luck-draw:
-        expression: "0 50 11 * * ?"
+        expression: "0 50 2 * * ?"
         jobClass: "com.opay.invite.job.InitPrizePoolJob"
       second-luck-draw:
-        expression: "0 50 15 * * ?"
+        expression: "0 50 4 * * ?"
         jobClass: "com.opay.invite.job.InitPrizePoolJob"
   luckDraw:
     callBack: http://t-api.iminvite.pos.operapay.com/invite/callback/bonus
@@ -217,15 +217,15 @@ prometheus:
 prize-pool:
   inviteLimit: 100
   shareLimit: 3 #每天分享上线
-  grandPrizeIndex: 37 #还剩n次时,开出大奖
-  firstGrandPrizeTimeUp: "4:00:00"
-  secondGrandPrizeTimeUp: "8:00:00"
+  grandPrizeIndex: 2 #还剩n次时,开出大奖
+  firstGrandPrizeTimeUp: "3:50:00"
+  secondGrandPrizeTimeUp: "5:50:00"
   secondPoolRate: 4
   count: 20
-  firstPoolStart: 14
-  firstPoolEnd: 15
-  secondPoolStart: 16
-  secondPoolEnd: 17
+  firstPoolStart: 3
+  firstPoolEnd: 4
+  secondPoolStart: 5
+  secondPoolEnd: 6
   firstPool:
     - {id: 3,prize: 5,prob: 0.5}
     - {id: 5,prize: 1,prob: 0.5}
