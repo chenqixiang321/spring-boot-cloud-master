@@ -18,5 +18,5 @@ public interface LuckyMoneyRecordService {
 
     int updateByPrimaryKey(LuckyMoneyRecordModel record);
 
-    int updateGetStatus(Long id, OPayCallBackResponse oPayCallBackResponse) throws Exception;
+    int updateGetStatus(Long luckyMoneyId, Long luckyMoneyRecordId, OPayCallBackResponse oPayCallBackResponse) throws Exception;
 }

@@ -38,14 +38,14 @@ public class OPayCallBackController {
     public void callBack(@RequestBody OPayCallBackResponse oPayCallBackResponse) {
         PayloadResponse payload = oPayCallBackResponse.getPayload();
         String data = "{Amount:\"" + payload.getAmount() + "\",Currency:\"" + payload.getCurrency() + "\",Reference:\"" + payload.getReference() + "\",Refunded:" + (payload.isRefunded() ? "t" : "f") + ",Status:\"" + payload.getStatus() + "\",Timestamp:\"" + payload.getTimestamp() + "\",Token:\"" + payload.getToken() + "\",TransactionID:\"" + payload.getTransactionId() + "\"}";
-        if (oPayCallBackResponse.getSha512().equals(HexUtils.toHexString(hmacSha3(data, opayConfig.getPrivatekey())))) {
+        if (!oPayCallBackResponse.getSha512().equals(HexUtils.toHexString(hmacSha3(data, opayConfig.getPrivatekey())))) {
             try {
                 String[] references = oPayCallBackResponse.getPayload().getReference().split(":");
                 String business = references[0];
                 if ("SLM".equals(business)) { //发红包
                     luckyMoneyService.updatePayStatus(Long.parseLong(references[1]), oPayCallBackResponse);
                 } else if ("RLM".equals(business)) {
-                    luckyMoneyRecordService.updateGetStatus(Long.parseLong(references[1]), oPayCallBackResponse);
+                    luckyMoneyRecordService.updateGetStatus(Long.parseLong(references[0]), Long.parseLong(references[1]), oPayCallBackResponse);
                 }
 
             } catch (Exception e) {

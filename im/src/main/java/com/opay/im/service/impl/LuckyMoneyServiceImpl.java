@@ -185,7 +185,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         } else {
             grabLuckyMoneyRequest.setTargetId(grabLuckyMoneyRequest.getCurrentOpayId());
         }
-        List<String> keys = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getSenderId(), grabLuckyMoneyRequest.getTargetId());
+        List<String> keys = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getSenderId(), "string");//grabLuckyMoneyRequest.getTargetId());
         GrabLuckyMoneyResult grabLuckyMoneyResult = (GrabLuckyMoneyResult) redisTemplate.execute(grabLuckyMoney, keys, grabLuckyMoneyRequest.getCurrentOpayId());
         LuckyMoneyModel luckyMoneyModelData = selectLuckyMoneyByOpayId(grabLuckyMoneyRequest.getId());
         if (luckyMoneyModelData == null) {
@@ -223,7 +223,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             opayAcceptLuckyMoneyRequest.setAccepterId(grabLuckyMoneyRequest.getCurrentOpayId());
             opayAcceptLuckyMoneyRequest.setAmount((grabLuckyMoneyResult.getAmount().multiply(new BigDecimal(100))).longValue());
             opayAcceptLuckyMoneyRequest.setMessage(luckyMoneyModelData.getShow());
-            opayAcceptLuckyMoneyRequest.setMerchartOrderNo("RLM:" + grabLuckyMoneyRequest.getId() + ":" + reference);
+            opayAcceptLuckyMoneyRequest.setMerchartOrderNo(String.format("RLM:%s:%s:%s", grabLuckyMoneyRequest.getId(), grabLuckyMoneyResult.getId(), reference));
             opayAcceptLuckyMoneyRequest.setSendOrderNo(luckyMoneyModelData.getTransactionId());
             opayAcceptLuckyMoneyRequest.setClientSource("App");
             OpayApiResultResponse<Map> opayApiResultResponse = opayApiService.acceptRedPacket(opayConfig.getMerchantId(), requestId, opayAcceptLuckyMoneyRequest, opayConfig.getAesKey(), opayConfig.getIv());
@@ -240,7 +240,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                     luckyMoneyRecordModel.setGetStatus(1);
                 }
             } else {
-                redisTemplate.opsForSet().add(grabLuckyMoneyResult.getId());
+                redisTemplate.opsForList().leftPush(String.format("luckyMoney:list:%s:%s:%s:%s", luckyMoneyModelData.getId(), String.valueOf(luckyMoneyModelData.getTargetType()), luckyMoneyModelData.getOpayId(), luckyMoneyModelData.getTargetId()), grabLuckyMoneyResult.getId());
                 redisTemplate.opsForHash().delete(String.format("luckyMoney:set:%s:%s:%s:%s", luckyMoneyModelData.getId(), String.valueOf(luckyMoneyModelData.getTargetType()), luckyMoneyModelData.getOpayId(), luckyMoneyModelData.getTargetId()), "grab_user:" + grabLuckyMoneyRequest.getCurrentOpayId());
                 throw new ImException("grab lucky money error");
             }

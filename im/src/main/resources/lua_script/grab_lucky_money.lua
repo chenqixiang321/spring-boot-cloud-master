@@ -5,12 +5,12 @@ local exists = redis.call("exists", lucky_money_key_set)
 if exists == 0 then
     return "[\"com.opay.im.model.response.GrabLuckyMoneyResult\",{\"code\":1,\"message\":\"The lucky money does not exist or has expired\"}]"
 end
-if redis.call("hget", lucky_money_key_set, "payStatus") ~= 1 then
+if redis.call("hget", lucky_money_key_set, "payStatus") ~= "1" then
     return "[\"com.opay.im.model.response.GrabLuckyMoneyResult\",{\"code\":4,\"message\":\"The lucky money unpaid\"}]"
 end
 local grab_user = redis.call("hget", lucky_money_key_set, "grab_user:" .. grab_user_id)
 if grab_user == nil or grab_user == false then
-    local id = redis.call("spop", lucky_money_key_list)
+    local id = redis.call("lpop", lucky_money_key_list)
     if id == false or id == nil then
         return "[\"com.opay.im.model.response.GrabLuckyMoneyResult\",{\"code\":2,\"message\":\"The lucky money has been robbed\"}]"
     end
