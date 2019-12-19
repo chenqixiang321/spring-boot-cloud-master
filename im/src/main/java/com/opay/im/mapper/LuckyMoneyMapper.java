@@ -22,5 +22,5 @@ public interface LuckyMoneyMapper {
 
     Integer selectPayStatus(@Param("opayId") String opayId, @Param("reference") String reference);
 
-    LuckyMoneyModel selectLuckyMoneyByOpayId(@Param("id") Long id, @Param("opayId") String opayId);
+    LuckyMoneyModel selectLuckyMoneyById(@Param("id") Long id);
 }

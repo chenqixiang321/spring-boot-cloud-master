@@ -26,11 +26,11 @@ public interface OpayFeignApiService {
     @Headers({"ContentType:application/json"})
     OpayApiResultResponse queryUserInfoByPhone(@RequestBody OpayApiRequest opayApiRequest);
 
-    @PostMapping({"/api/im/createRedPacket"})
+    @PostMapping({"/api/redEnvelopes/accept"})
     @Headers({"ContentType:application/json"})
-    OpayApiResultResponse createRedPacket(@RequestBody OpayApiRequest opayApiRequest);
+    OpayApiResultResponse acceptRedPacket(@RequestBody OpayApiRequest opayApiRequest);
 
-    @PostMapping({"/api/im/refundRedPacket"})
+    @PostMapping({"/api/redEnvelopes/chargeBack"})
     @Headers({"ContentType:application/json"})
     OpayApiResultResponse refundRedPacket(@RequestBody OpayApiRequest opayApiRequest);
 }

@@ -98,6 +98,12 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         return luckDrawInfoMapper.updateByPrimaryKey(record);
     }
 
+
+    public static void main(String[] args) {
+        String name = "aaa bb cc";
+        System.out.println(name.split(" ")[1]);
+    }
+
     @Override
     @Cacheable(value = "luckDrawInfoList@600", unless = "#result == null")
     public List<LuckDrawListResponse> selectLuckDrawInfoList() throws Exception {
@@ -108,6 +114,12 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         for (LuckDrawInfoModel luckDrawInfoModel : luckDrawInfoModelList) {
             luckDrawInfoResponse = new LuckDrawListResponse();
             BeanUtils.copyProperties(luckDrawInfoModel, luckDrawInfoResponse);
+            String[] names = luckDrawInfoResponse.getOpayName().split(" ");
+            if (names.length > 2) {
+                luckDrawInfoResponse.setOpayName(String.format("%s *** %s", names[0], names[names.length - 1]));
+            } else {
+                luckDrawInfoResponse.setOpayName(String.format("%s ***", names[0]));
+            }
             luckDrawInfoResponse.setPrizeId(luckDrawInfoModel.getPrizeLevel());
             luckDrawInfoResponseList.add(luckDrawInfoResponse);
         }

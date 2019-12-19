@@ -231,9 +231,9 @@
     select pay_status from lucky_money where reference=#{reference} and opay_id=#{opayId}
   </select>
 
-  <select id="selectLuckyMoneyByOpayId" resultMap="BaseResultMap">
+  <select id="selectLuckyMoneyById" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from lucky_money where id=#{id} and opay_id=#{opayId}
+    from lucky_money where id=#{id}
   </select>
 </mapper>

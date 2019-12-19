@@ -55,11 +55,11 @@ rongyun:
 config:
   opay:
     domain: http://api.test.opaydev.com:8081/
-    merchantId: 256619090900002
-    aesKey: UxanhvcUC3aeiLRR
+    merchantId: 256619121424013
+    aesKey: 9BQ65T1cvbry9elc
     iv: qazwert12345!@#$
-    publickey: OPAYPUB15681687755840.5595849282926585
-    privatekey: OPAYPRV15681687755840.6456873089707088
+    publickey: OPAYPUB15762910236470.4044222958487964
+    privatekey: OPAYPRV15762910236470.8764696319929024
 im:
   group:
     maxMember: 200

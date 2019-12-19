@@ -37,15 +37,16 @@ public class IncrKeyServiceImpl implements IncrKeyService {
     public String getIncrKey(String keyPrefix) {
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String dateYMD = sdf.format(date);
         String key;
         if (StringUtils.isNotBlank(keyPrefix)) {
-            key = keyPrefix + ":" + sdf.format(date);
+            key = keyPrefix + ":" + dateYMD;
         } else {
-            key = sdf.format(date);
+            key = dateYMD;
         }
         List<String> keys = Arrays.asList(key);
         Long incr = (Long) redisTemplate.execute(incrKey, keys, getSecondsToMidnight(date));
-        return key + incr;
+        return dateYMD + incr;
     }
 
     private long getSecondsToMidnight(Date date) {

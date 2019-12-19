@@ -35,7 +35,11 @@ public class OPayCallBackController {
         String data = "{Amount:\"" + payload.getAmount() + "\",Currency:\"" + payload.getCurrency() + "\",Reference:\"" + payload.getReference() + "\",Refunded:" + (payload.isRefunded() ? "t" : "f") + ",Status:\"" + payload.getStatus() + "\",Timestamp:\"" + payload.getTimestamp() + "\",Token:\"" + payload.getToken() + "\",TransactionID:\"" + payload.getTransactionId() + "\"}";
         if (oPayCallBackResponse.getSha512().equals(HexUtils.toHexString(hmacSha3(data, privatekey)))) {
             try {
-                luckyMoneyService.updatePayStatus(oPayCallBackResponse);
+                String business = oPayCallBackResponse.getPayload().getReference().split(":")[0];
+                if("SLM".equals(business)){ //发红包
+                    luckyMoneyService.updatePayStatus(oPayCallBackResponse);
+                }
+
             } catch (Exception e) {
                 log.error("call back error", e);
             }

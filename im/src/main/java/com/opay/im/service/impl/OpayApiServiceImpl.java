@@ -45,10 +45,10 @@ public class OpayApiServiceImpl implements OpayApiService {
     }
 
     @Override
-    public OpayApiResultResponse createRedPacket(String merchantId, String requestId, Object object, String aesKey, String iv) throws Exception {
+    public OpayApiResultResponse acceptRedPacket(String merchantId, String requestId, Object object, String aesKey, String iv) throws Exception {
         log.info("createRedPacket param:{}", JSON.toJSONString(object));
         OpayApiRequest request = getOpayApiRequest(merchantId, requestId, object, aesKey, iv);
-        OpayApiResultResponse feiginResponse = opayFeignApiService.createRedPacket(request);
+        OpayApiResultResponse feiginResponse = opayFeignApiService.acceptRedPacket(request);
         String result = opayApiResultResponseHandler(feiginResponse, aesKey, iv);
         Map opayApiOrderResult = (Map) mapperToClassObject(result, Map.class);
         log.info("createRedPacket reuslt:{}", JSON.toJSONString(feiginResponse));
