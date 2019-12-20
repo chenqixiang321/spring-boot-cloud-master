@@ -76,7 +76,7 @@ public class LuckDrawController {
             }
             luckDrawInfoService.drawOperate(drawOperateReqDto);
 
-
+            baseRespDto.buildSuccess();
         } catch (BackstageException e) {
             log.error("请求查询中奖记录， 失败", e);
             baseRespDto.buildError(e);
