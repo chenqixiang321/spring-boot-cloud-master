@@ -1,8 +1,10 @@
 package com.opay.im.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opay.im.model.OpayUser;
 import com.opay.im.model.request.OpayApiRequest;
 import com.opay.im.model.response.OpayApiResultResponse;
 import com.opay.im.service.OpayApiService;
@@ -11,6 +13,7 @@ import com.opay.im.utils.AESUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -66,5 +69,55 @@ public class OpayApiServiceImpl implements OpayApiService {
         Map opayApiOrderResult = (Map) mapperToClassObject(result, Map.class);
         feiginResponse.setData(opayApiOrderResult);
         return feiginResponse;
+    }
+
+    @Override
+    public OpayUser getOpayUser(String token) throws Exception {
+        JSONObject jsonObject = opayFeignApiService.currentUser(token);
+        if (null == jsonObject) {
+            log.error("call opay info error:{}", jsonObject);
+            throw new Exception("you need to be authenticated");
+        } else if (jsonObject.get("code") == null) {
+            log.error("call opay info error:{}", jsonObject);
+            throw new Exception("you need to be authenticated");
+        } else if (!"00000".equals(jsonObject.get("code"))) {
+            log.error("call opay info error:{}", jsonObject);
+            throw new Exception("you need to be authenticated");
+        } else {
+            JSONObject opayUserJson = jsonObject.getJSONObject("data");
+            if (opayUserJson == null) {
+                log.error("get opay user error:{}", jsonObject);
+                throw new Exception("you need to be authenticated");
+            } else {
+                OpayUser opayUser = (OpayUser)opayUserJson.toJavaObject(OpayUser.class);
+                if (StringUtils.isEmpty(opayUser.getPhoneNumber())) {
+                    log.error("get opay user phonenumber error:{}", jsonObject);
+                    throw new Exception("get a invalid phonenumber");
+                } else {
+                    opayUser.setPhoneNumber(opayUser.getPhoneNumber().replace("+234", ""));
+                    return opayUser;
+                }
+            }
+        }
+    }
+
+    protected String parseToken(String token) {
+        if (StringUtils.isEmpty(token)) {
+            return null;
+        } else {
+            String[] values = token.split(" ");
+            if (values.length == 2 && "Bearer".equals(values[0])) {
+                token = values[1];
+                if (token.split("\\.").length != 3) {
+                    log.warn("invalid token :{} ", token);
+                    return null;
+                } else {
+                    return token;
+                }
+            } else {
+                log.warn("invalid token :{} ", token);
+                return null;
+            }
+        }
     }
 }

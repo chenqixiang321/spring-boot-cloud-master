@@ -1,4 +1,4 @@
-package com.opay.im.model.request;
+package com.opay.im.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,11 +8,11 @@ import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class OpayApiRequest {
-    private String requestId;
-    private String merchantId;
+public class LookupUser {
     private String data;
+    private Long merchantId;
+    private Long requestId;
 }

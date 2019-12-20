@@ -90,7 +90,8 @@ feign:
   httpclient:
     connectionTimeout: 50000
     timeToLive: 1
-
+  hystrix:
+    enabled: true
 
 task:
   executeIp: 10.50.26.252
