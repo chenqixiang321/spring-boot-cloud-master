@@ -7,8 +7,6 @@ import com.opay.im.model.UserTokenModel;
 import com.opay.im.model.response.BlackListUserIdsResponse;
 import com.opay.im.service.RongCloudService;
 import io.rong.RongCloud;
-import io.rong.messages.InfoNtfMessage;
-import io.rong.messages.TxtMessage;
 import io.rong.methods.conversation.Conversation;
 import io.rong.methods.group.Group;
 import io.rong.methods.group.mute.MuteMembers;

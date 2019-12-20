@@ -7,6 +7,7 @@ public class ImException extends Exception {
         super(message);
         setCode(code);
     }
+
     public ImException(int code, String message) {
         super(message);
         setCode(String.valueOf(code));
