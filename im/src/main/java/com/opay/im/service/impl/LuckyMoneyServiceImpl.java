@@ -5,10 +5,7 @@ import com.opay.im.common.SystemCode;
 import com.opay.im.config.OpayConfig;
 import com.opay.im.constant.LuckyMoneyStatus;
 import com.opay.im.exception.ImException;
-import com.opay.im.exception.LuckMoneyExpiredException;
-import com.opay.im.exception.LuckMoneyGoneException;
-import com.opay.im.exception.LuckMoneyLimitException;
-import com.opay.im.exception.LuckMoneyUnpaidException;
+import com.opay.im.exception.LuckyMoneyException;
 import com.opay.im.mapper.LuckyMoneyMapper;
 import com.opay.im.mapper.LuckyMoneyRecordMapper;
 import com.opay.im.model.ChatGroupMemberModel;
@@ -19,7 +16,6 @@ import com.opay.im.model.request.LuckyMoneyRequest;
 import com.opay.im.model.request.OpayAcceptLuckyMoneyRequest;
 import com.opay.im.model.response.GrabLuckyMoneyResponse;
 import com.opay.im.model.response.GrabLuckyMoneyResult;
-import com.opay.im.model.response.LuckyMoneyDetailResponse;
 import com.opay.im.model.response.LuckyMoneyInfoResponse;
 import com.opay.im.model.response.LuckyMoneyRecordListResponse;
 import com.opay.im.model.response.LuckyMoneyRecordResponse;
@@ -153,7 +149,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         List<String> keys = Arrays.asList(String.valueOf(luckyMoneyModel.getId()), String.valueOf(luckyMoneyModel.getTargetType()), luckyMoneyModel.getOpayId(), luckyMoneyModel.getTargetId());
         Boolean sendLuckyMoneyResult = (Boolean) redisTemplate.execute(sendLuckyMoney, keys, luckyMoneyRequest.getAmount(), String.join(",", amountIds), String.join(",", amounts), dayMax, expirationDays * 24 * 3600, getEndTime());
         if (!sendLuckyMoneyResult) {
-            throw new LuckMoneyLimitException("Today's red envelope amount has reached the limit");
+            throw new LuckyMoneyException(SystemCode.LUCKY_MONEY_LIMIT.getCode(), SystemCode.LUCKY_MONEY_LIMIT.getMessage());
         }
         LuckyMoneyResponse luckyMoneyResponse = new LuckyMoneyResponse();
         luckyMoneyResponse.setId(luckyMoneyModel.getId());
@@ -182,7 +178,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                 }
             }
             if (!isInGroup) {
-                throw new ImException("You do not belong to this group");
+                throw new LuckyMoneyException(SystemCode.IM_NOT_BELONG_GROUP.getCode(), SystemCode.IM_NOT_BELONG_GROUP.getMessage());
             }
         } else {
             grabLuckyMoneyRequest.setTargetId(grabLuckyMoneyRequest.getCurrentOpayId());
@@ -191,7 +187,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         GrabLuckyMoneyResult grabLuckyMoneyResult = (GrabLuckyMoneyResult) redisTemplate.execute(grabLuckyMoney, keys, grabLuckyMoneyRequest.getCurrentOpayId());
         LuckyMoneyModel luckyMoneyModelData = selectLuckyMoneyByOpayId(grabLuckyMoneyRequest.getId());
         if (luckyMoneyModelData == null) {
-            throw new LuckMoneyExpiredException(grabLuckyMoneyResult.getMessage());
+            throw new LuckyMoneyException(grabLuckyMoneyResult.getCode(), grabLuckyMoneyResult.getMessage());
         }
         GrabLuckyMoneyResponse grabLuckyMoneyResponse = new GrabLuckyMoneyResponse();
         grabLuckyMoneyResponse.setAmount(luckyMoneyModelData.getAmount());
@@ -201,7 +197,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         grabLuckyMoneyResponse.setGrabAmount(grabLuckyMoneyResult.getAmount());
         grabLuckyMoneyResponse.setShow(luckyMoneyModelData.getShow());
         grabLuckyMoneyResponse.setTheme(luckyMoneyModelData.getTheme());
-        if (grabLuckyMoneyResult.getCode() == 0) {
+        if (SystemCode.SYS_API_SUCCESS.getCode().equals(grabLuckyMoneyResult.getCode())) {//成功抢到红包
             String reference = incrKeyService.getIncrKey("LM");
             LuckyMoneyRecordModel luckyMoneyRecordModel = new LuckyMoneyRecordModel();
             luckyMoneyRecordModel.setId(grabLuckyMoneyResult.getId());
@@ -237,25 +233,23 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                     luckyMoneyRecordModel.setGetStatus(2);
                     List<String> keys2 = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getSenderId(), grabLuckyMoneyRequest.getTargetId());
                     redisTemplate.execute(resetLuckyMoney, keys2, grabLuckyMoneyResult.getId(), grabLuckyMoneyRequest.getCurrentOpayId());
-                    throw new ImException(resultMap.get("errorMsg"));
+                    throw new ImException(resultMap.get("errorCode"), resultMap.get("errorMsg"));
                 } else {
                     luckyMoneyRecordModel.setGetStatus(1);
                 }
             } else {
                 List<String> keys2 = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getSenderId(), grabLuckyMoneyRequest.getTargetId());
                 redisTemplate.execute(resetLuckyMoney, keys2, grabLuckyMoneyResult.getId(), grabLuckyMoneyRequest.getCurrentOpayId());
-                throw new ImException("grab lucky money error");
+                throw new ImException(opayApiResultResponse.getCode(), opayApiResultResponse.getMessage());
             }
             luckyMoneyRecordMapper.updateByPrimaryKeySelective(luckyMoneyRecordModel);
             rongCloudService.sendMessage(grabLuckyMoneyRequest.getTargetId(), grabLuckyMoneyRequest.getSenderId(), mapper.writeValueAsString(map), "");
             rongCloudService.sendMessage(grabLuckyMoneyRequest.getSenderId(), grabLuckyMoneyRequest.getTargetId(), mapper.writeValueAsString(map), "");
             return grabLuckyMoneyResponse;
-        } else if (grabLuckyMoneyResult.getCode() == 2) {
-            throw new LuckMoneyGoneException(grabLuckyMoneyResult.getMessage());
-        } else if (grabLuckyMoneyResult.getCode() == 4) {
-            throw new LuckMoneyUnpaidException(grabLuckyMoneyResult.getMessage());
-        } else {
+        } else if ("20003".equals(grabLuckyMoneyResult.getCode())) {
             return grabLuckyMoneyResponse;
+        } else {
+            throw new LuckyMoneyException(grabLuckyMoneyResult.getCode(), grabLuckyMoneyResult.getMessage());
         }
     }
 
@@ -295,14 +289,14 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     @Override
     public LuckyMoneyInfoResponse selectLuckyMoneyDetailByOpayId(Long id, String senderOpayId, String receivedOpayId) throws Exception {
         LuckyMoneyInfoResponse luckyMoneyInfoResponse = new LuckyMoneyInfoResponse();
-        Object luckyMoney = redisTemplate.opsForValue().get("luckyMoney:" + senderOpayId);
+        Object luckyMoney = redisTemplate.opsForValue().get("luckyMoney:" + id);
         if (luckyMoney == null) {
             luckyMoneyInfoResponse.setStatus(LuckyMoneyStatus.EXPIRED.getCode());
             return luckyMoneyInfoResponse;
         }
         LuckyMoneyModel luckyMoneyModelData = selectLuckyMoneyByOpayId(id);
         if (luckyMoneyModelData == null) {
-            throw new LuckMoneyExpiredException("The lucky money does not exist");
+            throw new LuckyMoneyException(SystemCode.LUCKY_MONEY_DOES_NOT_EXIST.getCode(), SystemCode.LUCKY_MONEY_DOES_NOT_EXIST.getMessage());
         }
         BeanUtils.copyProperties(luckyMoneyModelData, luckyMoneyInfoResponse);
         if (receivedOpayId.equals(senderOpayId)) {

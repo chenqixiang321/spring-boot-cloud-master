@@ -161,7 +161,7 @@ public class UserController {
         OpayApiQueryUserByPhoneResponse queryUserByPhoneResponse = mapper.readValue(json, OpayApiQueryUserByPhoneResponse.class);
         List<OpayUserModel> users = queryUserByPhoneResponse.getUsers();
         if (users.isEmpty()) {
-            throw new ImException("opay user does not exist");
+            throw new ImException(SystemCode.IM_USER_DOES_NOT_EXIST.getCode(), SystemCode.IM_USER_DOES_NOT_EXIST.getMessage());
         }
         OpayUserModel user = users.get(0);
         user.setBlackList(false);
@@ -184,7 +184,7 @@ public class UserController {
 
     private String opayApiResultResponseHandler(OpayApiResultResponse<String> opayApiResultResponse) throws Exception {
         if (!SystemCode.SYS_API_SUCCESS.getCode().equals(opayApiResultResponse.getCode())) {
-            throw new ImException(opayApiResultResponse.getMessage());
+            throw new ImException(opayApiResultResponse.getCode(), opayApiResultResponse.getMessage());
         }
         return AESUtil.decrypt(opayApiResultResponse.getData(), aesKey, iv);
     }

@@ -175,11 +175,8 @@ public class RongCloudServiceImpl implements RongCloudService {
         } else {
             groupResult = (Result) groupApi.join(group);
         }
-        if (groupResult == null) {
-            throw new ImException("groupResult is null");
-        }
         if (groupResult.getCode() != 200) {
-            throw new ImException(groupResult.errorMessage);
+            throw new ImException(groupResult.getCode(), groupResult.errorMessage);
         }
     }
 
@@ -192,7 +189,7 @@ public class RongCloudServiceImpl implements RongCloudService {
                 .setMembers(members);
         Result joinGroupResult = (Result) groupApi.quit(group);
         if (joinGroupResult.getCode() != 200) {
-            throw new ImException(joinGroupResult.errorMessage);
+            throw new ImException(joinGroupResult.getCode(), joinGroupResult.errorMessage);
         }
     }
 
@@ -205,7 +202,7 @@ public class RongCloudServiceImpl implements RongCloudService {
                 .setTargetId(groupIdPrefix + targetId);
         ResponseResult muteConversationResult = conversationApi.mute(conversation);
         if (muteConversationResult.getCode() != 200) {
-            throw new ImException(muteConversationResult.errorMessage);
+            throw new ImException(muteConversationResult.getCode(), muteConversationResult.errorMessage);
         }
     }
 
@@ -219,7 +216,7 @@ public class RongCloudServiceImpl implements RongCloudService {
                 .setMinute(0);
         Result result = muteMembers.add(group);
         if (result.getCode() != 200) {
-            throw new ImException(result.errorMessage);
+            throw new ImException(result.getCode(), result.errorMessage);
         }
     }
 
@@ -232,7 +229,7 @@ public class RongCloudServiceImpl implements RongCloudService {
                 .setMembers(members);
         Result result = muteMembers.remove(group);
         if (result.getCode() != 200) {
-            throw new ImException(result.errorMessage);
+            throw new ImException(result.getCode(), result.errorMessage);
         }
     }
 
@@ -249,8 +246,6 @@ public class RongCloudServiceImpl implements RongCloudService {
     @Override
     public void sendMessage(String fromUserId, String toUserId, String content, String extra) throws Exception {
         String[] targetIds = {toUserId};
-//        InfoNtfMessage infoNtfMessage = new InfoNtfMessage(content, extra);
-//        TxtMessage txtMessage = new TxtMessage("hello", "helloExtra");
         RedEnvelopeMessage ms = new RedEnvelopeMessage(content);
         PrivateMessage privateMessage = new PrivateMessage()
                 .setSenderId(fromUserId)
@@ -259,7 +254,7 @@ public class RongCloudServiceImpl implements RongCloudService {
                 .setObjectName("app:red-envelope-receipt");
         ResponseResult privateResult = getRongCloud().message.msgPrivate.send(privateMessage);
         if (privateResult.getCode() != 200) {
-            throw new ImException(privateResult.errorMessage);
+            throw new ImException(privateResult.getCode(), privateResult.errorMessage);
         }
     }
 
@@ -279,12 +274,12 @@ public class RongCloudServiceImpl implements RongCloudService {
         if (type == 0) {
             Result blacklistResult = (Result) blackListApi.add(user);
             if (blacklistResult.getCode() != 200) {
-                throw new ImException(blacklistResult.errorMessage);
+                throw new ImException(blacklistResult.getCode(), blacklistResult.errorMessage);
             }
         } else {
             Result blacklistResult = (Result) blackListApi.remove(user);
             if (blacklistResult.getCode() != 200) {
-                throw new ImException(blacklistResult.errorMessage);
+                throw new ImException(blacklistResult.getCode(), blacklistResult.errorMessage);
             }
         }
 
@@ -296,7 +291,7 @@ public class RongCloudServiceImpl implements RongCloudService {
         UserModel user = new UserModel().setId(userId);
         BlackListResult result = blackListApi.getList(user);
         if (result.getCode() != 200) {
-            throw new ImException(result.errorMessage);
+            throw new ImException(result.getCode(), result.errorMessage);
         }
         List<String> userIds = new ArrayList<>();
         for (UserModel u : result.getUsers()) {

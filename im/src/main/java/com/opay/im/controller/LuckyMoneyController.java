@@ -77,11 +77,7 @@ public class LuckyMoneyController {
         grabLuckyMoneyRequest.setCurrentOpayName(String.valueOf(request.getAttribute("opayName")));
         grabLuckyMoneyRequest.setCurrentPhone(String.valueOf(request.getAttribute("phoneNumber")));
         GrabLuckyMoneyResponse grabLuckyMoneyResponse = luckyMoneyService.grabLuckyMoney(grabLuckyMoneyRequest);
-        if (grabLuckyMoneyResponse != null) {
-            return new ResultResponse(grabLuckyMoneyResponse);
-        } else {
-            return new ResultResponse(SystemCode.LUCKY_MONEY_ERROR.getCode(), SystemCode.LUCKY_MONEY_ERROR.getMessage());
-        }
+        return new ResultResponse(grabLuckyMoneyResponse);
 
     }
 

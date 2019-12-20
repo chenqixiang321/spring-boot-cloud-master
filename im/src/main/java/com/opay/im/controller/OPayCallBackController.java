@@ -37,17 +37,17 @@ public class OPayCallBackController {
     @PostMapping
     public void callBack(@RequestBody OPayCallBackResponse oPayCallBackResponse) {
         PayloadResponse payload = oPayCallBackResponse.getPayload();
+        log.info("opay callBack {}", payload.toString());
         String data = "{Amount:\"" + payload.getAmount() + "\",Currency:\"" + payload.getCurrency() + "\",Reference:\"" + payload.getReference() + "\",Refunded:" + (payload.isRefunded() ? "t" : "f") + ",Status:\"" + payload.getStatus() + "\",Timestamp:\"" + payload.getTimestamp() + "\",Token:\"" + payload.getToken() + "\",TransactionID:\"" + payload.getTransactionId() + "\"}";
         if (oPayCallBackResponse.getSha512().equals(HexUtils.toHexString(hmacSha3(data, opayConfig.getPrivatekey())))) {
             try {
-                String[] references = oPayCallBackResponse.getPayload().getReference().split(":");
+                String[] references = payload.getReference().split(":");
                 String business = references[0];
                 if ("SLM".equals(business)) { //发红包
                     luckyMoneyService.updatePayStatus(Long.parseLong(references[1]), oPayCallBackResponse);
-                } else if ("RLM".equals(business)) {
+                } else if ("RLM".equals(business)) {//抢红包
                     luckyMoneyRecordService.updateGetStatus(Long.parseLong(references[0]), Long.parseLong(references[1]), oPayCallBackResponse);
                 }
-
             } catch (Exception e) {
                 log.error("call back error", e);
             }
