@@ -96,5 +96,5 @@ feign:
 task:
   executeIp: 10.50.26.252
   minusHour:
-    start: 25
-    end: 24
+    start: 2
+    end: 1

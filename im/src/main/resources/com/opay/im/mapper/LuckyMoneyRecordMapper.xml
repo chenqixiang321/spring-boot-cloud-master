@@ -171,13 +171,13 @@
         and refund_id is null;
     </select>
 
-    <update id="updateStatusAndRefundIdById">
+    <update id="updateStatusAndRefundIdByLuckMoneyIdId">
 
         update lucky_money_record
         set record_status = #{recordStatus,jdbcType=TINYINT},
         refund_id = #{refundId,jdbcType=VARCHAR},
         version = version + 1
-        where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
+        where luck_money_id = #{luckMoneyId,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
 
     </update>
 

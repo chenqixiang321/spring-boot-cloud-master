@@ -123,7 +123,7 @@ public class LuckMoneyRollBack {
                 opayApiService.refundRedPacket(merchantId, requestId, request, aesKey, iv);
                 // 退回成功 修改状态 0-初始化(待抢) 1-成功 2-退回成功 3-退回失败
                 // 退回失败 等待下次定时跑批
-                luckyMoneyRecordMapper.updateStatusAndRefundIdById((byte) 2, "R" + requestId, model.getLuckMoneyId(), model.getVersion());
+                luckyMoneyRecordMapper.updateStatusAndRefundIdByLuckMoneyIdId((byte) 2, "R" + requestId, model.getLuckMoneyId(), model.getVersion());
 
             } catch (Exception e) {
                 log.error("luck_money_id :{} 退回失败, 等待下次处理", model.getLuckMoneyId());
