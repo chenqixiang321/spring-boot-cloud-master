@@ -93,7 +93,7 @@ feign:
 
 
 task:
-  executeIp: 52.210.41.16
+  executeIp: 10.50.26.252
   minusHour:
     start: 25
     end: 24
