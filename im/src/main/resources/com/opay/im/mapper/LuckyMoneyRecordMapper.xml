@@ -162,12 +162,13 @@
 
     <!-- 查询需要退款的定时 -->
 
-    <select id="selectListByCreateTime" resultType="com.opay.im.model.LuckyMoneyRecordModel">
+    <select id="selectListByCreateTime" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from lucky_money_record
         where create_time between #{startDate} and #{endDate}
-        and get_time is null;
+        and get_time is null
+        and refund_id is null;
     </select>
 
     <update id="updateStatusAndRefundIdById">
