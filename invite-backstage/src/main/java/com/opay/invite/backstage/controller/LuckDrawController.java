@@ -74,6 +74,14 @@ public class LuckDrawController {
             if (drawOperateReqDto.getId() == null) {
                 throw new BackstageException(BackstageExceptionEnum.DRAW_RECORD_ID_EMPTY);
             }
+
+            if (drawOperateReqDto.getRedeemStatus() == null) {
+                throw new BackstageException(BackstageExceptionEnum.REDEEM_STATUS_ERROR);
+            }
+            if (drawOperateReqDto.getRedeemStatus() != (byte) 1 && drawOperateReqDto.getRedeemStatus() != 2) {
+                throw new BackstageException(BackstageExceptionEnum.REDEEM_STATUS_ERROR);
+            }
+
             luckDrawInfoService.drawOperate(drawOperateReqDto);
 
             baseRespDto.buildSuccess();

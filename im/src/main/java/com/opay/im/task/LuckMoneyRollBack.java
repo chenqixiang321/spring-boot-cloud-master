@@ -102,6 +102,8 @@ public class LuckMoneyRollBack {
         // 一条一条交易进行处理回退金额
         for (LuckyMoneyRecordModel model : recordList) {
 
+            log.info("本次需要退回红包:{}", model.getLuckMoneyId());
+
             try {
 
                 String requestId = incrKeyService.getIncrKey();
@@ -114,7 +116,7 @@ public class LuckMoneyRollBack {
                 opayApiService.refundRedPacket(merchantId, requestId, request, aesKey, iv);
                 // 退回成功 修改状态 0-初始化(待抢) 1-成功 2-退回成功 3-退回失败
                 // 退回失败 等待下次定时跑批
-                luckyMoneyRecordMapper.updateStatusAndReferenceById((byte) 2, reference, model.getId(), model.getVersion());
+                luckyMoneyRecordMapper.updateStatusAndReferenceById((byte) 2, reference, model.getLuckMoneyId(), model.getVersion());
 
             } catch (Exception e) {
                 log.error("luck_money_id :{} 退回失败, 等待下次处理", model.getLuckMoneyId());

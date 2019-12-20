@@ -17,4 +17,8 @@ public class DrawOperateReqDto extends BaseReqDto {
 
     @ApiModelProperty(value = "操作备注")
     private String memo;
+
+    @ApiModelProperty(value = "赎回状态（审核状态）0-待审核 1-审核成功 2-审核拒绝")
+    private Byte redeemStatus;
+
 }

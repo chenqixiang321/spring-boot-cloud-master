@@ -100,12 +100,11 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             throw new BackstageException(BackstageExceptionEnum.OPERATOR_NOT_EXIST);
         }
 
-
         LuckDrawInfoExample example = new LuckDrawInfoExample();
         example.createCriteria().andIdEqualTo(reqDto.getId()).andRedeemStatusEqualTo((byte) 0);
 
         LuckDrawInfo record = new LuckDrawInfo();
-        record.setRedeemStatus((byte) 1);
+        record.setRedeemStatus(reqDto.getRedeemStatus());
         record.setOperateTime(LocalDateTime.now());
         record.setOperatorId(reqDto.getOperatorId());
         record.setOpayName(operatorList.get(0).getOperatorName());

@@ -22,6 +22,7 @@ public enum BackstageExceptionEnum {
 
     // 抽奖相关异常
     DRAW_RECORD_ID_EMPTY(2001, "Draw record id empty"),
+    REDEEM_STATUS_ERROR(2002, "RedeemStatus error"),
 
     // 提现相关异常
     OPAY_ID_EMPTY(3001, "opayId is empty"),

@@ -40,6 +40,8 @@ public class DrawRecordDto implements Serializable {
 
     @ApiModelProperty(value = "奖池信息")
     private Integer prizePool;
+    @ApiModelProperty(value = "赎回状态（审核状态）0-待审核 1-审核成功 2-审核拒绝")
+    private Byte redeemStatus;
 
     @ApiModelProperty(value = "操作员Id")
     private String operatorId;
