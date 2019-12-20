@@ -56,7 +56,7 @@ public class WithdrawController {
 
     @PostMapping(value = "/userDetail")
     @ApiOperation(value = "用户详情")
-    public UserDetailRespDto userDetail(UserDetailReqDto reqDto) {
+    public UserDetailRespDto userDetail(@RequestBody UserDetailReqDto reqDto) {
 
         log.info("获取用户详情, 请求参数:{}", JSON.toJSONString(reqDto));
 
@@ -90,7 +90,7 @@ public class WithdrawController {
 
     @ApiOperation(value = "提现审批")
     @PostMapping(value = "/withdrawOperate")
-    private BaseRespDto withdrawOperate(WithdrawOperateReqDto reqDto) {
+    public BaseRespDto withdrawOperate(@RequestBody WithdrawOperateReqDto reqDto) {
         BaseRespDto respDto = new BaseRespDto();
 
         try {
