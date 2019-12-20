@@ -170,11 +170,11 @@
         and get_time is null;
     </select>
 
-    <update id="updateStatusAndReferenceById">
+    <update id="updateStatusAndRefundIdById">
 
         update lucky_money_record
         set record_status = #{recordStatus,jdbcType=TINYINT},
-        reference = #{reference,jdbcType=VARCHAR},
+        refund_id = #{refundId,jdbcType=VARCHAR},
         version = version + 1
         where id = #{id,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
 

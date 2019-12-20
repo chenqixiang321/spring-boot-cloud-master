@@ -27,5 +27,5 @@ public interface LuckyMoneyRecordMapper {
 
     List<LuckyMoneyRecordModel> selectListByCreateTime(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
-    void updateStatusAndReferenceById(@Param("recordStatus") byte recordStatus, @Param("reference") String reference, @Param("id") Long id, @Param("version") Long version);
+    void updateStatusAndRefundIdById(@Param("recordStatus") byte recordStatus, @Param("refundId") String refundId, @Param("id") Long id, @Param("version") Long version);
 }
