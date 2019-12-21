@@ -64,7 +64,11 @@ public class OpayApiServiceImpl implements OpayApiService {
         log.info("refundRedPacket param:{}", JSON.toJSONString(object));
         OpayApiRequest request = getOpayApiRequest(merchantId, requestId, object, aesKey, iv);
         OpayApiResultResponse feiginResponse = opayFeignApiService.refundRedPacket(request);
-        String result = opayApiResultResponseHandler(feiginResponse, aesKey, iv);
+
+        // String result = opayApiResultResponseHandler(feiginResponse, aesKey, iv);
+
+        String result = AESUtil.decrypt((String) feiginResponse.getData(), aesKey, iv);
+
         log.info("refundRedPacket reuslt:{}", JSON.toJSONString(feiginResponse));
         Map opayApiOrderResult = (Map) mapperToClassObject(result, Map.class);
         feiginResponse.setData(opayApiOrderResult);

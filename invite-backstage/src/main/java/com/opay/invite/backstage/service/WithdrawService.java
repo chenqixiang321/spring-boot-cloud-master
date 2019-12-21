@@ -26,7 +26,7 @@ public interface WithdrawService {
      * @param reqDto
      * @return
      */
-    UserDetailRespDto userDetail(UserDetailReqDto reqDto) throws BackstageException;
+    UserDetailRespDto userDetail(UserDetailReqDto reqDto) throws Exception;
 
     /**
      * 提现审核

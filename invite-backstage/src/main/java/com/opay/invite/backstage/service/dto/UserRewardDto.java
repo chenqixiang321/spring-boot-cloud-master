@@ -12,14 +12,26 @@ import lombok.Data;
 @ApiModel(value = "用户获取奖励DTO")
 public class UserRewardDto {
 
+    @ApiModelProperty(value = "awardId")
+    private Long id;
+
     @ApiModelProperty(value = "用户id")
     private String opayId;
     @ApiModelProperty(value = "徒弟id")
     private String pupilId;
-    // @ApiModelProperty(value = "徒弟手机号")
-    // private String pupilPhone;
-    // @ApiModelProperty(value = "徒弟名字")
-    private String pupilName;
+    @ApiModelProperty(value = "徒弟手机号")
+    private String pupilPhone;
+
+    @ApiModelProperty(value = "徒弟名")
+    private String pupilFirstName;
+
+    @ApiModelProperty(value = "中间名")
+    private String pupilMiddleName;
+
+    @ApiModelProperty(value = "姓")
+    private String pupilSurname;
+
+
     @ApiModelProperty(value = "奖励金额")
     private String reward;
     @ApiModelProperty(value = "时间")

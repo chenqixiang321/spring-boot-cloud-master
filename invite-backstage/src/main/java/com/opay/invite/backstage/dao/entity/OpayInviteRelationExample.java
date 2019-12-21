@@ -1,7 +1,7 @@
 package com.opay.invite.backstage.dao.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class OpayInviteRelationExample {
@@ -455,52 +455,52 @@ public class OpayInviteRelationExample {
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtEqualTo(Date value) {
+        public Criteria andCreateAtEqualTo(LocalDateTime value) {
             addCriterion("create_at =", value, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtNotEqualTo(Date value) {
+        public Criteria andCreateAtNotEqualTo(LocalDateTime value) {
             addCriterion("create_at <>", value, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtGreaterThan(Date value) {
+        public Criteria andCreateAtGreaterThan(LocalDateTime value) {
             addCriterion("create_at >", value, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtGreaterThanOrEqualTo(Date value) {
+        public Criteria andCreateAtGreaterThanOrEqualTo(LocalDateTime value) {
             addCriterion("create_at >=", value, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtLessThan(Date value) {
+        public Criteria andCreateAtLessThan(LocalDateTime value) {
             addCriterion("create_at <", value, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtLessThanOrEqualTo(Date value) {
+        public Criteria andCreateAtLessThanOrEqualTo(LocalDateTime value) {
             addCriterion("create_at <=", value, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtIn(List<Date> values) {
+        public Criteria andCreateAtIn(List<LocalDateTime> values) {
             addCriterion("create_at in", values, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtNotIn(List<Date> values) {
+        public Criteria andCreateAtNotIn(List<LocalDateTime> values) {
             addCriterion("create_at not in", values, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtBetween(Date value1, Date value2) {
+        public Criteria andCreateAtBetween(LocalDateTime value1, LocalDateTime value2) {
             addCriterion("create_at between", value1, value2, "createAt");
             return (Criteria) this;
         }
 
-        public Criteria andCreateAtNotBetween(Date value1, Date value2) {
+        public Criteria andCreateAtNotBetween(LocalDateTime value1, LocalDateTime value2) {
             addCriterion("create_at not between", value1, value2, "createAt");
             return (Criteria) this;
         }

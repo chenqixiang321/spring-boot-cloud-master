@@ -143,6 +143,16 @@ public class LuckMoneyRollBack {
                         // 退回成功 修改状态 0-初始化(待抢) 1-成功 2-退回成功 3-退回失败
                         luckyMoneyRecordMapper.updateStatusAndRefundIdByLuckMoneyIdId((byte) 2, merchartOrderNo, model.getLuckMoneyId(), (byte) 0, model.getVersion());
                     }
+                } else if ("04188".equals(response.getCode())) {
+                    // 上次已经退回成功了
+                    // 退回成功 修改状态 0-初始化(待抢) 1-成功 2-退回成功 3-退回失败
+                    luckyMoneyRecordMapper.updateStatusAndRefundIdByLuckMoneyIdId((byte) 2, merchartOrderNo, model.getLuckMoneyId(), (byte) 0, model.getVersion());
+
+                } else if ("04189".equals(response.getCode())) {
+                    // 已经被领取成功了
+                    // 领取成功 修改状态 0-初始化(待抢) 1-成功 2-退回成功 3-退回失败
+                    luckyMoneyRecordMapper.updateStatusAndRefundIdByLuckMoneyIdId((byte) 1, merchartOrderNo, model.getLuckMoneyId(), (byte) 0, model.getVersion());
+
                 }
 
 

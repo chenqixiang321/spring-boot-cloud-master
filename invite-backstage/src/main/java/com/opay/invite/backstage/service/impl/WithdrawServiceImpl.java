@@ -133,6 +133,19 @@ public class WithdrawServiceImpl implements WithdrawService {
             BeanUtils.copyProperties(userModel, recordDto);
 
 
+            OpayInviteRelationExample relationExample = new OpayInviteRelationExample();
+            relationExample.createCriteria().andMasterIdEqualTo(opayActiveTixian.getOpayId());
+
+
+            List<OpayInviteRelation> relationList = opayInviteRelationMapper.selectByExample(relationExample);
+
+            if (CollectionUtils.isNotEmpty(recordDtoList)) {
+                OpayInviteRelation relation = relationList.get(0);
+                recordDto.setRegisterTime(relation.getCreateAt().format(DateTimeConstant.FORMAT_TIME));
+                recordDto.setMarkType(relation.getMarkType());
+            }
+
+
             recordDtoList.add(recordDto);
         }
 
@@ -164,7 +177,7 @@ public class WithdrawServiceImpl implements WithdrawService {
 
 
     @Override
-    public UserDetailRespDto userDetail(UserDetailReqDto reqDto) throws BackstageException {
+    public UserDetailRespDto userDetail(UserDetailReqDto reqDto) throws Exception {
 
         OpayActiveTixianExample tixianExample = new OpayActiveTixianExample();
         tixianExample.createCriteria().andReferenceEqualTo(reqDto.getReference());
@@ -231,6 +244,23 @@ public class WithdrawServiceImpl implements WithdrawService {
             BeanUtils.copyProperties(opayMasterPupilAward, userRewardDto);
             userRewardDto.setAmount(opayMasterPupilAward.getAmount().toString());
             userRewardDto.setCreateTime(opayMasterPupilAward.getCreateAt().format(DateTimeConstant.FORMAT_TIME));
+            // 查询徒弟名字和手机号
+
+
+            BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
+            batchQueryUserRequest.setUserId(opayMasterPupilAward.getPupilId());
+            log.info("请求账户查询用户信息, 请求:{}", JSON.toJSONString(batchQueryUserRequest));
+            OpayApiResultResponse<String> opayApiResultResponse = opayFeignApiService.batchQueryUserByPhone(getOpayApiRequest(batchQueryUserRequest));
+            log.info("请求账户查询用户信息, 返回:{}", JSON.toJSONString(opayApiResultResponse));
+            String json = opayApiResultResponseHandler(opayApiResultResponse);
+            ObjectMapper mapper = new ObjectMapper();
+            OpayApiQueryUserByUserIdResponse queryUserByPhoneResponse = mapper.readValue(json, OpayApiQueryUserByUserIdResponse.class);
+            List<OpayUserModel> users = queryUserByPhoneResponse.getUsers();
+            OpayUserModel userModel = users.get(0);
+            userRewardDto.setPupilFirstName(userModel.getFirstName());
+            userRewardDto.setPupilMiddleName(userModel.getMiddleName());
+            userRewardDto.setPupilSurname(userModel.getSurname());
+            userRewardDto.setPupilPhone(userModel.getPhoto());
             userRewardDtoList.add(userRewardDto);
         }
 
