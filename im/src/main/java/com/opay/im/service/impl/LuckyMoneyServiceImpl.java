@@ -185,7 +185,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         }
         List<String> keys = Arrays.asList(String.valueOf(grabLuckyMoneyRequest.getId()), String.valueOf(grabLuckyMoneyRequest.getTargetType()), grabLuckyMoneyRequest.getSenderId(), grabLuckyMoneyRequest.getTargetId());
         GrabLuckyMoneyResult grabLuckyMoneyResult = (GrabLuckyMoneyResult) redisTemplate.execute(grabLuckyMoney, keys, grabLuckyMoneyRequest.getCurrentOpayId());
-        LuckyMoneyModel luckyMoneyModelData = selectLuckyMoneyByOpayId(grabLuckyMoneyRequest.getId());
+        LuckyMoneyModel luckyMoneyModelData = selectLuckyMoneyById(grabLuckyMoneyRequest.getId());
         if (luckyMoneyModelData == null) {
             throw new LuckyMoneyException(grabLuckyMoneyResult.getCode(), grabLuckyMoneyResult.getMessage());
         }
@@ -267,7 +267,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         }
         String reference = payload.getReference().split(":")[2];
         String luckMoneyId = payload.getReference().split(":")[1];
-        LuckyMoneyModel lm = selectLuckyMoneyByOpayId(Long.parseLong(luckMoneyId));
+        LuckyMoneyModel lm = selectLuckyMoneyById(Long.parseLong(luckMoneyId));
         redisTemplate.opsForHash().put(String.format("luckyMoney:set:%s:%s:%s:%s", lm.getId(), String.valueOf(lm.getTargetType()), lm.getOpayId(), lm.getTargetId()), "payStatus", 1);
         luckyMoneyModel.setReference(reference);
         luckyMoneyModel.setTransactionId(payload.getTransactionId());
@@ -282,7 +282,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
     @Override
     @Cacheable(value = "luckyMoneyInfo", key = "#id", unless = "#result == null")
-    public LuckyMoneyModel selectLuckyMoneyByOpayId(Long id) throws Exception {
+    public LuckyMoneyModel selectLuckyMoneyById(Long id) throws Exception {
         return luckyMoneyMapper.selectLuckyMoneyById(id);
     }
 
@@ -294,7 +294,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             luckyMoneyInfoResponse.setStatus(LuckyMoneyStatus.EXPIRED.getCode());
             return luckyMoneyInfoResponse;
         }
-        LuckyMoneyModel luckyMoneyModelData = selectLuckyMoneyByOpayId(id);
+        LuckyMoneyModel luckyMoneyModelData = selectLuckyMoneyById(id);
         if (luckyMoneyModelData == null) {
             throw new LuckyMoneyException(SystemCode.LUCKY_MONEY_DOES_NOT_EXIST.getCode(), SystemCode.LUCKY_MONEY_DOES_NOT_EXIST.getMessage());
         }

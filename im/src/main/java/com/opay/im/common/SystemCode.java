@@ -12,8 +12,8 @@ public enum SystemCode {
     LUCKY_MONEY_GONE_ERROR("20002", "The lucky money has been robbed"),
     LUCKY_MONEY_HAS_ROBBED("20003", "You have robbed this lucky money"),
     LUCKY_MONEY_UNPAID("20004", "The lucky money unpaid"),
-    LUCKY_MONEY_LIMIT("20005", "Send the lucky money reached the upper limit"),
-    LUCKY_MONEY_DOES_NOT_EXIST("20006", "The lucky money does not exist"),
+    LUCKY_MONEY_LIMIT("20005", "The total amount of daily red envelopes exceeded the limit"),
+    LUCKY_MONEY_DOES_NOT_EXIST("20006", "The red envelope does not exist"),
 
     IM_USER_DOES_NOT_EXIST("30001", "The opay user does not exist"),
     IM_NOT_BELONG_GROUP("30002", "You do not belong to this group"),
