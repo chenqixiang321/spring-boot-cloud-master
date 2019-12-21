@@ -84,11 +84,11 @@
             <artifactId>c3p0</artifactId>
             <version>0.9.5.2</version>
         </dependency>
-        <dependency>
-            <groupId>com.opay.opos.prometheus.client</groupId>
-            <artifactId>prometheus-client-starter</artifactId>
-            <version>1.0.1</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.opay.opos.prometheus.client</groupId>-->
+<!--            <artifactId>prometheus-client-starter</artifactId>-->
+<!--            <version>1.0.1</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-httpclient</artifactId>
@@ -118,30 +118,30 @@
             </properties>
         </profile>
     </profiles>
-    <repositories>
-        <repository>
-            <id>nexus-opay</id>
-            <url>http://117.50.96.143:9090/repository/maven-public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>central Repositories</name>
-            <url>http://117.50.96.143:9090/repository/maven-snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>releases</id>
-            <name>Nexus Release Repository</name>
-            <url>http://117.50.96.143:9090/repository/maven-releases/</url>
-        </repository>
-    </distributionManagement>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>nexus-opay</id>-->
+<!--            <url>http://117.50.96.143:9090/repository/maven-public/</url>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--            <snapshots>-->
+<!--                <enabled>true</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--    </repositories>-->
+<!--    <distributionManagement>-->
+<!--        <snapshotRepository>-->
+<!--            <id>snapshots</id>-->
+<!--            <name>central Repositories</name>-->
+<!--            <url>http://117.50.96.143:9090/repository/maven-snapshots/</url>-->
+<!--        </snapshotRepository>-->
+<!--        <repository>-->
+<!--            <id>releases</id>-->
+<!--            <name>Nexus Release Repository</name>-->
+<!--            <url>http://117.50.96.143:9090/repository/maven-releases/</url>-->
+<!--        </repository>-->
+<!--    </distributionManagement>-->
     <build>
         <filters>
             <filter>src/main/resources/application-${build.profile.id}.yml</filter>

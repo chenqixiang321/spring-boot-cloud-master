@@ -28,6 +28,8 @@ public class LuckDrawResponse {
     private boolean isCanLuckyDraw;
     @ApiModelProperty(value = "系统时间")
     private String systemTime;
+    @ApiModelProperty(value = "活动是否开始：0未开始，1:开始")
+    private Integer isStart;
     @ApiModelProperty(value = "奖品信息")
     private Map<Integer, PrizeModel> prizeInfo;
 }

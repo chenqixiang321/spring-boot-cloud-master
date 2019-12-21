@@ -237,6 +237,8 @@ prize-pool:
   firstPoolEnd: 12
   secondPoolStart: 3
   secondPoolEnd: 4
+  activityStart: 2029-12-06 00:00:01
+  activityEnd: 2029-12-21 10:00:00
   firstPool:
     - {id: 4,prize: 10,prob: 0.00015}
     - {id: 5,prize: 5,prob: 0.0002}

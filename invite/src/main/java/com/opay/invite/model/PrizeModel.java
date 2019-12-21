@@ -1,5 +1,6 @@
 package com.opay.invite.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,6 @@ import java.math.BigDecimal;
 public class PrizeModel {
     private int id;
     private String prize;
+    @JsonIgnore
     private BigDecimal prob;
 }

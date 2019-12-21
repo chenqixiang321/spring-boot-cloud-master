@@ -26,7 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -49,6 +51,10 @@ public class LuckDrawController {
     private int secondPoolStart;
     @Value("${prize-pool.secondPoolEnd}")
     private int secondPoolEnd;
+    @Value("${prize-pool.activityStart}")
+    private String activityStart;
+    @Value("${prize-pool.activityEnd}")
+    private String activityEnd;
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
@@ -79,16 +85,31 @@ public class LuckDrawController {
         } else {
             luckDrawResponse.setCanLuckyDraw(false);
             if (hour < firstPoolStart) {
+                Date beforeDate = DateFormatter.getDateBefore(date, 1);
+                luckDrawResponse.setCurrentStartTime(DateFormatter.formatDateByZone(beforeDate, timeZone) + " " + secondPoolStart + ":00:00");
+                luckDrawResponse.setCurrentEndTime(DateFormatter.formatDateByZone(beforeDate, timeZone) + " " + secondPoolEnd + ":00:00");
                 luckDrawResponse.setNextStartTime(DateFormatter.formatDateByZone(date, timeZone) + " " + firstPoolStart + ":00:00");
                 luckDrawResponse.setNextEndTime(DateFormatter.formatDateByZone(date, timeZone) + " " + firstPoolEnd + ":00:00");
             } else if (firstPoolEnd <= hour && hour < secondPoolStart) {
+                luckDrawResponse.setCurrentStartTime(DateFormatter.formatDateByZone(date, timeZone) + " " + firstPoolStart + ":00:00");
+                luckDrawResponse.setCurrentEndTime(DateFormatter.formatDateByZone(date, timeZone) + " " + firstPoolEnd + ":00:00");
                 luckDrawResponse.setNextStartTime(DateFormatter.formatDateByZone(date, timeZone) + " " + secondPoolStart + ":00:00");
                 luckDrawResponse.setNextEndTime(DateFormatter.formatDateByZone(date, timeZone) + " " + secondPoolEnd + ":00:00");
             } else if (hour >= secondPoolEnd) {
+                luckDrawResponse.setCurrentStartTime(DateFormatter.formatDateByZone(date, timeZone) + " " + secondPoolStart + ":00:00");
+                luckDrawResponse.setCurrentEndTime(DateFormatter.formatDateByZone(date, timeZone) + " " + secondPoolEnd + ":00:00");
                 Date afterDate = DateFormatter.getDateAfter(date, 1);
                 luckDrawResponse.setNextStartTime(DateFormatter.formatDateByZone(afterDate, timeZone) + " " + firstPoolStart + ":00:00");
                 luckDrawResponse.setNextEndTime(DateFormatter.formatDateByZone(afterDate, timeZone) + " " + firstPoolEnd + ":00:00");
             }
+        }
+        long now = DateFormatter.parseYMDHMSDate(DateFormatter.formatDatetimeByZone(new Date(), timeZone)).getTime();
+        Date activityStartDate = DateFormatter.parseYMDHMSDate(activityStart);
+        Date activityEndDate = DateFormatter.parseYMDHMSDate(activityEnd);
+        if (now >= activityStartDate.getTime() && now < activityEndDate.getTime()) {
+            luckDrawResponse.setIsStart(1);
+        } else {
+            luckDrawResponse.setIsStart(0);
         }
         luckDrawResponse.setSystemTime(DateFormatter.formatDatetimeByZone(date, timeZone));
         luckDrawResponse.setPrizeInfo(luckDrawInfoService.getPrize());
@@ -175,7 +196,10 @@ public class LuckDrawController {
         LoginUser user = inviteOperateService.getOpayInfo(request);
         format.setTimeZone(TimeZone.getTimeZone(timeZone));
         int hour = Integer.parseInt(format.format(new Date()));
-        if ((hour >= firstPoolStart && hour < firstPoolEnd) || (hour >= secondPoolStart && hour < secondPoolEnd)) {
+        long now = DateFormatter.parseYMDHMSDate(DateFormatter.formatDatetimeByZone(new Date(), timeZone)).getTime();
+        Date activityStartDate = DateFormatter.parseYMDHMSDate(activityStart);
+        Date activityEndDate = DateFormatter.parseYMDHMSDate(activityEnd);
+        if (now >= activityStartDate.getTime() && now < activityEndDate.getTime() && ((hour >= firstPoolStart && hour < firstPoolEnd) || (hour >= secondPoolStart && hour < secondPoolEnd))) {
             return new ResultResponse(luckDrawInfoService.getLuckDraw(user.getOpayId(), user.getOpayName(), user.getPhoneNumber()));
         } else {
             return new ResultResponse(CodeMsg.LUCKY_DRAW_NOT_START_CODE.getCode(), CodeMsg.LUCKY_DRAW_NOT_START_CODE.getMessage());
