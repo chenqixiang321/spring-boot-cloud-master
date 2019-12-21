@@ -139,7 +139,7 @@ public class WithdrawServiceImpl implements WithdrawService {
 
             List<OpayInviteRelation> relationList = opayInviteRelationMapper.selectByExample(relationExample);
 
-            if (CollectionUtils.isNotEmpty(recordDtoList)) {
+            if (CollectionUtils.isNotEmpty(relationList)) {
                 OpayInviteRelation relation = relationList.get(0);
                 recordDto.setRegisterTime(relation.getCreateAt().format(DateTimeConstant.FORMAT_TIME));
                 recordDto.setMarkType(relation.getMarkType());
