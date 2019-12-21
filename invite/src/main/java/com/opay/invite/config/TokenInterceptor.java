@@ -1,13 +1,13 @@
 package com.opay.invite.config;
 
 
-import com.opos.service.OpayService;
+import com.opay.invite.model.OpayUser;
+import com.opay.invite.service.OpayApiService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import com.opos.feign.domain.OpayUser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +18,7 @@ import java.util.List;
 public class TokenInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private OpayService opayService;
+    private OpayApiService opayService;
 
     @Override
     public void afterCompletion(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, Exception arg3)

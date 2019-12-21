@@ -1,8 +1,10 @@
 package com.opay.invite.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opay.invite.model.OpayUser;
 import com.opay.invite.model.request.OpayApiRequest;
 import com.opay.invite.model.response.OpayApiOrderResultResponse;
 import com.opay.invite.model.response.OpayApiResultResponse;
@@ -13,6 +15,7 @@ import com.opay.invite.utils.AESUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -71,26 +74,32 @@ public class OpayApiServiceImpl implements OpayApiService {
     }
 
     @Override
-    public OpayApiResultResponse createRedPacket(String merchantId, String requestId, Object object, String aesKey, String iv) throws Exception {
-        log.info("createRedPacket param:{}", JSON.toJSONString(object));
-        OpayApiRequest request =getOpayApiRequest(merchantId,requestId,object,aesKey,iv);
-        OpayApiResultResponse feiginResponse= opayFeignApiService.createRedPacket(request);
-        String result= opayApiResultResponseHandler(feiginResponse,aesKey,iv);
-        Map opayApiOrderResult = (Map) mapperToClassObject(result, Map.class);
-        log.info("createRedPacket reuslt:{}", JSON.toJSONString(feiginResponse));
-        feiginResponse.setData(opayApiOrderResult);
-        return feiginResponse;
-    }
-
-    @Override
-    public OpayApiResultResponse refundRedPacket(String merchantId, String requestId, Object object, String aesKey, String iv) throws Exception {
-        log.info("refundRedPacket param:{}", JSON.toJSONString(object));
-        OpayApiRequest request = getOpayApiRequest(merchantId, requestId, object, aesKey, iv);
-        OpayApiResultResponse feiginResponse = opayFeignApiService.refundRedPacket(request);
-        String result = opayApiResultResponseHandler(feiginResponse, aesKey, iv);
-        log.info("refundRedPacket reuslt:{}", JSON.toJSONString(feiginResponse));
-        Map opayApiOrderResult = (Map) mapperToClassObject(result, Map.class);
-        feiginResponse.setData(opayApiOrderResult);
-        return feiginResponse;
+    public OpayUser getOpayUser(String token) throws Exception {
+        JSONObject jsonObject = opayFeignApiService.currentUser(token);
+        if (null == jsonObject) {
+            log.error("call opay info error:{}", jsonObject);
+            throw new Exception("you need to be authenticated");
+        } else if (jsonObject.get("code") == null) {
+            log.error("call opay info error:{}", jsonObject);
+            throw new Exception("you need to be authenticated");
+        } else if (!"00000".equals(jsonObject.get("code"))) {
+            log.error("call opay info error:{}", jsonObject);
+            throw new Exception("you need to be authenticated");
+        } else {
+            JSONObject opayUserJson = jsonObject.getJSONObject("data");
+            if (opayUserJson == null) {
+                log.error("get opay user error:{}", jsonObject);
+                throw new Exception("you need to be authenticated");
+            } else {
+                OpayUser opayUser = (OpayUser)opayUserJson.toJavaObject(OpayUser.class);
+                if (StringUtils.isEmpty(opayUser.getPhoneNumber())) {
+                    log.error("get opay user phonenumber error:{}", jsonObject);
+                    throw new Exception("get a invalid phonenumber");
+                } else {
+                    opayUser.setPhoneNumber(opayUser.getPhoneNumber().replace("+234", ""));
+                    return opayUser;
+                }
+            }
+        }
     }
 }
