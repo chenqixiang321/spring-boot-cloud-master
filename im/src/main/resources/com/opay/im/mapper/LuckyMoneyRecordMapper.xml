@@ -169,11 +169,9 @@
         <if test="refundId != null">
             refund_id = #{refundId,jdbcType=VARCHAR},
         </if>
-
-
         version = version + 1
         where luck_money_id = #{luckMoneyId,jdbcType=BIGINT}
-        and record_status = #{oldRecordStatus,,jdbcType=BIGINT}
+        and record_status = #{oldRecordStatus,,jdbcType=TINYINT}
         and version = #{version,jdbcType=BIGINT}
 
     </update>

@@ -12,8 +12,8 @@ import lombok.Data;
 @ApiModel(value = "提现审核")
 public class WithdrawOperateReqDto extends BaseReqDto {
 
-    @ApiModelProperty(value = "内部流水号")
-    private String reference;
+    @ApiModelProperty(value = "主键id")
+    private Long id;
 
     @ApiModelProperty(value = "1 审核通过 2 审核不通过")
     private Byte status;

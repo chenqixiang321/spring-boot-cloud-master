@@ -72,6 +72,12 @@ public class WithdrawController {
             if (StringUtils.isBlank(reqDto.getOpayId())) {
                 throw new BackstageException(BackstageExceptionEnum.OPAY_ID_EMPTY);
             }
+            if (reqDto.getPageNum() == null) {
+                reqDto.setPageNum(1);
+            }
+            if (reqDto.getPageSize() == null) {
+                reqDto.setPageSize(20);
+            }
 
             respDto = withdrawService.userDetail(reqDto);
             respDto.buildSuccess();
@@ -104,6 +110,11 @@ public class WithdrawController {
             if (reqDto.getStatus() != (byte) 1 && reqDto.getStatus() != (byte) 2) {
                 throw new BackstageException(BackstageExceptionEnum.WITHDRAW_OPERATE_STATUS_ERROR);
             }
+            if (reqDto.getId() == null) {
+                throw new BackstageException(BackstageExceptionEnum.WITHDRAW_OPERATE_STATUS_ERROR);
+            }
+
+
             withdrawService.withdrawOperate(reqDto);
             respDto.buildSuccess();
         } catch (BackstageException e) {

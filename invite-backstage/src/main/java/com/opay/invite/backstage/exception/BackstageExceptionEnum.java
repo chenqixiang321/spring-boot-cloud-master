@@ -30,6 +30,7 @@ public enum BackstageExceptionEnum {
     WITHDRAW_OPERATE_STATUS_ERROR(3003, "Withdraw operate status error"),
     WITHDRAW_OPERATE_TYPE_ERROR(3004, "Withdraw operate type error"),
     WITHDRAW_OPERATE_STATUS_UPDATE_ERROR(3005, "Withdraw operate status update error"),
+    WITHDRAW_ID_EMPTY(3006, "￿withdraw id empty"),
     ;
     private int code;
 

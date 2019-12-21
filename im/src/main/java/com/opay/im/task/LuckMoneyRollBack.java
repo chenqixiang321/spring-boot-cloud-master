@@ -1,6 +1,7 @@
 package com.opay.im.task;
 
 
+import com.alibaba.fastjson.JSON;
 import com.opay.im.mapper.LuckyMoneyMapper;
 import com.opay.im.mapper.LuckyMoneyRecordMapper;
 import com.opay.im.model.LuckyMoneyModel;
@@ -112,7 +113,7 @@ public class LuckMoneyRollBack {
             LuckyMoneyModel moneyModel = luckyMoneyMapper.selectByPrimaryKey(model.getLuckMoneyId());
 
 
-            log.info("本次需要退回红包:{}", model.getLuckMoneyId());
+            log.info("本次需要退回红包:{}, version:{}", model.getLuckMoneyId(), model.getVersion());
 
             try {
 
@@ -126,6 +127,8 @@ public class LuckMoneyRollBack {
                 request.setSenderId(model.getOpayId());
                 OpayApiResultResponse<Map> response = opayApiService.refundRedPacket(merchantId, requestId, request, aesKey, iv);
 
+                log.info("定时任务退红包返回信息:{}", JSON.toJSONString(response));
+
                 if ("00000".equals(response.getCode())) {
                     Map<String, String> resultMap = response.getData();
                     if ("PENDING".equals(resultMap.get("orderStatus"))) {
@@ -136,7 +139,7 @@ public class LuckMoneyRollBack {
                         luckyMoneyRecordMapper.updateStatusAndRefundIdByLuckMoneyIdId((byte) 4, merchartOrderNo, model.getLuckMoneyId(), (byte) 0, model.getVersion());
                     } else if ("FAIL".equals(resultMap.get("orderStatus"))) {
                         luckyMoneyRecordMapper.updateStatusAndRefundIdByLuckMoneyIdId((byte) 3, merchartOrderNo, model.getLuckMoneyId(), (byte) 0, model.getVersion());
-                    } else {
+                    } else if ("SUCCESS".equals(resultMap.get("orderStatus"))) {
                         // 退回成功 修改状态 0-初始化(待抢) 1-成功 2-退回成功 3-退回失败
                         luckyMoneyRecordMapper.updateStatusAndRefundIdByLuckMoneyIdId((byte) 2, merchartOrderNo, model.getLuckMoneyId(), (byte) 0, model.getVersion());
                     }
@@ -144,7 +147,7 @@ public class LuckMoneyRollBack {
 
 
             } catch (Exception e) {
-                log.error("luck_money_id :{} 退回失败, 等待下次处理", model.getLuckMoneyId());
+                log.error("luck_money_id :{} 退回失败, 等待下次处理", model.getLuckMoneyId(), e);
             }
 
         }

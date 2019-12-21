@@ -28,7 +28,6 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 提现记录相关操作方法
@@ -232,6 +231,7 @@ public class WithdrawServiceImpl implements WithdrawService {
             BeanUtils.copyProperties(opayMasterPupilAward, userRewardDto);
             userRewardDto.setAmount(opayMasterPupilAward.getAmount().toString());
             userRewardDto.setCreateTime(opayMasterPupilAward.getCreateAt().format(DateTimeConstant.FORMAT_TIME));
+            userRewardDtoList.add(userRewardDto);
         }
 
         respDto.setUserRewardDtoList(userRewardDtoList);
@@ -247,14 +247,11 @@ public class WithdrawServiceImpl implements WithdrawService {
     @Override
     public void withdrawOperate(WithdrawOperateReqDto reqDto) throws Exception {
 
-        OpayActiveTixianExample tixianExample = new OpayActiveTixianExample();
-        tixianExample.createCriteria().andReferenceEqualTo(reqDto.getReference());
 
-        List<OpayActiveTixian> tixianList = opayActiveTixianMapper.selectByExample(tixianExample);
-        if (CollectionUtils.isEmpty(tixianList)) {
+        OpayActiveTixian tixian = opayActiveTixianMapper.selectByPrimaryKey(reqDto.getId());
+        if (tixian == null) {
             throw new BackstageException(BackstageExceptionEnum.WITHDRAW_RECORD_NOT_EXIST);
         }
-        OpayActiveTixian tixian = tixianList.get(0);
 
         if (tixian.getStatus() != (byte) 0) {
             log.info("提现状态不正确, 只有申请中的可以审核");
