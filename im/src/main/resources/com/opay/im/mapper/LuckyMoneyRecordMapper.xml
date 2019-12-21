@@ -126,7 +126,7 @@
                 get_status = #{getStatus,jdbcType=TINYINT},
             </if>
             <if test="transactionId != null">
-                ttransaction_id = #{transactionId,jdbcType=VARCHAR},
+                transaction_id = #{transactionId,jdbcType=VARCHAR},
             </if>
             <if test="reference != null">
                 reference = #{reference,jdbcType=VARCHAR},
