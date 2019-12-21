@@ -85,7 +85,13 @@ feign:
     connectionTimeout: 5000
   hystrix:
     enabled: true
-
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
 task:
   executeIp: 10.249.250.171
   minusHour:

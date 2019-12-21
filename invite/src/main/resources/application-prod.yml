@@ -213,7 +213,18 @@ prometheus:
   client:
     enabled: true
     basePackage: com.opay.invite
-
+feign:
+  httpclient:
+    connectionTimeout: 5000
+  hystrix:
+    enabled: true
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
 prize-pool:
   inviteLimit: 100
   shareLimit: 3 #每天分享上线

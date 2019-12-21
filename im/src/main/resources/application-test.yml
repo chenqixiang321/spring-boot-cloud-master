@@ -88,11 +88,16 @@ prometheus:
     basePackage: com.opay.im
 feign:
   httpclient:
-    connectionTimeout: 50000
-    timeToLive: 1
+    connectionTimeout: 5000
   hystrix:
     enabled: true
-
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
 task:
   executeIp: 10.50.26.252
   minusHour:
