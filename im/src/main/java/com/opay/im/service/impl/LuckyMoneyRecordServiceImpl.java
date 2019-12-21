@@ -95,9 +95,9 @@ public class LuckyMoneyRecordServiceImpl implements LuckyMoneyRecordService {
         PayloadResponse payload = oPayCallBackResponse.getPayload();
 
         if ("successful".equals(payload.getStatus())) {
-            luckyMoneyRecordMapper.updateStatusAndRefundIdByLuckMoneyIdId((byte) 2, null, model.getLuckMoneyId(), (byte) 0, model.getVersion());
+            luckyMoneyRecordMapper.updateStatusAndRefundIdByLuckMoneyIdId((byte) 2, null, model.getLuckMoneyId(), (byte) 4, model.getVersion());
         } else if ("failed".equals(payload.getStatus())) {
-            luckyMoneyRecordMapper.updateStatusAndRefundIdByLuckMoneyIdId((byte) 3, null, model.getLuckMoneyId(), (byte) 0, model.getVersion());
+            luckyMoneyRecordMapper.updateStatusAndRefundIdByLuckMoneyIdId((byte) 3, null, model.getLuckMoneyId(), (byte) 4, model.getVersion());
         } else {
             log.info("luckMoneyId:{}回调返回状态不正确, 当前回调状态:{}", luckMoneyId, payload.getStatus());
             throw new Exception();

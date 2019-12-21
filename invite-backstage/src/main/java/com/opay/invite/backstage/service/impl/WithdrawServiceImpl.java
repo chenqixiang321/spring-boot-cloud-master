@@ -111,16 +111,6 @@ public class WithdrawServiceImpl implements WithdrawService {
 
         List<WithdrawRecordDto> recordDtoList = new ArrayList<>();
 
-        List<String> userIdList = withdrawList.stream().map(OpayActiveTixian::getOpayId).collect(Collectors.toList());
-        // 去查询账户信息
-        BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
-        batchQueryUserRequest.setUserId(String.join(",", userIdList));
-        OpayApiResultResponse<String> opayApiResultResponse = opayFeignApiService.batchQueryUserByPhone(getOpayApiRequest(batchQueryUserRequest));
-        String json = opayApiResultResponseHandler(opayApiResultResponse);
-        ObjectMapper mapper = new ObjectMapper();
-        OpayApiQueryUserByUserIdResponse queryUserByPhoneResponse = mapper.readValue(json, OpayApiQueryUserByUserIdResponse.class);
-        List<OpayUserModel> users = queryUserByPhoneResponse.getUsers();
-
         for (OpayActiveTixian opayActiveTixian : withdrawList) {
 
             WithdrawRecordDto recordDto = new WithdrawRecordDto();
@@ -130,14 +120,20 @@ public class WithdrawServiceImpl implements WithdrawService {
             recordDto.setOperator(operateTime);
             recordDto.setAmount(opayActiveTixian.getAmount().toString());
 
-            Optional<OpayUserModel> modelOptional = users.stream()
-                    .filter(opayUserModel -> opayActiveTixian.getOpayId().equals(opayUserModel.getUserId()))
-                    .findAny();
+            // 去查询账户信息
+            BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
+            batchQueryUserRequest.setUserId(opayActiveTixian.getOpayId());
+            log.info("请求账户查询用户信息, 请求:{}", JSON.toJSONString(batchQueryUserRequest));
+            OpayApiResultResponse<String> opayApiResultResponse = opayFeignApiService.batchQueryUserByPhone(getOpayApiRequest(batchQueryUserRequest));
+            log.info("请求账户查询用户信息, 返回:{}", JSON.toJSONString(opayApiResultResponse));
+            String json = opayApiResultResponseHandler(opayApiResultResponse);
+            ObjectMapper mapper = new ObjectMapper();
+            OpayApiQueryUserByUserIdResponse queryUserByPhoneResponse = mapper.readValue(json, OpayApiQueryUserByUserIdResponse.class);
+            List<OpayUserModel> users = queryUserByPhoneResponse.getUsers();
+            OpayUserModel userModel = users.get(0);
+            BeanUtils.copyProperties(userModel, recordDto);
 
-            if (modelOptional.isPresent()) {
-                OpayUserModel userModel = modelOptional.get();
-                BeanUtils.copyProperties(userModel, recordDto);
-            }
+
             recordDtoList.add(recordDto);
         }
 
