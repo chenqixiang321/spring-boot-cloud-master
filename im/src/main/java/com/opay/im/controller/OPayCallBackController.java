@@ -46,7 +46,7 @@ public class OPayCallBackController {
                 if ("SLM".equals(business)) { //发红包
                     luckyMoneyService.updatePayStatus(Long.parseLong(references[1]), oPayCallBackResponse);
                 } else if ("RLM".equals(business)) {//抢红包
-                    luckyMoneyRecordService.updateGetStatus(Long.parseLong(references[0]), Long.parseLong(references[1]), oPayCallBackResponse);
+                    luckyMoneyRecordService.updateGetStatus(Long.parseLong(references[1]), Long.parseLong(references[2]), oPayCallBackResponse);
                 }
             } catch (Exception e) {
                 log.error("call back error", e);
