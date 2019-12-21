@@ -388,7 +388,7 @@
     <!--  以下为自定义SQL -->
     <select id="sumAmountByTypeAndStatus" resultType="java.math.BigDecimal">
 
-        select sum(amount) where opay_id = #{opayId} and `type` = #{type} and `status` = #{status};
+        select sum(amount) from opay_active_tixian where opay_id = #{opayId} and `type` = #{type} and `status` = #{status};
 
     </select>
 
