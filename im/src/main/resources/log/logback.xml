@@ -30,8 +30,8 @@
             <!-- 活动文件的名字会根据fileNamePattern的值，每隔一段时间改变一次 -->  
             <!-- 文件名：log/sys.2017-12-05.0.log -->
             <fileNamePattern>logs/info.%d.%i.log</fileNamePattern>
-            <!-- 每产生一个日志文件，该日志文件的保存期限为30天 -->
-            <maxHistory>30</maxHistory>
+            <!-- 每产生一个日志文件，该日志文件的保存期限为7天 -->
+            <maxHistory>7</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">      
                 <!-- maxFileSize:这是活动文件的大小，默认值是10MB,本篇设置为1KB，只是为了演示 -->    
                 <maxFileSize>500MB</maxFileSize>      
@@ -60,8 +60,8 @@
             <!-- 活动文件的名字会根据fileNamePattern的值，每隔一段时间改变一次 -->  
             <!-- 文件名：log/sys.2017-12-05.0.log -->
             <fileNamePattern>/data/app/opayim/logs/error.%d.%i.log</fileNamePattern>
-            <!-- 每产生一个日志文件，该日志文件的保存期限为30天 -->
-            <maxHistory>30</maxHistory>
+            <!-- 每产生一个日志文件，该日志文件的保存期限为7天 -->
+            <maxHistory>7</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">      
                 <!-- maxFileSize:这是活动文件的大小，默认值是10MB,本篇设置为1KB，只是为了演示 -->    
                 <maxFileSize>500MB</maxFileSize>      
@@ -90,8 +90,8 @@
             <!-- 活动文件的名字会根据fileNamePattern的值，每隔一段时间改变一次 -->  
             <!-- 文件名：log/sys.2017-12-05.0.log -->
             <fileNamePattern>logs/warn.%d.%i.log</fileNamePattern>
-            <!-- 每产生一个日志文件，该日志文件的保存期限为30天 -->
-            <maxHistory>30</maxHistory>
+            <!-- 每产生一个日志文件，该日志文件的保存期限为7天 -->
+            <maxHistory>7</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">      
                 <!-- maxFileSize:这是活动文件的大小，默认值是10MB,本篇设置为1KB，只是为了演示 -->    
                 <maxFileSize>500MB</maxFileSize>      
