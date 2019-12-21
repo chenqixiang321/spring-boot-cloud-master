@@ -1,7 +1,6 @@
 package com.opay.im.controller;
 
 import com.opay.im.config.OpayConfig;
-import com.opay.im.model.LuckyMoneyRecordModel;
 import com.opay.im.model.response.opaycallback.OPayCallBackResponse;
 import com.opay.im.model.response.opaycallback.PayloadResponse;
 import com.opay.im.service.LuckyMoneyRecordService;
@@ -13,7 +12,6 @@ import org.bouncycastle.crypto.digests.SHA3Digest;
 import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +45,11 @@ public class OPayCallBackController {
                     luckyMoneyService.updatePayStatus(Long.parseLong(references[1]), oPayCallBackResponse);
                 } else if ("RLM".equals(business)) {//抢红包
                     luckyMoneyRecordService.updateGetStatus(Long.parseLong(references[1]), Long.parseLong(references[2]), oPayCallBackResponse);
+                } else if ("REFUND".equals(business)) {// 退红包
+                    luckyMoneyRecordService.updateRecordStatus(Long.parseLong(references[1]), oPayCallBackResponse);
                 }
+
+
             } catch (Exception e) {
                 log.error("call back error", e);
             }

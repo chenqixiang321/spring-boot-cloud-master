@@ -1,6 +1,7 @@
 package com.opay.invite.backstage.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.opay.invite.backstage.config.OrderType;
@@ -10,23 +11,24 @@ import com.opay.invite.backstage.dao.entity.*;
 import com.opay.invite.backstage.dao.mapper.*;
 import com.opay.invite.backstage.exception.BackstageException;
 import com.opay.invite.backstage.exception.BackstageExceptionEnum;
+import com.opay.invite.backstage.service.OpayFeignApiService;
 import com.opay.invite.backstage.service.RpcService;
 import com.opay.invite.backstage.service.WithdrawService;
 import com.opay.invite.backstage.service.dto.*;
+import com.opay.invite.backstage.utils.AESUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 提现记录相关操作方法
@@ -54,9 +56,17 @@ public class WithdrawServiceImpl implements WithdrawService {
     private TransferConfig transferConfig;
     @Resource
     private OpayActiveTixianLogMapper opayActiveTixianLogMapper;
+    @Autowired
+    private OpayFeignApiService opayFeignApiService;
+    @Value("${config.opay.aesKey}")
+    private String aesKey;
+    @Value("${config.opay.iv}")
+    private String iv;
+    @Value("${config.opay.merchantId}")
+    private String merchantId;
 
     @Override
-    public WithdrawRecordRespDto withdrawRecord(WithdrawRecordReqDto reqDto) {
+    public WithdrawRecordRespDto withdrawRecord(WithdrawRecordReqDto reqDto) throws Exception {
 
         OpayActiveTixianExample example = new OpayActiveTixianExample();
         OpayActiveTixianExample.Criteria criteria = example.createCriteria();
@@ -101,16 +111,33 @@ public class WithdrawServiceImpl implements WithdrawService {
 
         List<WithdrawRecordDto> recordDtoList = new ArrayList<>();
 
+        List<String> userIdList = withdrawList.stream().map(OpayActiveTixian::getOpayId).collect(Collectors.toList());
+        // 去查询账户信息
+        BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
+        batchQueryUserRequest.setUserId(String.join(",", userIdList));
+        OpayApiResultResponse<String> opayApiResultResponse = opayFeignApiService.batchQueryUserByPhone(getOpayApiRequest(batchQueryUserRequest));
+        String json = opayApiResultResponseHandler(opayApiResultResponse);
+        ObjectMapper mapper = new ObjectMapper();
+        OpayApiQueryUserByUserIdResponse queryUserByPhoneResponse = mapper.readValue(json, OpayApiQueryUserByUserIdResponse.class);
+        List<OpayUserModel> users = queryUserByPhoneResponse.getUsers();
+
         for (OpayActiveTixian opayActiveTixian : withdrawList) {
 
             WithdrawRecordDto recordDto = new WithdrawRecordDto();
             BeanUtils.copyProperties(opayActiveTixian, recordDto);
-
             recordDto.setCreateTime(opayActiveTixian.getCreateAt().format(DateTimeConstant.FORMAT_TIME));
-
             String operateTime = opayActiveTixian.getOperateTime() == null ? null : opayActiveTixian.getOperateTime().format(DateTimeConstant.FORMAT_TIME);
             recordDto.setOperator(operateTime);
             recordDto.setAmount(opayActiveTixian.getAmount().toString());
+
+            Optional<OpayUserModel> modelOptional = users.stream()
+                    .filter(opayUserModel -> opayActiveTixian.getOpayId().equals(opayUserModel.getUserId()))
+                    .findAny();
+
+            if (modelOptional.isPresent()) {
+                OpayUserModel userModel = modelOptional.get();
+                BeanUtils.copyProperties(userModel, recordDto);
+            }
             recordDtoList.add(recordDto);
         }
 
@@ -123,6 +150,23 @@ public class WithdrawServiceImpl implements WithdrawService {
 
         return respDto;
     }
+
+    private String opayApiResultResponseHandler(OpayApiResultResponse<String> opayApiResultResponse) throws Exception {
+        if (!"00000".equals(opayApiResultResponse.getCode())) {
+            throw new BackstageException(BackstageExceptionEnum.FAIL);
+        }
+        return AESUtil.decrypt(opayApiResultResponse.getData(), aesKey, iv);
+    }
+
+    private OpayApiRequest getOpayApiRequest(Object object) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        OpayApiRequest batchQuery = new OpayApiRequest();
+        batchQuery.setMerchantId(merchantId);
+        batchQuery.setRequestId(UUID.randomUUID().toString());
+        batchQuery.setData(AESUtil.encrypt(mapper.writeValueAsString(object), aesKey, iv));
+        return batchQuery;
+    }
+
 
     @Override
     public UserDetailRespDto userDetail(UserDetailReqDto reqDto) throws BackstageException {

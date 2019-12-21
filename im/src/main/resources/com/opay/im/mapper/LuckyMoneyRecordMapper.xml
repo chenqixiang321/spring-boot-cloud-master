@@ -162,6 +162,22 @@
 
     <!-- 查询需要退款的定时 -->
 
+    <update id="updateStatusAndRefundIdByLuckMoneyIdId">
+
+        update lucky_money_record
+        set record_status = #{recordStatus,jdbcType=TINYINT},
+        <if test="refundId != null">
+            refund_id = #{refundId,jdbcType=VARCHAR},
+        </if>
+
+
+        version = version + 1
+        where luck_money_id = #{luckMoneyId,jdbcType=BIGINT}
+        and record_status = #{oldRecordStatus,,jdbcType=BIGINT}
+        and version = #{version,jdbcType=BIGINT}
+
+    </update>
+
     <select id="selectListByCreateTime" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -170,15 +186,5 @@
         and get_time is null
         and refund_id is null;
     </select>
-
-    <update id="updateStatusAndRefundIdByLuckMoneyIdId">
-
-        update lucky_money_record
-        set record_status = #{recordStatus,jdbcType=TINYINT},
-        refund_id = #{refundId,jdbcType=VARCHAR},
-        version = version + 1
-        where luck_money_id = #{luckMoneyId,jdbcType=BIGINT} and version = #{version,jdbcType=BIGINT}
-
-    </update>
 
 </mapper>

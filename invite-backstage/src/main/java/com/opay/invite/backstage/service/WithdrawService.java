@@ -18,7 +18,7 @@ public interface WithdrawService {
      * @param reqDto
      * @return
      */
-    WithdrawRecordRespDto withdrawRecord(WithdrawRecordReqDto reqDto);
+    WithdrawRecordRespDto withdrawRecord(WithdrawRecordReqDto reqDto) throws Exception;
 
     /**
      * 查询用户详情
