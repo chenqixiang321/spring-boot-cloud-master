@@ -101,5 +101,5 @@ hystrix:
 task:
   executeIp: 10.50.26.252
   minusHour:
-    start: 2
-    end: 1
+    start: 25
+    end: 24
