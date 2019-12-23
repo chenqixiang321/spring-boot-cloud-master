@@ -1,6 +1,7 @@
 package com.opay.invite.config;
 
 
+import com.alibaba.fastjson.JSON;
 import com.opay.invite.service.OpayFeignApiService;
 import com.opay.invite.service.impl.OpayFeignApiServiceFallback;
 import feign.hystrix.FallbackFactory;
@@ -17,7 +18,7 @@ public class OpayFeignFactory implements FallbackFactory<OpayFeignApiService> {
     }
 
     public OpayFeignApiService create(Throwable throwable) {
-        log.error("OpayFeign error", throwable);
+        log.error("OpayFeign error", throwable.getMessage());
         return this.opayFeignApiServiceFallback;
     }
 }
