@@ -92,7 +92,7 @@ public class WithdrawServiceImpl implements WithdrawService {
             criteria.andOpayIdEqualTo(reqDto.getOpayId());
         } else if (StringUtils.isNotBlank(reqDto.getOpayPhone())) {
             OpayInviteCodeExample codeExample = new OpayInviteCodeExample();
-            codeExample.createCriteria().andPhoneEqualTo(reqDto.getOpayPhone());
+            codeExample.createCriteria().andPhoneLike("%" + reqDto.getOpayPhone() + "%");
             List<OpayInviteCode> list = opayInviteCodeMapper.selectByExample(codeExample);
             if (CollectionUtils.isNotEmpty(list)) {
                 criteria.andOpayIdEqualTo(list.get(0).getOpayId());
