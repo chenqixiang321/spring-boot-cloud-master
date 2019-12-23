@@ -66,7 +66,7 @@ public class AESUtil {
             throw new Exception("decrypt key can't null or empty");
         }
 
-        log.info("AESUtil decrypt data:{}, key:{}", data, key);
+        log.debug("AESUtil decrypt data:{}, key:{}", data, key);
         SecretKeySpec skeySpec = getKey(key);
         Cipher cipher = Cipher.getInstance(PADDING);
         IvParameterSpec iv = new IvParameterSpec(IV_STR.getBytes());
