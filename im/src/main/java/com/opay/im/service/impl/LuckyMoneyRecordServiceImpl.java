@@ -99,7 +99,7 @@ public class LuckyMoneyRecordServiceImpl implements LuckyMoneyRecordService {
         LuckyMoneyRecordModel model = recordModelList.get(0);
 
         PayloadResponse payload = oPayCallBackResponse.getPayload();
-
+        log.info("opay call back updateRecordStatus,luckMoneyId:{},status:{}", luckMoneyId, payload.getStatus());
         if ("successful".equals(payload.getStatus())) {
             LuckyMoneyModel lm = luckyMoneyService.selectLuckyMoneyById(luckMoneyId);
             ObjectMapper mapper = new ObjectMapper();
@@ -111,7 +111,7 @@ public class LuckyMoneyRecordServiceImpl implements LuckyMoneyRecordService {
             map.put("envelopeId", lm.getId());
             map.put("targetId", lm.getTargetId());
             map.put("status", "2");//0:未抢,1:已抢 ,2:过期
-            redisTemplate.delete("luckyMoney:" + lm.getId());
+            redisTemplate.delete("luckyMoney:" + luckMoneyId);
             rongCloudService.sendMessage(lm.getTargetId(), lm.getOpayId(), mapper.writeValueAsString(map), "");
             rongCloudService.sendMessage(lm.getOpayId(), lm.getTargetId(), mapper.writeValueAsString(map), "");
             luckyMoneyRecordMapper.updateStatusAndRefundIdByLuckMoneyIdId((byte) 2, null, model.getLuckMoneyId(), (byte) 4, model.getVersion());

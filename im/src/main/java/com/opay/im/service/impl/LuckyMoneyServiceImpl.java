@@ -362,6 +362,22 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         return luckyMoneyRecordResponse;
     }
 
+    @Override
+    public void sendLuckyMoneyExpiredMsg(Long luckMoneyId, String senderUserId, String senderOpayName, String targetId, String openUserId, String openOpayName) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> map = new HashMap<>();
+        map.put("sendUserId", senderUserId);
+        map.put("sendNickName", senderOpayName);
+        map.put("openUserId", openUserId);
+        map.put("openNickName", openOpayName);
+        map.put("envelopeId", luckMoneyId);
+        map.put("targetId", targetId);
+        map.put("status", "2");//0:未抢,1:已抢 ,2:过期
+        String json = mapper.writeValueAsString(map);
+        redisTemplate.delete("luckyMoney:" + luckMoneyId);
+        rongCloudService.sendMessage(targetId, senderUserId, json, "");
+        rongCloudService.sendMessage(senderUserId, targetId, json, "");
+    }
 
     private static BigDecimal getRandomMoney(RedPackage _redPackage) {
         // remainSize 剩余的红包数量

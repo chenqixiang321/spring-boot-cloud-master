@@ -40,4 +40,6 @@ public interface LuckyMoneyService {
     LuckyMoneyInfoResponse selectLuckyMoneyDetailByOpayId(Long id, String senderOpayId, String receivedOpayId) throws Exception;
 
     LuckyMoneyRecordResponse selectLuckyMoneyView(Long id) throws Exception;
+
+    void sendLuckyMoneyExpiredMsg(Long luckMoneyId, String senderUserId, String senderOpayName, String targetUserId, String openUserId, String openOpayName) throws Exception;
 }
