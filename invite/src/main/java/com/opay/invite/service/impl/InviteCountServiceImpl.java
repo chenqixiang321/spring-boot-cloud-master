@@ -34,6 +34,10 @@ public class InviteCountServiceImpl implements InviteCountService {
     private String timeZone;
     @Autowired
     private PrizePoolConfig prizePoolConfig;
+    @Value("${prize-pool.activityStart}")
+    private String activityStart;
+    @Value("${prize-pool.activityEnd}")
+    private String activityEnd;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -67,6 +71,12 @@ public class InviteCountServiceImpl implements InviteCountService {
 
     @Override
     public boolean updateInviteCount(String opayId, String opayName, String opayPhone) throws Exception {
+        long now = DateFormatter.parseYMDHMSDate(DateFormatter.formatDatetimeByZone(new Date(), timeZone)).getTime();
+        Date activityStartDate = DateFormatter.parseYMDHMSDate(activityStart);
+        Date activityEndDate = DateFormatter.parseYMDHMSDate(activityEnd);
+        if (now < activityStartDate.getTime() || now > activityEndDate.getTime()) {
+            return false;
+        }
         Date date = new Date();
         List<String> keys = Arrays.asList(opayId, "invite");
         Boolean execute = (Boolean) redisTemplate.execute(inviteShareCountInc, keys, prizePoolConfig.getInviteLimit(), getSecondsToMidnight(date));

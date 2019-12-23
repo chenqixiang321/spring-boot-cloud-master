@@ -54,12 +54,12 @@ rongyun:
   api: http://api-sg01.ronghub.com
 config:
   opay:
-    domain: http://api.test.opaydev.com:8081/
-    merchantId: 256619121424013
-    aesKey: 9BQ65T1cvbry9elc
+    domain: https://api.operapay.com
+    merchantId: 256619122168000
+    aesKey: Xw8RjcXMoPnxfi9i
     iv: qazwert12345!@#$
-    publickey: OPAYPUB15762910236470.4044222958487964
-    privatekey: OPAYPRV15762910236470.8764696319929024
+    publickey: OPAYPUB15769333886080.45086047237636484
+    privatekey: OPAYPRV15769333886080.03629076818522026
 im:
   group:
     maxMember: 200
