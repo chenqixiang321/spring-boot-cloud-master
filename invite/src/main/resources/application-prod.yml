@@ -144,14 +144,14 @@ activity:
       action: 3
       masterReward: 1
       pupilReward: 1
-    royList[1]:
-      action: 4
-      masterReward: 0.3
-      pupilReward: 0.3
-    royList[2]:
-      action: 5
-      masterReward: 1
-      pupilReward: 1
+#    royList[1]:
+#      action: 4
+#      masterReward: 0.3
+#      pupilReward: 0.3
+#    royList[2]:
+#      action: 5
+#      masterReward: 1
+#      pupilReward: 1
 tixian:
   limit:
     open: 1
