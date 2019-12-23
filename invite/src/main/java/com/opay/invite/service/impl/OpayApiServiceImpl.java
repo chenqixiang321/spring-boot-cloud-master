@@ -63,9 +63,10 @@ public class OpayApiServiceImpl implements OpayApiService {
 
     @Override
     public OpayApiResultResponse queryUserRecordByUserId(String merchantId, String requestId, Object object, String aesKey, String iv) throws Exception {
-        log.info("queryUserRecordByUserId param:{}", JSON.toJSONString(object));
         OpayApiRequest request =getOpayApiRequest(merchantId,requestId,object,aesKey,iv);
+        log.info("queryUserRecordByUserId param:{}", JSON.toJSONString(object));
         OpayApiResultResponse feiginResponse= opayFeignApiService.queryUserRecordByUserId(request);
+        log.info("queryUserRecordByUserId reuslt:{}", JSON.toJSONString(feiginResponse));
         String result= opayApiResultResponseHandler(feiginResponse,aesKey,iv);
         OpayApiUserOrderResponse opayApiOrderResult = (OpayApiUserOrderResponse) mapperToClassObject(result, OpayApiUserOrderResponse.class);
         log.info("queryUserRecordByUserId reuslt:{}", JSON.toJSONString(feiginResponse));
