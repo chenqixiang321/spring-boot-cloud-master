@@ -39,7 +39,7 @@ public class RewardJob extends OpayJob {
         Date nowTime = DateFormatter.parseDate(startTime);
         int isStart = inviteOperateService.checkActiveStatusTime(nowTime,rewardConfig.getStartTime(),rewardConfig.getEndTime());
         if(isStart!=1){
-            log.warn("活动已结束 startTime:{}",startTime);
+            log.warn("RewardJob 活动已结束 startTime:{}",startTime);
             return;
         }
         //获取所有需要执行用户数据

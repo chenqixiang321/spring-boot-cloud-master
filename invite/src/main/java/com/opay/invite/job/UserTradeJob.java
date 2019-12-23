@@ -52,7 +52,7 @@ public class UserTradeJob extends OpayJob {
         Date sTime = DateFormatter.parseDate(startTime);
         int isStart = inviteOperateService.checkActiveStatusTime(sTime,rewardConfig.getStartTime(),rewardConfig.getEndTime());
         if(isStart!=1){
-             log.warn("活动已结束 startTime:{}",startTime);
+             log.warn("UserTradeJob 活动已结束 startTime:{}",startTime);
             return;
         }
         int start=0;
@@ -69,12 +69,12 @@ public class UserTradeJob extends OpayJob {
                     OpayApiResultResponse resultResponse = userTradeService.getUserTradeList(list, subStart, SUB_PAGE_SIZE,endTime,startTime, ServiceType.Airtime.getServiceType());
                     OpayApiUserOrderResponse opayApiUserOrderResponse = (OpayApiUserOrderResponse) resultResponse.getData();
                     if(opayApiUserOrderResponse.getRecords().isEmpty()){
-                        log.warn("resultResponse data empty,task finish day:{}",day);
+                        log.warn("UserTradeJob resultResponse data empty,task finish day:{}",day);
                         break;
                     }
                     userOrderList.addAll(opayApiUserOrderResponse.getRecords());
                     if (opayApiUserOrderResponse.getRecords().size() < SUB_PAGE_SIZE) {
-                        log.warn("resultResponse data pageSize,task finish day:{}",day);
+                        log.warn("UserTradeJob resultResponse data pageSize,task finish day:{}",day);
                         break;
                     }
                     subStart += 1;
