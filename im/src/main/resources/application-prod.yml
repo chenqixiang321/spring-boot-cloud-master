@@ -54,7 +54,7 @@ rongyun:
   api: http://api-sg01.ronghub.com
 config:
   opay:
-    domain: https://api.operapay.com
+    domain: http://internal-campaignapiinternal-1831570749.eu-west-1.elb.amazonaws.com
     merchantId: 256619122168000
     aesKey: Xw8RjcXMoPnxfi9i
     iv: qazwert12345!@#$
