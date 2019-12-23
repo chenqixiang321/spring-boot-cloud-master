@@ -2,7 +2,6 @@ package com.opay.invite.backstage.service;
 
 import com.opay.invite.backstage.service.dto.OpayApiRequest;
 import com.opay.invite.backstage.service.dto.OpayApiResultResponse;
-import com.opos.feign.factory.OpayFeignFactory;
 import feign.Headers;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
         name = "opayFeignApiService",
-        url = "${config.opay.domain}",
-        fallbackFactory = OpayFeignFactory.class
+        url = "${config.opay.domain}"//,
+       // fallbackFactory = OpayFeignFactory.class
 )
 public interface OpayFeignApiService {
     @PostMapping({"api/im/batchQueryUserByPhone"})
