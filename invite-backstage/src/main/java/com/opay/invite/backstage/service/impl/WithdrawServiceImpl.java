@@ -292,6 +292,7 @@ public class WithdrawServiceImpl implements WithdrawService {
             // 先置为审核成功 再调用转账
             OpayActiveTixian record = new OpayActiveTixian();
             record.setStatus((byte) 1);
+            record.setMemo(reqDto.getMemo());
 
             OpayActiveTixianExample example = new OpayActiveTixianExample();
             example.createCriteria().andIdEqualTo(tixian.getId()).andOpayIdEqualTo(tixian.getOpayId()).andStatusEqualTo((byte) 0);
@@ -305,6 +306,7 @@ public class WithdrawServiceImpl implements WithdrawService {
             // 审核拒绝
             OpayActiveTixian record = new OpayActiveTixian();
             record.setStatus((byte) 2);
+            record.setMemo(reqDto.getMemo());
 
             OpayActiveTixianExample example = new OpayActiveTixianExample();
             example.createCriteria().andIdEqualTo(tixian.getId()).andOpayIdEqualTo(tixian.getOpayId()).andStatusEqualTo((byte) 0);
