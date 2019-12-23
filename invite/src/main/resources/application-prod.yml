@@ -107,7 +107,7 @@ activity:
     rewardList[3]:
       orderId: 4
       min: 21
-      max: 1000
+      max: 30
       walletReward: 360
       totalReward: 3700
     rewardList[4]:
