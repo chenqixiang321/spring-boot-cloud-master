@@ -111,6 +111,8 @@ public class LuckDrawController {
         } else {
             luckDrawResponse.setIsStart(0);
         }
+        luckDrawResponse.setActivityStart(activityStart);
+        luckDrawResponse.setActivityEnd(activityEnd);
         luckDrawResponse.setSystemTime(DateFormatter.formatDatetimeByZone(date, timeZone));
         luckDrawResponse.setPrizeInfo(luckDrawInfoService.getPrize());
         resultResponse.setData(luckDrawResponse);
