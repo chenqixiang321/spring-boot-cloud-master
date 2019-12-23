@@ -293,6 +293,8 @@ public class WithdrawServiceImpl implements WithdrawService {
             OpayActiveTixian record = new OpayActiveTixian();
             record.setStatus((byte) 1);
             record.setMemo(reqDto.getMemo());
+            record.setOperator(reqDto.getOperatorId());
+            record.setOperateTime(LocalDateTime.now());
 
             OpayActiveTixianExample example = new OpayActiveTixianExample();
             example.createCriteria().andIdEqualTo(tixian.getId()).andOpayIdEqualTo(tixian.getOpayId()).andStatusEqualTo((byte) 0);
@@ -307,6 +309,8 @@ public class WithdrawServiceImpl implements WithdrawService {
             OpayActiveTixian record = new OpayActiveTixian();
             record.setStatus((byte) 2);
             record.setMemo(reqDto.getMemo());
+            record.setOperator(reqDto.getOperatorId());
+            record.setOperateTime(LocalDateTime.now());
 
             OpayActiveTixianExample example = new OpayActiveTixianExample();
             example.createCriteria().andIdEqualTo(tixian.getId()).andOpayIdEqualTo(tixian.getOpayId()).andStatusEqualTo((byte) 0);
