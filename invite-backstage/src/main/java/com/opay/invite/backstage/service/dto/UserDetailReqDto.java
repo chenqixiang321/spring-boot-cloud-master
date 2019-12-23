@@ -15,7 +15,7 @@ public class UserDetailReqDto extends BasePageReqDto {
     @ApiModelProperty(value = "用户opayId")
     private String opayId;
 
-    @ApiModelProperty(value = "用户提现内部流水号")
-    private String reference;
+    @ApiModelProperty(value = "主键id")
+    private Long id;
 
 }

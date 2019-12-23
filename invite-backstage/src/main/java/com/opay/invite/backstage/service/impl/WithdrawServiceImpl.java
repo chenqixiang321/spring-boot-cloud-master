@@ -180,7 +180,7 @@ public class WithdrawServiceImpl implements WithdrawService {
     public UserDetailRespDto userDetail(UserDetailReqDto reqDto) throws Exception {
 
         OpayActiveTixianExample tixianExample = new OpayActiveTixianExample();
-        tixianExample.createCriteria().andReferenceEqualTo(reqDto.getReference());
+        tixianExample.createCriteria().andIdEqualTo(reqDto.getId());
 
         List<OpayActiveTixian> tixianList = opayActiveTixianMapper.selectByExample(tixianExample);
 
@@ -210,7 +210,7 @@ public class WithdrawServiceImpl implements WithdrawService {
         BigDecimal balanceSum = opayActiveTixianMapper.sumAmountByTypeAndStatus((byte) 0, (byte) 3, reqDto.getOpayId());
 
         UserDetailRespDto respDto = new UserDetailRespDto();
-        respDto.setReference(reqDto.getReference());
+        respDto.setReference(opayActiveTixian.getReference());
         respDto.setOpayId(reqDto.getOpayId());
         respDto.setInviteNo(inviteNo);
         respDto.setTotalCashback(opayActiveCashback.getTotalAmount().toString());

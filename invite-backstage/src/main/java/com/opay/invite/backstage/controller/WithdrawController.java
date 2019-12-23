@@ -72,6 +72,10 @@ public class WithdrawController {
             if (StringUtils.isBlank(reqDto.getOpayId())) {
                 throw new BackstageException(BackstageExceptionEnum.OPAY_ID_EMPTY);
             }
+            if (reqDto.getId() == null) {
+                throw new BackstageException(BackstageExceptionEnum.WITHDRAW_ID_EMPTY);
+            }
+
             if (reqDto.getPageNum() == null) {
                 reqDto.setPageNum(1);
             }
