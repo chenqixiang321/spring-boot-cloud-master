@@ -18,7 +18,7 @@ public class OpayFeignFactory implements FallbackFactory<OpayFeignApiService> {
     }
 
     public OpayFeignApiService create(Throwable throwable) {
-        log.error("OpayFeign error", throwable.getMessage());
+        log.error("OpayFeign error{}", throwable.getMessage());
         return this.opayFeignApiServiceFallback;
     }
 }
