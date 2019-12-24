@@ -51,7 +51,7 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             criteria.andPrizeEqualTo(reqDto.getPrize());
         }
         if (StringUtils.isNotBlank(reqDto.getOpayPhone())) {
-            criteria.andOpayPhoneEqualTo(reqDto.getOpayPhone());
+            criteria.andOpayPhoneLike("%" + reqDto.getOpayPhone() + "%");
         }
         if (StringUtils.isNotBlank(reqDto.getOperateStartTime()) && StringUtils.isNotBlank(reqDto.getOperateEndTime())) {
             LocalDateTime startTime = LocalDateTime.parse(reqDto.getOperateStartTime(), DateTimeConstant.FORMAT_TIME);
@@ -67,6 +67,11 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         if (redeemStatus != null && (redeemStatus == 0 || redeemStatus == 1)) {
             criteria.andRedeemStatusEqualTo(redeemStatus);
         }
+
+        if (StringUtils.isBlank(reqDto.getOpayId())) {
+            criteria.andOpayIdLike("%" + reqDto.getOpayId() + "%");
+        }
+
 
         Page<LuckDrawInfo> luckDrawInfoPage = PageHelper.startPage(reqDto.getPageNum(), reqDto.getPageSize())
                 .doSelectPage(() -> {

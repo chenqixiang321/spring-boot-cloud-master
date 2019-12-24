@@ -29,4 +29,7 @@ public class DrawRecordReqDto extends BasePageReqDto {
     @ApiModelProperty(value = "赎回状态 0-未赎回 1-已赎回，留空或其他查询全部")
     private Byte redeemStatus;
 
+    @ApiModelProperty(value = "用户opayId")
+    private String opayId;
+
 }

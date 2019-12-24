@@ -215,8 +215,8 @@ public class WithdrawServiceImpl implements WithdrawService {
         respDto.setInviteNo(inviteNo);
         respDto.setTotalCashback(opayActiveCashback.getTotalAmount().toString());
         respDto.setRemainCashback(opayActiveCashback.getAmount().toString());
-        respDto.setToBonus(bonusSum.toString());
-        respDto.setToBalance(balanceSum.toString());
+        respDto.setToBonus(bonusSum != null ? bonusSum.toString() : null);
+        respDto.setToBalance(balanceSum != null ? balanceSum.toString() : null);
         respDto.setRegisterTime(opayActiveCashback.getCreateAt().format(DateTimeConstant.FORMAT_TIME));
         respDto.setWithdrawAmount(opayActiveTixian.getAmount().toString());
         respDto.setWithdrawAmountType(opayActiveTixian.getType());
