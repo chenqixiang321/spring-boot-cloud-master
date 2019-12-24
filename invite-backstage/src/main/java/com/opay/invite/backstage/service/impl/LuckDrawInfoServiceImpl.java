@@ -53,16 +53,25 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         if (StringUtils.isNotBlank(reqDto.getOpayPhone())) {
             criteria.andOpayPhoneLike("%" + reqDto.getOpayPhone() + "%");
         }
-        if (StringUtils.isNotBlank(reqDto.getOperateStartTime()) && StringUtils.isNotBlank(reqDto.getOperateEndTime())) {
+
+        if (StringUtils.isNotBlank(reqDto.getOperateStartTime())) {
             LocalDateTime startTime = LocalDateTime.parse(reqDto.getOperateStartTime(), DateTimeConstant.FORMAT_TIME);
+            criteria.andOperateTimeGreaterThanOrEqualTo(startTime);
+        }
+        if (StringUtils.isNotBlank(reqDto.getOperateEndTime())) {
             LocalDateTime endTime = LocalDateTime.parse(reqDto.getOperateEndTime(), DateTimeConstant.FORMAT_TIME);
-            criteria.andOperateTimeBetween(startTime, endTime);
+            criteria.andOperateTimeLessThanOrEqualTo(endTime);
         }
-        if (StringUtils.isNotBlank(reqDto.getStartTime()) && StringUtils.isNotBlank(reqDto.getEndTime())) {
+
+        if (StringUtils.isNotBlank(reqDto.getStartTime())) {
             LocalDateTime startTime = LocalDateTime.parse(reqDto.getStartTime(), DateTimeConstant.FORMAT_TIME);
-            LocalDateTime endTime = LocalDateTime.parse(reqDto.getEndTime(), DateTimeConstant.FORMAT_TIME);
-            criteria.andCreateTimeBetween(startTime, endTime);
+            criteria.andCreateTimeGreaterThanOrEqualTo(startTime);
         }
+        if (StringUtils.isNotBlank(reqDto.getEndTime())) {
+            LocalDateTime endTime = LocalDateTime.parse(reqDto.getEndTime(), DateTimeConstant.FORMAT_TIME);
+            criteria.andCreateTimeLessThanOrEqualTo(endTime);
+        }
+
         Byte redeemStatus = reqDto.getRedeemStatus();
         if (redeemStatus != null && (redeemStatus == 0 || redeemStatus == 1)) {
             criteria.andRedeemStatusEqualTo(redeemStatus);

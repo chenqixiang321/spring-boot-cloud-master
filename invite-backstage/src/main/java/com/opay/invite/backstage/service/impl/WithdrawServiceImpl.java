@@ -75,15 +75,22 @@ public class WithdrawServiceImpl implements WithdrawService {
         OpayActiveTixianExample example = new OpayActiveTixianExample();
         OpayActiveTixianExample.Criteria criteria = example.createCriteria();
 
-        if (StringUtils.isNotBlank(reqDto.getOperateStartTime()) && StringUtils.isNotBlank(reqDto.getOperateEndTime())) {
+        if (StringUtils.isNotBlank(reqDto.getOperateStartTime())) {
             LocalDateTime startTime = LocalDateTime.parse(reqDto.getOperateStartTime(), DateTimeConstant.FORMAT_TIME);
-            LocalDateTime endTime = LocalDateTime.parse(reqDto.getOperateEndTime(), DateTimeConstant.FORMAT_TIME);
-            criteria.andOperateTimeBetween(startTime, endTime);
+            criteria.andOperateTimeGreaterThanOrEqualTo(startTime);
         }
-        if (StringUtils.isNotBlank(reqDto.getStartTime()) && StringUtils.isNotBlank(reqDto.getEndTime())) {
+        if (StringUtils.isNotBlank(reqDto.getOperateEndTime())) {
+            LocalDateTime endTime = LocalDateTime.parse(reqDto.getOperateEndTime(), DateTimeConstant.FORMAT_TIME);
+            criteria.andOperateTimeLessThanOrEqualTo(endTime);
+        }
+
+        if (StringUtils.isNotBlank(reqDto.getStartTime())) {
             LocalDateTime startTime = LocalDateTime.parse(reqDto.getStartTime(), DateTimeConstant.FORMAT_TIME);
+            criteria.andCreateAtGreaterThanOrEqualTo(startTime);
+        }
+        if (StringUtils.isNotBlank(reqDto.getEndTime())) {
             LocalDateTime endTime = LocalDateTime.parse(reqDto.getEndTime(), DateTimeConstant.FORMAT_TIME);
-            criteria.andCreateAtBetween(startTime, endTime);
+            criteria.andCreateAtLessThanOrEqualTo(endTime);
         }
 
         if (reqDto.getStatus() != null) {
