@@ -45,8 +45,10 @@ public class WithdrawRecordDto implements Serializable {
     @ApiModelProperty(value = "更新时间")
     private String updateTime;
 
-    @ApiModelProperty(value = "操作人")
+    @ApiModelProperty(value = "操作Id")
     private String operator;
+    @ApiModelProperty(value = "操作人名字")
+    private String operatorName;
 
     @ApiModelProperty(value = "操作时间")
     private String operateTime;

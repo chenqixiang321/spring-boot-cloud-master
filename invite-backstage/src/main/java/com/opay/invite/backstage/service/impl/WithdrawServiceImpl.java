@@ -59,6 +59,9 @@ public class WithdrawServiceImpl implements WithdrawService {
     private OpayActiveTixianLogMapper opayActiveTixianLogMapper;
     @Autowired
     private OpayFeignApiService opayFeignApiService;
+    @Resource
+    private InviteOperatorMapper inviteOperatorMapper;
+
     @Value("${config.opay.aesKey}")
     private String aesKey;
     @Value("${config.opay.iv}")
@@ -118,7 +121,17 @@ public class WithdrawServiceImpl implements WithdrawService {
             BeanUtils.copyProperties(opayActiveTixian, recordDto);
             recordDto.setCreateTime(opayActiveTixian.getCreateAt().format(DateTimeConstant.FORMAT_TIME));
             String operateTime = opayActiveTixian.getOperateTime() == null ? null : opayActiveTixian.getOperateTime().format(DateTimeConstant.FORMAT_TIME);
-            recordDto.setOperator(operateTime);
+            recordDto.setOperator(opayActiveTixian.getOperator());
+
+            InviteOperatorExample example1 = new InviteOperatorExample();
+            example1.createCriteria().andOperatorIdEqualTo(opayActiveTixian.getOperator());
+            List<InviteOperator> operatorList = inviteOperatorMapper.selectByExample(example1);
+
+            if (CollectionUtils.isNotEmpty(operatorList)) {
+                recordDto.setOperatorName(operatorList.get(0).getOperatorName());
+            }
+
+            recordDto.setOperateTime(operateTime);
             recordDto.setAmount(opayActiveTixian.getAmount().toString());
 
             // 去查询账户信息
@@ -209,7 +222,7 @@ public class WithdrawServiceImpl implements WithdrawService {
         // 0:bonus 1:balance
         // status 3 成功
         BigDecimal bonusSum = opayActiveTixianMapper.sumAmountByTypeAndStatus((byte) 0, (byte) 3, reqDto.getOpayId());
-        BigDecimal balanceSum = opayActiveTixianMapper.sumAmountByTypeAndStatus((byte) 0, (byte) 3, reqDto.getOpayId());
+        BigDecimal balanceSum = opayActiveTixianMapper.sumAmountByTypeAndStatus((byte) 1, (byte) 3, reqDto.getOpayId());
 
         UserDetailRespDto respDto = new UserDetailRespDto();
         respDto.setReference(opayActiveTixian.getReference());
