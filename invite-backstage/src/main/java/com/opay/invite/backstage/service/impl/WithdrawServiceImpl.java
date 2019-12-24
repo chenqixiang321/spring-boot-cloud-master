@@ -26,7 +26,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -363,6 +365,66 @@ public class WithdrawServiceImpl implements WithdrawService {
             }
         }
 
+    }
+
+    @Override
+    public SumWithdrawInfoRespDto sumWithdrawInfo(SumWithdrawInfoReqDto reqDto) {
+
+        LocalDateTime startTime;
+        LocalDateTime endTime;
+
+        if (StringUtils.isNotBlank(reqDto.getStartTime()) && StringUtils.isNotBlank(reqDto.getEndTime())) {
+            startTime = LocalDateTime.parse(reqDto.getStartTime(), DateTimeConstant.FORMAT_TIME);
+            endTime = LocalDateTime.parse(reqDto.getEndTime(), DateTimeConstant.FORMAT_TIME);
+        } else {
+            // 凌晨和今天结束
+            startTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+            endTime = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+        }
+        // bonus 申请中
+        OpayActiveTixianExample tixianExample1 = new OpayActiveTixianExample();
+        tixianExample1.createCriteria().andTypeEqualTo((byte) 0).andStatusEqualTo((byte) 0).andCreateAtBetween(startTime, endTime);
+        List<OpayActiveTixian> bonusList = opayActiveTixianMapper.selectByExample(tixianExample1);
+        // balance 申请中
+        OpayActiveTixianExample tixianExample2 = new OpayActiveTixianExample();
+        tixianExample2.createCriteria().andTypeEqualTo((byte) 1).andStatusEqualTo((byte) 0).andCreateAtBetween(startTime, endTime);
+        List<OpayActiveTixian> balanceList = opayActiveTixianMapper.selectByExample(tixianExample1);
+        // 审批拒绝的
+        OpayActiveTixianExample tixianExample3 = new OpayActiveTixianExample();
+        tixianExample3.createCriteria().andStatusEqualTo((byte) 2).andCreateAtBetween(startTime, endTime);
+        List<OpayActiveTixian> rejectList = opayActiveTixianMapper.selectByExample(tixianExample1);
+
+
+        int toBonusRecordSum = 0;
+        BigDecimal toBonusSum = new BigDecimal(0);
+        if (CollectionUtils.isNotEmpty(bonusList)) {
+            toBonusRecordSum = bonusList.size();
+            toBonusSum = bonusList.stream().map(OpayActiveTixian::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
+        int toBalanceRecordSum = 0;
+        BigDecimal toBalanceSum = new BigDecimal(0);
+        if (CollectionUtils.isNotEmpty(balanceList)) {
+            toBalanceRecordSum = balanceList.size();
+            toBalanceSum = balanceList.stream().map(OpayActiveTixian::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
+        int rejectRecordSum = 0;
+        BigDecimal rejectSum = new BigDecimal(0);
+        if (CollectionUtils.isNotEmpty(rejectList)) {
+            rejectRecordSum = rejectList.size();
+            rejectSum = rejectList.stream().map(OpayActiveTixian::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
+
+        SumWithdrawInfoRespDto respDto = new SumWithdrawInfoRespDto();
+        respDto.setToBonusRecordSum(toBonusRecordSum);
+        respDto.setToBonusSum(toBonusSum.toString());
+        respDto.setToBalanceRecordSum(toBalanceRecordSum);
+        respDto.setToBalanceSum(toBalanceSum.toString());
+        respDto.setTotalRecordSum(toBonusRecordSum + toBalanceRecordSum);
+        respDto.setTotalSum(toBonusSum.add(toBalanceSum).toString());
+        respDto.setRejectRecordSum(rejectRecordSum);
+        respDto.setRejectSum(rejectSum.toString());
+
+        return respDto;
     }
 
     public void rollbackTixian(OpayActiveTixian saveTixian) {

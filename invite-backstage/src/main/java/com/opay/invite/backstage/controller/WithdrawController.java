@@ -51,6 +51,7 @@ public class WithdrawController {
             log.error("运营后台请求查询提现记录ERROR", e);
             respDto.buildFail();
         }
+
         return respDto;
     }
 
@@ -93,6 +94,7 @@ public class WithdrawController {
             log.error("运营后台查询用户详情ERROR", e);
             respDto.buildFail();
         }
+
         return respDto;
 
     }
@@ -101,6 +103,8 @@ public class WithdrawController {
     @ApiOperation(value = "提现审批")
     @PostMapping(value = "/withdrawOperate")
     public BaseRespDto withdrawOperate(@RequestBody WithdrawOperateReqDto reqDto) {
+        log.info("后台提现审批请求参数:{}", JSON.toJSONString(reqDto));
+
         BaseRespDto respDto = new BaseRespDto();
 
         try {
@@ -131,6 +135,34 @@ public class WithdrawController {
 
         return respDto;
 
+    }
+
+    @ApiOperation(value = "提现总量")
+    @PostMapping(value = "/sumWithdrawInfo")
+    public SumWithdrawInfoRespDto sumWithdrawInfo(@RequestBody SumWithdrawInfoReqDto reqDto) {
+
+        log.info("获取提现总量, 请求参数:{}", JSON.toJSONString(reqDto));
+
+        SumWithdrawInfoRespDto respDto = new SumWithdrawInfoRespDto();
+
+        try {
+            if (StringUtils.isBlank(reqDto.getOperatorId())) {
+                throw new BackstageException(BackstageExceptionEnum.OPERATOR_ID_ERROR);
+            }
+
+            respDto = withdrawService.sumWithdrawInfo(reqDto);
+            respDto.buildSuccess();
+        } catch (BackstageException e) {
+            log.error("运营后台获取提现审批总量ERROR", e);
+            respDto.buildError(e);
+        } catch (Exception e) {
+            log.error("运营后台获取提现审批总量ERROR", e);
+            respDto.buildFail();
+        }
+
+        log.info("运营后台获取提现审批总量, 返回信息:{}", JSON.toJSONString(respDto));
+
+        return respDto;
     }
 
 

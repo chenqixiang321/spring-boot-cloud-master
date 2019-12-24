@@ -35,4 +35,12 @@ public interface WithdrawService {
      * @throws BackstageException
      */
     void withdrawOperate(WithdrawOperateReqDto reqDto) throws Exception;
+
+    /**
+     * 获取提现审批总量
+     *
+     * @param reqDto
+     * @return
+     */
+    SumWithdrawInfoRespDto sumWithdrawInfo(SumWithdrawInfoReqDto reqDto);
 }
