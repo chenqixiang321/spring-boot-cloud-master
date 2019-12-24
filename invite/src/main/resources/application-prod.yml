@@ -188,10 +188,10 @@ opay:
         expression: "0 0 3 * * ?"
         jobClass: "com.opay.invite.job.RewardJob"
       first-luck-draw:
-        expression: "0 50 10 * * ?"
+        expression: "0 50 11 * * ?"
         jobClass: "com.opay.invite.job.InitPrizePoolJob"
       second-luck-draw:
-        expression: "0 50 2 * * ?"
+        expression: "0 50 19 * * ?"
         jobClass: "com.opay.invite.job.InitPrizePoolJob"
   luckDraw:
     callBack: https://api.iminvite.pos.operapay.com/invite/callback/bonus
@@ -229,14 +229,14 @@ prize-pool:
   inviteLimit: 100
   shareLimit: 3 #每天分享上线
   grandPrizeIndex: 1238 #还剩n次时,开出大奖
-  firstGrandPrizeTimeUp: "11:45:00"
-  secondGrandPrizeTimeUp: "3:50:00"
+  firstGrandPrizeTimeUp: "13:45:00" #大奖开出时间
+  secondGrandPrizeTimeUp: "21:50:00"
   secondPoolRate: 4
   count: 100000
-  firstPoolStart: 11
-  firstPoolEnd: 12
-  secondPoolStart: 3
-  secondPoolEnd: 4
+  firstPoolStart: 12
+  firstPoolEnd: 14
+  secondPoolStart: 20
+  secondPoolEnd: 22
   activityStart: 2029-12-06 00:00:01
   activityEnd: 2029-12-21 10:00:00
   firstPool:

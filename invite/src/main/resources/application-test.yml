@@ -190,10 +190,10 @@ opay:
         expression: "05 56 12 * * ?"
         jobClass: "com.opay.invite.job.RewardJob"
       first-luck-draw:
-        expression: "0 50 1 * * ?"
+        expression: "0 50 2 * * ?"
         jobClass: "com.opay.invite.job.InitPrizePoolJob"
       second-luck-draw:
-        expression: "0 50 3 * * ?"
+        expression: "0 50 5 * * ?"
         jobClass: "com.opay.invite.job.InitPrizePoolJob"
 #  luckDraw:
 #    callBack: http://t-api.iminvite.pos.operapay.com/invite/callback/bonus
@@ -264,19 +264,29 @@ hystrix:
 prize-pool:
   inviteLimit: 100
   shareLimit: 3 #每天分享上线
-  grandPrizeIndex: 2 #还剩n次时,开出大奖
-  firstGrandPrizeTimeUp: "10:50:00"
-  secondGrandPrizeTimeUp: "10:50:00"
+  grandPrizeIndex: 1238 #还剩n次时,开出大奖
+  firstGrandPrizeTimeUp: "4:45:00"
+  secondGrandPrizeTimeUp: "14:50:00"
   secondPoolRate: 4
-  count: 20
-  firstPoolStart: 7
-  firstPoolEnd: 8
-  secondPoolStart: 9
-  secondPoolEnd: 10
-  activityStart: 2029-12-06 00:00:01
+  count: 100000
+  firstPoolStart: 3
+  firstPoolEnd: 5
+  secondPoolStart: 6
+  secondPoolEnd: 15
+  activityStart: 2019-12-06 00:00:01
   activityEnd: 2029-12-21 10:00:00
   firstPool:
-    - {id: 3,prize: 5,prob: 0.5}
-    - {id: 6,prize: 0,prob: 0.5}
+    - {id: 4,prize: 10,prob: 0.00015}
+    - {id: 5,prize: 5,prob: 0.0002}
+    - {id: 6,prize: 2,prob: 0.001}
+    - {id: 7,prize: 1,prob: 0.24865}
+    - {id: 8,prize: 0,prob: 0.75}
   secondPool:
-    - {id: 2,prize: 10,prob: 1}
+    - {id: 1,prize: phone,prob: 0.00001}
+    - {id: 2,prize: 100,prob: 0.00004}
+    - {id: 3,prize: 50,prob: 0.0002}
+    - {id: 4,prize: 10,prob: 0.00035}
+    - {id: 5,prize: 5,prob: 0.0009}
+    - {id: 6,prize: 2,prob: 0.0285}
+    - {id: 7,prize: 1,prob: 0.27}
+    - {id: 8,prize: 0,prob: 0.7}
