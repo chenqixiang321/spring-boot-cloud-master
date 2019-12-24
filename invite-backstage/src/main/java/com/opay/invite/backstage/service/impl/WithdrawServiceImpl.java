@@ -122,16 +122,18 @@ public class WithdrawServiceImpl implements WithdrawService {
             recordDto.setCreateTime(opayActiveTixian.getCreateAt().format(DateTimeConstant.FORMAT_TIME));
             String operateTime = opayActiveTixian.getOperateTime() == null ? null : opayActiveTixian.getOperateTime().format(DateTimeConstant.FORMAT_TIME);
             recordDto.setOperator(opayActiveTixian.getOperator());
+            recordDto.setOperateTime(operateTime);
 
-            InviteOperatorExample example1 = new InviteOperatorExample();
-            example1.createCriteria().andOperatorIdEqualTo(opayActiveTixian.getOperator());
-            List<InviteOperator> operatorList = inviteOperatorMapper.selectByExample(example1);
+            if (StringUtils.isNotBlank(opayActiveTixian.getOperator())) {
+                InviteOperatorExample example1 = new InviteOperatorExample();
+                example1.createCriteria().andOperatorIdEqualTo(opayActiveTixian.getOperator());
+                List<InviteOperator> operatorList = inviteOperatorMapper.selectByExample(example1);
 
-            if (CollectionUtils.isNotEmpty(operatorList)) {
-                recordDto.setOperatorName(operatorList.get(0).getOperatorName());
+                if (CollectionUtils.isNotEmpty(operatorList)) {
+                    recordDto.setOperatorName(operatorList.get(0).getOperatorName());
+                }
             }
 
-            recordDto.setOperateTime(operateTime);
             recordDto.setAmount(opayActiveTixian.getAmount().toString());
 
             // 去查询账户信息
