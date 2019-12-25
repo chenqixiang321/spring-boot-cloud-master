@@ -269,6 +269,7 @@ public class WithdrawServiceImpl implements WithdrawService {
             userRewardDto.setAmount(opayMasterPupilAward.getAmount().toString());
             userRewardDto.setCreateTime(opayMasterPupilAward.getCreateAt().format(DateTimeConstant.FORMAT_TIME));
             // 查询徒弟名字和手机号
+            userRewardDto.setReward(opayMasterPupilAward.getReward());
 
 
             BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
@@ -284,7 +285,7 @@ public class WithdrawServiceImpl implements WithdrawService {
             userRewardDto.setPupilFirstName(userModel.getFirstName());
             userRewardDto.setPupilMiddleName(userModel.getMiddleName());
             userRewardDto.setPupilSurname(userModel.getSurname());
-            userRewardDto.setPupilPhone(userModel.getPhoto());
+            userRewardDto.setPupilPhone(userModel.getMobile());
             userRewardDtoList.add(userRewardDto);
         }
 
@@ -410,11 +411,11 @@ public class WithdrawServiceImpl implements WithdrawService {
         // balance 申请中
         OpayActiveTixianExample tixianExample2 = new OpayActiveTixianExample();
         tixianExample2.createCriteria().andTypeEqualTo((byte) 1).andStatusEqualTo((byte) 0).andCreateAtBetween(startTime, endTime);
-        List<OpayActiveTixian> balanceList = opayActiveTixianMapper.selectByExample(tixianExample1);
+        List<OpayActiveTixian> balanceList = opayActiveTixianMapper.selectByExample(tixianExample2);
         // 审批拒绝的
         OpayActiveTixianExample tixianExample3 = new OpayActiveTixianExample();
         tixianExample3.createCriteria().andStatusEqualTo((byte) 2).andCreateAtBetween(startTime, endTime);
-        List<OpayActiveTixian> rejectList = opayActiveTixianMapper.selectByExample(tixianExample1);
+        List<OpayActiveTixian> rejectList = opayActiveTixianMapper.selectByExample(tixianExample3);
 
 
         int toBonusRecordSum = 0;

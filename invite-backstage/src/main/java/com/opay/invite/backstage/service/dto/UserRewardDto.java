@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @author liuzhihang
  * @date 2019/12/18 17:25
@@ -33,7 +35,7 @@ public class UserRewardDto {
 
 
     @ApiModelProperty(value = "奖励金额")
-    private String reward;
+    private BigDecimal reward;
     @ApiModelProperty(value = "时间")
     private String createTime;
     @ApiModelProperty(value = "0:待入账，1:已入账")
