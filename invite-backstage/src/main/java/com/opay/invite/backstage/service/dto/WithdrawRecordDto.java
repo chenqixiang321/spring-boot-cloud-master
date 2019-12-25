@@ -18,6 +18,9 @@ public class WithdrawRecordDto implements Serializable {
     @ApiModelProperty(value = "申请金额")
     private String amount;
 
+    @ApiModelProperty(value = "备注")
+    private String memo;
+
     @ApiModelProperty(value = "0:bonus 1:balance")
     private Byte type;
 

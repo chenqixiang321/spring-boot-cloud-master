@@ -6,7 +6,7 @@ spring:
   application:
     name: opay-invite-backstage
   datasource:
-    url: jdbc:mysql://opay-im.c7vkdm90b2v9.eu-west-1.rds.amazonaws.com:3306/opay_invite?useSSL=false&useAffectedRows=true&allowMultiQueries=true
+    url: jdbc:mysql://opay-im.c7vkdm90b2v9.eu-west-1.rds.amazonaws.com:3306/opay_invite?useSSL=false&useAffectedRows=true&allowMultiQueries=true&useUnicode=true&characterEncoding=utf8
     username: root
     password: ff3NKWQpY5hEq7xzOLuX
     driver-class-name: com.mysql.jdbc.Driver
