@@ -122,6 +122,7 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         record.setOperateTime(LocalDateTime.now());
         record.setOperatorId(reqDto.getOperatorId());
         record.setOpayName(operatorList.get(0).getOperatorName());
+        record.setMemo(reqDto.getMemo());
 
         int i = luckDrawInfoMapper.updateByExampleSelective(record, example);
 
