@@ -406,11 +406,11 @@ public class WithdrawServiceImpl implements WithdrawService {
         }
         // bonus 申请中
         OpayActiveTixianExample tixianExample1 = new OpayActiveTixianExample();
-        tixianExample1.createCriteria().andTypeEqualTo((byte) 0).andStatusEqualTo((byte) 0).andCreateAtBetween(startTime, endTime);
+        tixianExample1.createCriteria().andTypeEqualTo((byte) 0).andStatusEqualTo((byte) 1).andCreateAtBetween(startTime, endTime);
         List<OpayActiveTixian> bonusList = opayActiveTixianMapper.selectByExample(tixianExample1);
         // balance 申请中
         OpayActiveTixianExample tixianExample2 = new OpayActiveTixianExample();
-        tixianExample2.createCriteria().andTypeEqualTo((byte) 1).andStatusEqualTo((byte) 0).andCreateAtBetween(startTime, endTime);
+        tixianExample2.createCriteria().andTypeEqualTo((byte) 1).andStatusEqualTo((byte) 1).andCreateAtBetween(startTime, endTime);
         List<OpayActiveTixian> balanceList = opayActiveTixianMapper.selectByExample(tixianExample2);
         // 审批拒绝的
         OpayActiveTixianExample tixianExample3 = new OpayActiveTixianExample();
