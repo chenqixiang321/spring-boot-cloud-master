@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 提现记录相关操作方法
@@ -107,7 +108,12 @@ public class WithdrawServiceImpl implements WithdrawService {
             codeExample.createCriteria().andPhoneLike("%" + reqDto.getOpayPhone() + "%");
             List<OpayInviteCode> list = opayInviteCodeMapper.selectByExample(codeExample);
             if (CollectionUtils.isNotEmpty(list)) {
-                criteria.andOpayIdEqualTo(list.get(0).getOpayId());
+
+                List<String> opayIdList = list.stream().map(OpayInviteCode::getOpayId).collect(Collectors.toList());
+                criteria.andOpayIdIn(opayIdList);
+            } else {
+                // 没有该用户 所以直接返回空数据
+                return new WithdrawRecordRespDto();
             }
         }
 
@@ -404,13 +410,13 @@ public class WithdrawServiceImpl implements WithdrawService {
             startTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
             endTime = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
         }
-        // bonus 申请中
+        // bonus 转账成功
         OpayActiveTixianExample tixianExample1 = new OpayActiveTixianExample();
-        tixianExample1.createCriteria().andTypeEqualTo((byte) 0).andStatusEqualTo((byte) 1).andCreateAtBetween(startTime, endTime);
+        tixianExample1.createCriteria().andTypeEqualTo((byte) 0).andStatusEqualTo((byte) 3).andCreateAtBetween(startTime, endTime);
         List<OpayActiveTixian> bonusList = opayActiveTixianMapper.selectByExample(tixianExample1);
-        // balance 申请中
+        // balance 转账成功
         OpayActiveTixianExample tixianExample2 = new OpayActiveTixianExample();
-        tixianExample2.createCriteria().andTypeEqualTo((byte) 1).andStatusEqualTo((byte) 1).andCreateAtBetween(startTime, endTime);
+        tixianExample2.createCriteria().andTypeEqualTo((byte) 1).andStatusEqualTo((byte) 3).andCreateAtBetween(startTime, endTime);
         List<OpayActiveTixian> balanceList = opayActiveTixianMapper.selectByExample(tixianExample2);
         // 审批拒绝的
         OpayActiveTixianExample tixianExample3 = new OpayActiveTixianExample();
