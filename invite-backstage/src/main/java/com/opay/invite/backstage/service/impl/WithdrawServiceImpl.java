@@ -9,6 +9,8 @@ import com.opay.invite.backstage.config.TransferConfig;
 import com.opay.invite.backstage.constant.DateTimeConstant;
 import com.opay.invite.backstage.dao.entity.*;
 import com.opay.invite.backstage.dao.mapper.*;
+import com.opay.invite.backstage.dto.NotifyMessage;
+import com.opay.invite.backstage.dto.TransOrder;
 import com.opay.invite.backstage.exception.BackstageException;
 import com.opay.invite.backstage.exception.BackstageExceptionEnum;
 import com.opay.invite.backstage.service.OpayFeignApiService;
@@ -23,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -30,7 +33,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 提现记录相关操作方法
@@ -108,12 +110,7 @@ public class WithdrawServiceImpl implements WithdrawService {
             codeExample.createCriteria().andPhoneLike("%" + reqDto.getOpayPhone() + "%");
             List<OpayInviteCode> list = opayInviteCodeMapper.selectByExample(codeExample);
             if (CollectionUtils.isNotEmpty(list)) {
-
-                List<String> opayIdList = list.stream().map(OpayInviteCode::getOpayId).collect(Collectors.toList());
-                criteria.andOpayIdIn(opayIdList);
-            } else {
-                // 没有该用户 所以直接返回空数据
-                return new WithdrawRecordRespDto();
+                criteria.andOpayIdEqualTo(list.get(0).getOpayId());
             }
         }
 
@@ -274,10 +271,8 @@ public class WithdrawServiceImpl implements WithdrawService {
             BeanUtils.copyProperties(opayMasterPupilAward, userRewardDto);
             userRewardDto.setAmount(opayMasterPupilAward.getAmount().toString());
             userRewardDto.setCreateTime(opayMasterPupilAward.getCreateAt().format(DateTimeConstant.FORMAT_TIME));
-            // 查询徒弟名字和手机号
             userRewardDto.setReward(opayMasterPupilAward.getReward());
-
-
+            // 查询徒弟名字和手机号
             BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
             batchQueryUserRequest.setUserId(opayMasterPupilAward.getPupilId());
             log.info("请求账户查询用户信息, 请求:{}", JSON.toJSONString(batchQueryUserRequest));
@@ -307,19 +302,37 @@ public class WithdrawServiceImpl implements WithdrawService {
 
     @Override
     public void withdrawOperate(WithdrawOperateReqDto reqDto) throws Exception {
-
-
-        OpayActiveTixian tixian = opayActiveTixianMapper.selectByPrimaryKey(reqDto.getId());
-        if (tixian == null) {
+        OpayActiveTixian withDrawOrg = opayActiveTixianMapper.selectByPrimaryKey(reqDto.getId());
+        if (withDrawOrg == null) {
             throw new BackstageException(BackstageExceptionEnum.WITHDRAW_RECORD_NOT_EXIST);
         }
 
-        if (tixian.getStatus() != (byte) 0) {
+        if (withDrawOrg.getStatus() != null
+                && !(withDrawOrg.getStatus().equals(Byte.valueOf("0"))
+                        || withDrawOrg.getStatus().equals(Byte.valueOf("1")))) {
             log.info("提现状态不正确, 只有申请中的可以审核");
             throw new BackstageException(BackstageExceptionEnum.WITHDRAW_OPERATE_STATUS_ERROR);
         }
 
-        if (reqDto.getStatus() == (byte) 1) {
+        String orderNo = withDrawOrg.getTradeNo();
+        String opayId = withDrawOrg.getOpayId();
+
+        String orderType = OrderType.bonusOffer.getOrderType();
+        if (withDrawOrg.getType() == 1) {
+            orderType = OrderType.MUAATransfer.getOrderType();
+        }
+
+        if (withDrawOrg.getStatus().equals(Byte.valueOf("1"))) {
+            TransOrder transOrder = rpcService.queryOrder(UUID.randomUUID().toString(),
+                    merchantId, orderNo, orderType);
+            if (transOrder == null) {
+                log.info("WithdrawServiceImpl.withdrawOperate 查询订单失败 opayId:{}, orderNo:{}", opayId, withDrawOrg.getTradeNo());
+                return;
+            }
+            transferNotify(withDrawOrg, transOrder.getOrderNo(), transOrder.getStatus());
+        }
+
+        if (reqDto.getStatus().equals(1)) {
             // 先置为审核成功 再调用转账
             OpayActiveTixian record = new OpayActiveTixian();
             record.setStatus((byte) 1);
@@ -328,14 +341,14 @@ public class WithdrawServiceImpl implements WithdrawService {
             record.setOperateTime(LocalDateTime.now());
 
             OpayActiveTixianExample example = new OpayActiveTixianExample();
-            example.createCriteria().andIdEqualTo(tixian.getId()).andOpayIdEqualTo(tixian.getOpayId()).andStatusEqualTo((byte) 0);
+            example.createCriteria().andIdEqualTo(withDrawOrg.getId()).andOpayIdEqualTo(withDrawOrg.getOpayId()).andStatusEqualTo(withDrawOrg.getStatus());
             int i = opayActiveTixianMapper.updateByExampleSelective(record, example);
 
             if (i != 1) {
-                log.info("id={}将审核状态更改为审核成功失败", tixian.getId());
+                log.info("id={}将审核状态更改为审核成功失败", withDrawOrg.getId());
                 throw new BackstageException(BackstageExceptionEnum.WITHDRAW_OPERATE_STATUS_UPDATE_ERROR);
             }
-        } else if (reqDto.getStatus() == (byte) 2) {
+        } else if (reqDto.getStatus().equals(2)) {
             // 审核拒绝
             OpayActiveTixian record = new OpayActiveTixian();
             record.setStatus((byte) 2);
@@ -344,53 +357,39 @@ public class WithdrawServiceImpl implements WithdrawService {
             record.setOperateTime(LocalDateTime.now());
 
             OpayActiveTixianExample example = new OpayActiveTixianExample();
-            example.createCriteria().andIdEqualTo(tixian.getId()).andOpayIdEqualTo(tixian.getOpayId()).andStatusEqualTo((byte) 0);
+            example.createCriteria().andIdEqualTo(withDrawOrg.getId()).andOpayIdEqualTo(withDrawOrg.getOpayId()).andStatusEqualTo(withDrawOrg.getStatus());
             int i = opayActiveTixianMapper.updateByExampleSelective(record, example);
 
             if (i != 1) {
-                log.info("id={}将审核状态更改为审核成功失败", tixian.getId());
+                log.info("id={}将审核状态更改为审核成功失败", withDrawOrg.getId());
                 throw new BackstageException(BackstageExceptionEnum.WITHDRAW_OPERATE_STATUS_UPDATE_ERROR);
             }
-            rollbackTixian(tixian);
+            rollbackTixian(withDrawOrg);
             return;
         }
 
-
-        String orderType = OrderType.bonusOffer.getOrderType();
-        if (tixian.getType() == 1) {
-            orderType = OrderType.MUAATransfer.getOrderType();
-        }
-        String reference = transferConfig.getReference() + "" + String.format("%10d", tixian.getId()).replace(" ", "0");
-        Map<String, String> map = rpcService.transfer(reference, tixian.getOpayId(), tixian.getAmount().toString(), reference, orderType, "BalancePayment");
+        String reference = transferConfig.getReference() + "" + String.format("%10d", withDrawOrg.getId()).replace(" ", "0");
+        Map<String, String> map = rpcService.transfer(reference, withDrawOrg.getOpayId(), withDrawOrg.getAmount().toString(), reference, orderType, "BalancePayment");
         if (map == null || map.size() == 0) {
-            log.error("提现错误, 请求参数: {}", JSON.toJSONString(tixian));
+            log.error("提现错误, 请求参数: {}", JSON.toJSONString(withDrawOrg));
             throw new BackstageException(BackstageExceptionEnum.FAIL);
         }
         log.info("transfer::::{}", JSON.toJSONString(map));
         if (map.size() > 0) {
             if ("504".equals(map.get("code"))) {
-                log.error("提现超时, 请求参数 timeout err {}", JSON.toJSONString(tixian));
-            } else if ("00000".equals(map.get("code")) && ("SUCCESS".equals(map.get("status")) || "PENDING".equals(map.get("status")))) {
-                // 转账成功
+                log.error("提现超时, 请求参数 timeout err {}", JSON.toJSONString(withDrawOrg));
+            } else if (!("00000".equals(map.get("code")) && ("SUCCESS".equals(map.get("status"))))) {
+                // 转账受理失败
                 OpayActiveTixian activeTixian = new OpayActiveTixian();
                 activeTixian.setReference(reference);
                 activeTixian.setTradeNo(map.get("orderNo"));
-                activeTixian.setStatus((byte) 3);
+                activeTixian.setStatus((byte) 0);
 
                 OpayActiveTixianExample tixianExample1 = new OpayActiveTixianExample();
-                tixianExample1.createCriteria().andIdEqualTo(tixian.getId()).andOpayIdEqualTo(tixian.getOpayId()).andStatusEqualTo((byte) 1);
+                tixianExample1.createCriteria().andIdEqualTo(withDrawOrg.getId()).andOpayIdEqualTo(withDrawOrg.getOpayId()).andStatusEqualTo((byte) 1);
                 opayActiveTixianMapper.updateByExampleSelective(activeTixian, tixianExample1);
             } else {
-                // 转账失败
-                OpayActiveTixian activeTixian = new OpayActiveTixian();
-                activeTixian.setReference(reference);
-                activeTixian.setTradeNo(map.get("orderNo"));
-                activeTixian.setStatus((byte) 4);
-
-                OpayActiveTixianExample tixianExample1 = new OpayActiveTixianExample();
-                tixianExample1.createCriteria().andIdEqualTo(tixian.getId()).andOpayIdEqualTo(tixian.getOpayId()).andStatusEqualTo((byte) 1);
-                opayActiveTixianMapper.updateByExampleSelective(activeTixian, tixianExample1);
-                rollbackTixian(tixian);
+                log.error("未知错误");
             }
         }
 
@@ -410,18 +409,18 @@ public class WithdrawServiceImpl implements WithdrawService {
             startTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
             endTime = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
         }
-        // bonus 转账成功
+        // bonus 申请中
         OpayActiveTixianExample tixianExample1 = new OpayActiveTixianExample();
-        tixianExample1.createCriteria().andTypeEqualTo((byte) 0).andStatusEqualTo((byte) 3).andCreateAtBetween(startTime, endTime);
+        tixianExample1.createCriteria().andTypeEqualTo((byte) 0).andStatusEqualTo((byte) 0).andCreateAtBetween(startTime, endTime);
         List<OpayActiveTixian> bonusList = opayActiveTixianMapper.selectByExample(tixianExample1);
-        // balance 转账成功
+        // balance 申请中
         OpayActiveTixianExample tixianExample2 = new OpayActiveTixianExample();
-        tixianExample2.createCriteria().andTypeEqualTo((byte) 1).andStatusEqualTo((byte) 3).andCreateAtBetween(startTime, endTime);
-        List<OpayActiveTixian> balanceList = opayActiveTixianMapper.selectByExample(tixianExample2);
+        tixianExample2.createCriteria().andTypeEqualTo((byte) 1).andStatusEqualTo((byte) 0).andCreateAtBetween(startTime, endTime);
+        List<OpayActiveTixian> balanceList = opayActiveTixianMapper.selectByExample(tixianExample1);
         // 审批拒绝的
         OpayActiveTixianExample tixianExample3 = new OpayActiveTixianExample();
         tixianExample3.createCriteria().andStatusEqualTo((byte) 2).andCreateAtBetween(startTime, endTime);
-        List<OpayActiveTixian> rejectList = opayActiveTixianMapper.selectByExample(tixianExample3);
+        List<OpayActiveTixian> rejectList = opayActiveTixianMapper.selectByExample(tixianExample1);
 
 
         int toBonusRecordSum = 0;
@@ -456,6 +455,7 @@ public class WithdrawServiceImpl implements WithdrawService {
         return respDto;
     }
 
+    @Override
     public void rollbackTixian(OpayActiveTixian saveTixian) {
         try {
 
@@ -493,6 +493,53 @@ public class WithdrawServiceImpl implements WithdrawService {
             log.info("rollbackTixian {},status:{},cashback2:{}", JSON.toJSONString(saveTixian), 4, JSON.toJSONString(cashback2));
         } catch (Exception e) {
             log.warn("transter err {},status:{},err:{}", JSON.toJSONString(saveTixian), 4, e.getMessage());
+        }
+    }
+
+    @Override
+    public void transferNotify(OpayActiveTixian opayActiveTixianOrg, String orderNo, String orderStatus) {
+        log.info("WithdrawServiceImpl.transferNotify orderNo:{}, orderStatus:{}", orderNo, orderStatus);
+        // 1. 校验提现记录信息
+        if (opayActiveTixianOrg == null) {
+            OpayActiveTixianExample example = new OpayActiveTixianExample();
+            example.createCriteria()
+                    .andTradeNoEqualTo(orderNo)
+                    .andStatusEqualTo((byte) 1);
+            List<OpayActiveTixian> opayActiveTixians = opayActiveTixianMapper.selectByExample(example);
+            if (CollectionUtils.isEmpty(opayActiveTixians)) {
+                log.error("提现记录不存在或者提现状态错误");
+                return;
+            }
+            if (opayActiveTixians.size() > 1) {
+                log.error("查询到多条提现记录", JSON.toJSONString(opayActiveTixians));
+                return;
+            }
+            opayActiveTixianOrg = opayActiveTixians.get(0);
+            if (opayActiveTixianOrg == null) {
+                log.error("提现记录不存在或者提现状态错误", JSON.toJSONString(opayActiveTixians));
+                return;
+            }
+        }
+
+        // 2. 处理提现转账结果
+        if ("SUCCESS".equals(orderStatus)) {
+            // 转账成功
+            OpayActiveTixian activeTixian = new OpayActiveTixian();
+            activeTixian.setStatus((byte) 3);
+            OpayActiveTixianExample tixianExample = new OpayActiveTixianExample();
+            tixianExample.createCriteria()
+                    .andIdEqualTo(opayActiveTixianOrg.getId())
+                    .andOpayIdEqualTo(opayActiveTixianOrg.getOpayId())
+                    .andTradeNoEqualTo(orderNo)
+                    .andStatusEqualTo(opayActiveTixianOrg.getStatus());
+            opayActiveTixianMapper.updateByExampleSelective(activeTixian, tixianExample);
+        } else if ("FAIL".equals(orderStatus)) {
+            // 转账失败，恢复到待审核状态
+            OpayActiveTixian activeTixian = new OpayActiveTixian();
+            activeTixian.setStatus((byte) 4);
+            OpayActiveTixianExample tixianExample = new OpayActiveTixianExample();
+            opayActiveTixianMapper.updateByExampleSelective(activeTixian, tixianExample);
+            rollbackTixian(opayActiveTixianOrg);
         }
     }
 

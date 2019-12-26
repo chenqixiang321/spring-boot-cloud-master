@@ -25,6 +25,8 @@ public class TransferConfig {
 
     private String userRecordUrl;
 
+    private String queryOrderUrl;
+
     private String userListUrl;
 
     private String batchListUrl;

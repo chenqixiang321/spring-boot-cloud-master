@@ -2,6 +2,7 @@ package com.opay.invite.backstage.service;
 
 import com.alibaba.fastjson.JSON;
 import com.opay.invite.backstage.config.OrderType;
+import com.opay.invite.backstage.dto.TransOrder;
 import com.opay.invite.backstage.utils.AESUtil;
 
 import java.util.HashMap;
@@ -53,5 +54,16 @@ public interface RpcService {
     Map<String, String> getOpayUser(String phone, String requestId, String merchantId) throws Exception;
 
     Map<String, String> queryUserRecordByPhone(String phone, String startTime, String requestId, String merchantId, String serviceType) throws Exception;
+
+    /**
+     * 根据订单号查询转账订单信息
+     * @param requestId
+     * @param merchantId
+     * @param orderNo
+     * @param orderType
+     * @return
+     * @throws Exception
+     */
+    TransOrder queryOrder(String requestId, String merchantId, String orderNo, String orderType) throws Exception;
 
 }

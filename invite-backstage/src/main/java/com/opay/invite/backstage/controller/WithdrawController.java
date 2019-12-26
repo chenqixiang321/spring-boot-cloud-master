@@ -115,13 +115,12 @@ public class WithdrawController {
             if (reqDto.getStatus() == null) {
                 throw new BackstageException(BackstageExceptionEnum.WITHDRAW_OPERATE_STATUS_ERROR);
             }
-            if (reqDto.getStatus() != (byte) 1 && reqDto.getStatus() != (byte) 2) {
+            if (!(reqDto.getStatus().equals(1) || reqDto.getStatus().equals(2))) {
                 throw new BackstageException(BackstageExceptionEnum.WITHDRAW_OPERATE_STATUS_ERROR);
             }
             if (reqDto.getId() == null) {
                 throw new BackstageException(BackstageExceptionEnum.WITHDRAW_OPERATE_STATUS_ERROR);
             }
-
 
             withdrawService.withdrawOperate(reqDto);
             respDto.buildSuccess();

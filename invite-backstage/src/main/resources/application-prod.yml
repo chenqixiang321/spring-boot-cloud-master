@@ -6,7 +6,7 @@ spring:
   application:
     name: opay-invite-backstage
   datasource:
-    url: jdbc:mysql://opay-im.c7vkdm90b2v9.eu-west-1.rds.amazonaws.com:3306/opay_invite?useSSL=false&useAffectedRows=true&allowMultiQueries=true&useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://opay-im.c7vkdm90b2v9.eu-west-1.rds.amazonaws.com:3306/opay_invite?useSSL=false&useAffectedRows=true&allowMultiQueries=true
     username: root
     password: ff3NKWQpY5hEq7xzOLuX
     driver-class-name: com.mysql.jdbc.Driver
@@ -157,6 +157,7 @@ transfer:
     reference: IVE
     userUrl: /api/users/queryUserInfoByPhone
     userRecordUrl: /api/im/queryUserRecordByPhone
+    queryOrderUrl: /api/m/queryOrder
     transferNotify: https://api.iminvite.pos.operapay.com/invite/api/transferNotify
 
 mybatis:

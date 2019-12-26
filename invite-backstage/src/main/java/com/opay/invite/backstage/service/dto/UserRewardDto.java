@@ -33,7 +33,6 @@ public class UserRewardDto {
     @ApiModelProperty(value = "姓")
     private String pupilSurname;
 
-
     @ApiModelProperty(value = "奖励金额")
     private BigDecimal reward;
     @ApiModelProperty(value = "时间")

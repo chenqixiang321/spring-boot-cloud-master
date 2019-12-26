@@ -1,5 +1,6 @@
 package com.opay.invite.backstage.service;
 
+import com.opay.invite.backstage.dao.entity.OpayActiveTixian;
 import com.opay.invite.backstage.exception.BackstageException;
 import com.opay.invite.backstage.service.dto.*;
 
@@ -43,4 +44,15 @@ public interface WithdrawService {
      * @return
      */
     SumWithdrawInfoRespDto sumWithdrawInfo(SumWithdrawInfoReqDto reqDto);
+
+    /**
+     * 提现失败回滚操作
+     * @param saveTixian
+     */
+    void rollbackTixian(OpayActiveTixian saveTixian);
+
+    /**
+     * 处理提现转账异步通知(也称奖励金)
+     */
+    void transferNotify(OpayActiveTixian opayActiveTixianOrg, String orderNo, String orderStatus);
 }

@@ -16,7 +16,7 @@ public class WithdrawOperateReqDto extends BaseReqDto {
     private Long id;
 
     @ApiModelProperty(value = "1 审核通过 2 审核不通过")
-    private Byte status;
+    private Integer status;
 
     @ApiModelProperty(value = "审核备注")
     private String memo;
