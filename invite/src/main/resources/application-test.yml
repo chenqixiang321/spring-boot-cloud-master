@@ -80,6 +80,7 @@ config:
 
 activity:
   reward:
+    luckDrawId: luckDraw_0108
     activeId: invite_0108
     maxActiveAmout: 175
     registerReward: 1

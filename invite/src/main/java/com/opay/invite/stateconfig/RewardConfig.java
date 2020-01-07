@@ -41,4 +41,6 @@ public class RewardConfig {
 
     private BigDecimal maxActiveAmount; //最大活动金额
 
+    private String luckDrawId; //大转盘活动ID
+
 }

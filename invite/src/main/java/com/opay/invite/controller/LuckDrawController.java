@@ -1,5 +1,6 @@
 package com.opay.invite.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.opay.invite.model.LoginUser;
 import com.opay.invite.model.request.MyLuckDrawListRequest;
 import com.opay.invite.model.response.LuckDrawCountResponse;
@@ -9,12 +10,16 @@ import com.opay.invite.model.response.LuckDrawResponse;
 import com.opay.invite.model.response.ResultResponse;
 import com.opay.invite.model.response.SuccessResponse;
 import com.opay.invite.resp.CodeMsg;
+import com.opay.invite.resp.Result;
+import com.opay.invite.service.ActiveService;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.LuckDrawInfoService;
+import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.utils.DateFormatter;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,6 +37,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/luckDraw")
 @Api(value = "抽奖功能API")
@@ -59,6 +65,11 @@ public class LuckDrawController {
     private RedisTemplate redisTemplate;
     @Autowired
     private InviteOperateService inviteOperateService;
+    @Autowired
+    private RewardConfig rewardConfig;
+    @Autowired
+    private ActiveService activeService;
+
     private SimpleDateFormat format = new SimpleDateFormat("HH");
 
     @ApiOperation(value = "获取抽奖信息", notes = "获取抽奖信息")
@@ -195,6 +206,14 @@ public class LuckDrawController {
     @ApiOperation(value = "抽奖", notes = "抽奖")
     @GetMapping
     public ResultResponse<LuckDrawInfoResponse> luckDraw(HttpServletRequest request) throws Exception {
+        // 活动号
+        String luckDrawId = rewardConfig.getLuckDrawId();
+        // 如果金额超限不参与奖励
+        int lockedActive = activeService.isLockedActive(luckDrawId);
+        if (lockedActive > 0) {
+            log.warn("抽奖活动金额超限，luckDrawId {}",luckDrawId);
+            return new ResultResponse(CodeMsg.LUCKY_DRAW_HAS_END_CODE.getCode(), CodeMsg.LUCKY_DRAW_HAS_END_CODE.getMessage());
+        }
         LoginUser user = inviteOperateService.getOpayInfo(request);
         format.setTimeZone(TimeZone.getTimeZone(timeZone));
         int hour = Integer.parseInt(format.format(new Date()));

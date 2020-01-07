@@ -26,9 +26,16 @@ public class TestController {
     private RewardConfig rewardConfig;
 
     @ApiOperation(value = "活动限额锁定", notes = "活动限额锁定")
-    @PostMapping("/activeLimitUnLock")
-    public Result activeLimitUnLock(HttpServletRequest request) throws Exception {
+    @PostMapping("/activeLimitLock")
+    public Result activeLimitLock(HttpServletRequest request) throws Exception {
         activeService.lockActive(rewardConfig.getActiveId());
+        return Result.success();
+    }
+
+    @ApiOperation(value = "抽奖活动限额锁定", notes = "抽奖活动限额锁定")
+    @PostMapping("/luckDrawActiveLock")
+    public Result luckDrawActiveLock(HttpServletRequest request) throws Exception {
+        activeService.lockActive(rewardConfig.getLuckDrawId());
         return Result.success();
     }
 
