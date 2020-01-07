@@ -80,15 +80,16 @@ config:
 
 activity:
   reward:
+    maxActiveAmout: 175
     registerReward: 1
     masterReward: 1
     rechargeReward: 2
     agentOpen: 1
     startTime: 2019-11-23 00:00:00
-    endTime: 2019-12-18 21:00:00
+    endTime: 2020-02-18 21:00:00
     effectiveDay: 7
     turntableStart: 2019-12-06 00:00:01
-    turntableEnd: 2019-12-26 00:00:01
+    turntableEnd: 2020-02-26 00:00:01
     rewardList[0]:
       orderId: 1
       min: 1

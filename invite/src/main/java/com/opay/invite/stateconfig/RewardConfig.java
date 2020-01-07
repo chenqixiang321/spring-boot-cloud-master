@@ -39,4 +39,6 @@ public class RewardConfig {
 
     private String activeId; //活动ID
 
+    private BigDecimal maxActiveAmount; //最大活动金额
+
 }

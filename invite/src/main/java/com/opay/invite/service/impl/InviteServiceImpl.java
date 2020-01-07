@@ -148,7 +148,7 @@ public class InviteServiceImpl implements InviteService {
         BigDecimal sumCashBackAmount = activeService.sumCashBackAmount(rewardConfig.getActiveId());
         for(OpayActiveCashback cashback:cashbacklist){
             cashback.setActiveId(rewardConfig.getActiveId());
-            if ((cashback.getAmount().add(sumCashBackAmount)).compareTo(sumCashBackAmount) > 0) {
+            if ((cashback.getAmount().add(sumCashBackAmount)).compareTo(rewardConfig.getMaxActiveAmount()) > 0) {
                 // 金额查过奖励总额，活动加锁
                 activeService.lockActive(rewardConfig.getActiveId());
                 break;
