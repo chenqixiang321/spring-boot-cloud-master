@@ -153,7 +153,9 @@ public class InviteController {
         OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,user.getOpayId(),inviteCode.getPhone(),user.getPhoneNumber(),vr,markType);
         List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,user.getOpayId(),markType);
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
-        inviteOperateService.saveRelationAndRewardAndCashback(relation, list,cashbacklist);
+        synchronized (this) {
+            inviteOperateService.saveRelationAndRewardAndCashback(relation, list, cashbacklist);
+        }
         Map<String,Object> rmap = new HashMap<>();
         rmap.put("reward",rewardConfig.getRegisterReward());
         inviteOperateService.updateInviteCount(masterId);

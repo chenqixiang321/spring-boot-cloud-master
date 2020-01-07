@@ -330,7 +330,9 @@ public class ActivityController {
             cashbacklist.add(masterCashback);
         }
         cashbacklist = inviteOperateService.getOpayCashback(list2,cashbacklist);
-        inviteOperateService.saveRewardAndCashback(list2,cashbacklist);
+        synchronized (this) {
+            inviteOperateService.saveRewardAndCashback(list2, cashbacklist);
+        }
         return Result.success();
     }
 

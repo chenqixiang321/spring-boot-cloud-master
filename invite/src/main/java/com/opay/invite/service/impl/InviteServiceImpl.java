@@ -42,6 +42,7 @@ public class InviteServiceImpl implements InviteService {
     @Autowired
     private OpayCashbackTixianMapper opayCashbackTixianMapper;
 
+    @Autowired
     private ActiveService activeService;
 
     @Override

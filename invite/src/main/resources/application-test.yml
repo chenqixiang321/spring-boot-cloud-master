@@ -80,6 +80,7 @@ config:
 
 activity:
   reward:
+    activeId: invite_0108
     maxActiveAmout: 175
     registerReward: 1
     masterReward: 1

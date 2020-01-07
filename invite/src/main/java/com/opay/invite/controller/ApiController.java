@@ -174,7 +174,9 @@ public class ApiController {
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
         try {
             log.info("save invite:{}", JSON.toJSONString(relation));
-            inviteOperateService.saveRelationAndRewardAndCashback(relation, list, cashbacklist);
+            synchronized (this){
+                inviteOperateService.saveRelationAndRewardAndCashback(relation, list, cashbacklist);
+            }
         }catch (Exception e){
             return Result.error(CodeMsg.CustomCodeMsg(500,"system error"));
         }
