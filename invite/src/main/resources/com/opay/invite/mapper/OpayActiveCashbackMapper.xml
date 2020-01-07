@@ -23,7 +23,10 @@
       <include refid="Base_Column_List" />
         from opay_active_cashback where opay_id=#{opayId,jdbcType=VARCHAR}
     </select>
-  <insert id="saveCashback">
+    <select id="sumCashBackAmount" resultType="java.math.BigDecimal">
+        select sum(total_amount) from opay_active_cashback where active_id = #{activeId,jdbcType=VARCHAR}
+    </select>
+    <insert id="saveCashback">
     insert into opay_active_cashback (opay_id,phone,create_at)
     values
      (#{opayId,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},#{time})

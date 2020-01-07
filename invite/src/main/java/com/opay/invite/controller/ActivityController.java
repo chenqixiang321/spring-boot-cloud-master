@@ -6,6 +6,7 @@ import com.opay.invite.model.*;
 import com.opay.invite.model.request.InviteRequest;
 import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.resp.Result;
+import com.opay.invite.service.ActiveService;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.service.RpcService;
@@ -65,6 +66,8 @@ public class ActivityController {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    private ActiveService activeService;
 
     @ApiOperation(value = "获取活动页内容", notes = "获取活动页内容")
     @PostMapping("/getActivity")
@@ -263,6 +266,14 @@ public class ActivityController {
             log.warn("活动未开始或已结束,info{},"+JSON.toJSONString(user));
             return Result.success();
         }
+        // 活动号
+        String activeId = rewardConfig.getActiveId();
+        // 如果金额超限不参与奖励
+        int lockedActive = activeService.isLockedActive(activeId);
+        if (lockedActive > 0) {
+            log.warn("活动奖励金额超限info{}", JSON.toJSONString(user));
+            return Result.success();
+        }
 
         OpayInviteRelation relation = inviteService.selectRelationMasterByMasterId(user.getOpayId());
         if(relation==null){//没有师徒关系
@@ -288,6 +299,7 @@ public class ActivityController {
         if(!"Y".equals(afterIsExistOrder)){
             return Result.success();
         }
+
         Integer count =0;
         if(relation !=null) {
             count = inviteService.getCurrentRelationCount(relation.getMasterId(),user.getOpayId());
@@ -304,6 +316,7 @@ public class ActivityController {
             list2 = inviteOperateService.getRechargeMasterPupilAward(null, user.getOpayId(), stepReward,0);//默认普通
         }
         OpayActiveCashback cashback = inviteService.getActivityCashbackByOpayId(user.getOpayId());
+
         if(cashback ==null){
             inviteService.saveCashback(user.getOpayId(),user.getPhoneNumber(),new Date());
             cashback = new OpayActiveCashback();
