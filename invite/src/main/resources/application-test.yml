@@ -72,7 +72,8 @@ spring:
           password: "04cdf9719ba61283"
 config:
   opay:
-    domain: http://api.test.opaydev.com:8081
+#    domain: http://api.test.opaydev.com:8081
+    domain: http://api.test.g1.opaydev.com
     merchantId: 256619120522011
     aesKey: gepy7T6jTldRMq7A
     iv: qazwert12345!@#$
