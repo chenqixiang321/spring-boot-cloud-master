@@ -21,9 +21,14 @@ public class ActiveServiceImpl implements ActiveService {
     @Autowired
     private OpayActiveCashbackMapper opayActiveCashbackMapper;
 
+//    @Override
+//    public BigDecimal sumCashBackAmount(String activeId) {
+//        return opayActiveCashbackMapper.sumCashBackAmount(activeId);
+//    }
+
     @Override
     public BigDecimal sumCashBackAmount(String activeId) {
-        return opayActiveCashbackMapper.sumCashBackAmount(activeId);
+        return null;
     }
 
     @Override

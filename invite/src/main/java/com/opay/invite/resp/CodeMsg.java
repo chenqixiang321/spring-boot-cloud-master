@@ -28,8 +28,6 @@ public class CodeMsg {
 
 
     public static final CodeMsg LUCKY_DRAW_NOT_START_CODE = new CodeMsg(2001, "The lucky draw has not yet started");
-    public static final CodeMsg LUCKY_DRAW_HAS_END_CODE = new CodeMsg(2002, "The lucky draw has end");
-
     private int code;
     private String message;
 

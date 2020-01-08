@@ -37,10 +37,4 @@ public class RewardConfig {
 
     private String turntableEnd;//转盘活动结束时间
 
-    private String activeId; //活动ID
-
-    private BigDecimal maxActiveAmount; //最大活动金额
-
-    private String luckDrawId; //大转盘活动ID
-
 }

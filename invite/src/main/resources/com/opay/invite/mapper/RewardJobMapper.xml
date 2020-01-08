@@ -70,12 +70,12 @@
             #{item.id}
         </foreach>
     </update>
-    
+
     <select id="selectUserOrderList" parameterType="java.util.List" resultMap="BaseResultMap">
         select opay_id,order_id from opay_user_order where order_id in
         <foreach collection="list" open="(" close=")" item="item" index="index" separator=",">
             #{item.orderId}
         </foreach>
     </select>
-    
+
 </mapper>

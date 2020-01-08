@@ -51,8 +51,4 @@ public class OpayActiveCashback {
     @JsonIgnore
     @ApiModelProperty(value = "更新时间")
     private Date updateAt;
-
-    @JsonIgnore
-    @ApiModelProperty(value = "活动ID")
-    private String activeId;
 }

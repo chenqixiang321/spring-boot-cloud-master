@@ -10,7 +10,6 @@ import com.opay.invite.mapper.OpayInviteCodeMapper;
 import com.opay.invite.model.*;
 import com.opay.invite.model.request.WithdrawalApproval;
 import com.opay.invite.model.request.WithdrawalListRequest;
-import com.opay.invite.service.ActiveService;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.utils.DateFormatter;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -41,9 +39,6 @@ public class InviteServiceImpl implements InviteService {
 
     @Autowired
     private OpayCashbackTixianMapper opayCashbackTixianMapper;
-
-    @Autowired
-    private ActiveService activeService;
 
     @Override
     public int checkRelation(String masterId, String pupilId) {
@@ -141,25 +136,7 @@ public class InviteServiceImpl implements InviteService {
     @Transactional(rollbackFor=Exception.class)
     @Override
     public void updateCashback(List<OpayActiveCashback> cashbacklist) throws Exception{
-        int lock = activeService.isLockedActive(rewardConfig.getActiveId());
-        if (lock > 0) {
-            return;
-        }
-
-        BigDecimal sumCashBackAmount = activeService.sumCashBackAmount(rewardConfig.getActiveId());
-        if (sumCashBackAmount == null) {
-            sumCashBackAmount = new BigDecimal("0");
-        }
         for(OpayActiveCashback cashback:cashbacklist){
-            cashback.setActiveId(rewardConfig.getActiveId());
-            if (cashback.getAmount() == null) {
-                cashback.setAmount(new BigDecimal("0"));
-            }
-            if ((cashback.getAmount().add(sumCashBackAmount)).compareTo(rewardConfig.getMaxActiveAmount()) > 0) {
-                // 金额查过奖励总额，活动加锁
-                activeService.lockActive(rewardConfig.getActiveId());
-                break;
-            }
             int num = opayactiveCashbackMapper.updateCashback(cashback);
             if(num<=0){
                 log.warn("更新失败:{}", JSON.toJSONString(cashbacklist));

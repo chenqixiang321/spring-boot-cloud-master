@@ -72,7 +72,6 @@ spring:
           password: "04cdf9719ba61283"
 config:
   opay:
-#    domain: http://api.test.opaydev.com:8081
     domain: http://api.test.g1.opaydev.com
     merchantId: 256619120522011
     aesKey: gepy7T6jTldRMq7A
@@ -80,9 +79,6 @@ config:
 
 activity:
   reward:
-    luckDrawId: luckDraw_0108
-    activeId: invite_0108
-    maxActiveAmout: 175
     registerReward: 1
     masterReward: 1
     rechargeReward: 2
@@ -174,7 +170,7 @@ invite:
 
 transfer:
   opay:
-    domain: http://api.test.opaydev.com:8081
+    domain: http://api.test.g1.opaydev.com
     merchantId: 256619120522011
     aesKey: gepy7T6jTldRMq7A
     iv: qazwert12345!@#$

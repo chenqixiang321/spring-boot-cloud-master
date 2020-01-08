@@ -13,7 +13,6 @@ import com.opay.invite.model.request.WithdrawalApproval;
 import com.opay.invite.model.request.WithdrawalListRequest;
 import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.resp.Result;
-import com.opay.invite.service.ActiveService;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.service.RpcService;
@@ -71,9 +70,6 @@ public class ApiController {
     @Autowired
     private WithdrawalService withdrawalService;
 
-    @Autowired
-    private ActiveService activeService;
-
     @ApiOperation(value = "用户填入邀请码回调", notes = "用户填入邀请码回调")
     @PostMapping("/notifyInvite")
     public Result notifyInvite(HttpServletRequest request, @RequestBody NotifyInvite notifyInvite) throws Exception {
@@ -97,12 +93,6 @@ public class ApiController {
             log.warn("活动未开始或已结束,notifyInvite info{},"+JSON.toJSONString(notifyInvite));
             return Result.success();
         }
-        int lockedActive = activeService.isLockedActive(rewardConfig.getActiveId());
-        if (lockedActive > 0) {
-            log.warn("活动奖励金额超限,notifyInvite info{},"+JSON.toJSONString(notifyInvite));
-            return Result.success();
-        }
-
         try {
             Date regDate = DateFormatter.parseDate(notifyInvite.getCreateTime());
             Date date = DateFormatter.getDateAfter(regDate,rewardConfig.getEffectiveDay());
@@ -174,9 +164,7 @@ public class ApiController {
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
         try {
             log.info("save invite:{}", JSON.toJSONString(relation));
-            synchronized (this){
-                inviteOperateService.saveRelationAndRewardAndCashback(relation, list, cashbacklist);
-            }
+            inviteOperateService.saveRelationAndRewardAndCashback(relation, list, cashbacklist);
         }catch (Exception e){
             return Result.error(CodeMsg.CustomCodeMsg(500,"system error"));
         }

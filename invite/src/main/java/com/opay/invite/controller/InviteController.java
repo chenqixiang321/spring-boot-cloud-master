@@ -5,7 +5,6 @@ import com.opay.invite.model.*;
 import com.opay.invite.model.request.InviteRequest;
 import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.resp.Result;
-import com.opay.invite.service.ActiveService;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.service.RpcService;
@@ -57,9 +56,6 @@ public class InviteController {
     @Autowired
     private RewardConfig rewardConfig;
 
-    @Autowired
-    private ActiveService activeService;
-
     @Value("${spring.jackson.time-zone:''}")
     private String zone;
 
@@ -88,16 +84,6 @@ public class InviteController {
             log.warn("活动未开始或已结束,inviteRequest info{},"+ JSON.toJSONString(inviteRequest));
             return Result.error(CodeMsg.ILLEGAL_CODE_ACTIVE);
         }
-
-        // 活动号
-        String activeId = rewardConfig.getActiveId();
-        // 如果金额超限不参与奖励
-        int lockedActive = activeService.isLockedActive(activeId);
-        if (lockedActive > 0) {
-            log.warn("活动奖励金额超限info{}，inviteRequest info{},"+ JSON.toJSONString(inviteRequest));
-            return Result.success();
-        }
-
         OpayInviteCode inviteCode = inviteService.getOpayIdByInviteCode(inviteRequest.getInviteCode());
         //获取code用户类型
         if(inviteCode==null){
@@ -153,9 +139,7 @@ public class InviteController {
         OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,user.getOpayId(),inviteCode.getPhone(),user.getPhoneNumber(),vr,markType);
         List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,user.getOpayId(),markType);
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
-        synchronized (this) {
-            inviteOperateService.saveRelationAndRewardAndCashback(relation, list, cashbacklist);
-        }
+        inviteOperateService.saveRelationAndRewardAndCashback(relation, list,cashbacklist);
         Map<String,Object> rmap = new HashMap<>();
         rmap.put("reward",rewardConfig.getRegisterReward());
         inviteOperateService.updateInviteCount(masterId);

@@ -4,7 +4,6 @@ import com.opay.invite.model.OpayActiveCashback;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -22,6 +21,4 @@ public interface OpayActiveCashbackMapper {
     void updateBatchCashback(List<OpayActiveCashback> list);
 
     void updateRollbackCashback(OpayActiveCashback cashback);
-
-    BigDecimal sumCashBackAmount(@Param("activeId") String activeId);
 }
