@@ -90,4 +90,21 @@ public class RedisUtil {
         return redisTemplate.opsForValue().increment(realKey, -delta);
     }
 
+    /**
+     * 设置对应的参数值，要设置不同的数据类型，从而可以转换为对应的参数类型
+     * @param keyPre
+     * @param key
+     * @return
+     */
+    public Integer get(String keyPre, String key) {
+        String realKey = keyPre + key;
+        Object o = redisTemplate.opsForValue().get(realKey);
+        if (o instanceof Long) {
+            return (Integer)o;
+        }
+
+        return 0;
+    }
+
+
 }

@@ -1,58 +1,58 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.opay.invite.mapper.ActiveMapper">
-    <resultMap id="BaseResultMap" type="com.opay.invite.model.Active">
-        <!--@mbg.generated-->
-        <!--@Table invite_count-->
-        <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="version" jdbcType="INTEGER" property="version"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
-        <result column="active_id" jdbcType="VARCHAR" property="activeId"/>
-        <result column="valid" jdbcType="INTEGER" property="valid"/>
-    </resultMap>
-    <sql id="Base_Column_List">
-        <!--@mbg.generated-->
-        id, version, create_time, update_time, active_id, valid
-    </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        <!--@mbg.generated-->
-        select
-        <include refid="Base_Column_List"/>
-        from active
-        where id = #{id,jdbcType=BIGINT}
-    </select>
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">-->
+<!--<mapper namespace="com.opay.invite.mapper.ActiveMapper">-->
+    <!--<resultMap id="BaseResultMap" type="com.opay.invite.model.Active">-->
+        <!--&lt;!&ndash;@mbg.generated&ndash;&gt;-->
+        <!--&lt;!&ndash;@Table invite_count&ndash;&gt;-->
+        <!--<id column="id" jdbcType="BIGINT" property="id"/>-->
+        <!--<result column="version" jdbcType="INTEGER" property="version"/>-->
+        <!--<result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>-->
+        <!--<result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>-->
+        <!--<result column="active_id" jdbcType="VARCHAR" property="activeId"/>-->
+        <!--<result column="valid" jdbcType="INTEGER" property="valid"/>-->
+    <!--</resultMap>-->
+    <!--<sql id="Base_Column_List">-->
+        <!--&lt;!&ndash;@mbg.generated&ndash;&gt;-->
+        <!--id, version, create_time, update_time, active_id, valid-->
+    <!--</sql>-->
+    <!--<select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">-->
+        <!--&lt;!&ndash;@mbg.generated&ndash;&gt;-->
+        <!--select-->
+        <!--<include refid="Base_Column_List"/>-->
+        <!--from active-->
+        <!--where id = #{id,jdbcType=BIGINT}-->
+    <!--</select>-->
 
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.opay.invite.model.InviteCountModel"
-            useGeneratedKeys="true">
-        <!--@mbg.generated-->
-        insert into active (version, create_time, update_time,
-        active_id, valid)
-        values (0, current_date, current_date,
-        #{activeId,jdbcType=VARCHAR}, #{valid,jdbcType=TINYINT})
-    </insert>
+    <!--<insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.opay.invite.model.InviteCountModel"-->
+            <!--useGeneratedKeys="true">-->
+        <!--&lt;!&ndash;@mbg.generated&ndash;&gt;-->
+        <!--insert into active (version, create_time, update_time,-->
+        <!--active_id, valid)-->
+        <!--values (0, current_date, current_date,-->
+        <!--#{activeId,jdbcType=VARCHAR}, #{valid,jdbcType=TINYINT})-->
+    <!--</insert>-->
 
-    <select id="selectByActiveId" parameterType="java.lang.String" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from active
-        where active_id = #{activeId,jdbcType=VARCHAR}
-    </select>
+    <!--<select id="selectByActiveId" parameterType="java.lang.String" resultMap="BaseResultMap">-->
+        <!--select-->
+        <!--<include refid="Base_Column_List"/>-->
+        <!--from active-->
+        <!--where active_id = #{activeId,jdbcType=VARCHAR}-->
+    <!--</select>-->
 
-    <update id="update" parameterType="com.opay.invite.model.Active">
-        <!--@mbg.generated-->
-        update active
-        <set>
-            <if test="version != null">
-                version = #{version,jdbcType=VARCHAR},
-            </if>
-            <if test="updateTime != null">
-                update_time = #{updateTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="valid != null">
-                valid = #{valid,jdbcType=TINYINT},
-            </if>
-        </set>
-        where id = #{id,jdbcType=BIGINT}
-    </update>
-</mapper>
+    <!--<update id="update" parameterType="com.opay.invite.model.Active">-->
+        <!--&lt;!&ndash;@mbg.generated&ndash;&gt;-->
+        <!--update active-->
+        <!--<set>-->
+            <!--<if test="version != null">-->
+                <!--version = #{version,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="updateTime != null">-->
+                <!--update_time = #{updateTime,jdbcType=TIMESTAMP},-->
+            <!--</if>-->
+            <!--<if test="valid != null">-->
+                <!--valid = #{valid,jdbcType=TINYINT},-->
+            <!--</if>-->
+        <!--</set>-->
+        <!--where id = #{id,jdbcType=BIGINT}-->
+    <!--</update>-->
+<!--</mapper>-->

@@ -186,7 +186,7 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             // 奖励金超过奖金限制
             if (redisUtil.decr("invite_active_", "luckDrawTotalAmount", prizeInt) < 0 ) {
                 log.warn("活动金额超限，活动结束");
-                throw new InviteException("活动金额超限，活动结束");
+                throw new InviteException("Event funds have been exhausted, thank you for your participation");
             }
 
             if (CommonUtil.isInteger(prize) && !"0".equals(prize)) {

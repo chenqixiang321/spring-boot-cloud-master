@@ -6,13 +6,13 @@ import com.opay.invite.model.OpayInviteRelation;
 import com.opay.invite.model.OpayUserOrder;
 import com.opay.invite.model.response.OpayApiResultResponse;
 import com.opay.invite.model.response.OpayApiUserOrderResponse;
-import com.opay.invite.service.ActiveService;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.OpayApiService;
 import com.opay.invite.service.UserTradeService;
 import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.transferconfig.ServiceType;
 import com.opay.invite.utils.DateFormatter;
+import com.opay.invite.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class UserTradeJob extends OpayJob {
     private RewardConfig rewardConfig;
 
     @Autowired
-    private ActiveService activeService;
+    private RedisUtil redisUtil;
 
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext) {
@@ -61,11 +61,9 @@ public class UserTradeJob extends OpayJob {
         }
 
         //判断活动开关
-        String activeId = rewardConfig.getActiveId();
-        // 如果金额超限不参与奖励
-        int lockedActive = activeService.isLockedActive(activeId);
-        if (lockedActive > 0) {
-            log.warn("UserTradeJob 活动已结束 开关已关 activeId:{}",activeId);
+        Integer cashBackTotalAmount = redisUtil.get("invite_active_", "cashBackTotalAmount");
+        if(cashBackTotalAmount == null || cashBackTotalAmount <= 0 ){
+            log.warn("UserTradeJob 活动已结束 额度已完 cashBackTotalAmount:{}",cashBackTotalAmount);
             return;
         }
 

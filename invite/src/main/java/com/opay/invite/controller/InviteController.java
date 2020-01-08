@@ -6,7 +6,6 @@ import com.opay.invite.model.*;
 import com.opay.invite.model.request.InviteRequest;
 import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.resp.Result;
-import com.opay.invite.service.ActiveService;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.service.RpcService;
@@ -56,9 +55,6 @@ public class InviteController {
     @Autowired
     private RewardConfig rewardConfig;
 
-    @Autowired
-    private ActiveService activeService;
-
     @Value("${spring.jackson.time-zone:''}")
     private String zone;
 
@@ -92,11 +88,9 @@ public class InviteController {
         }
 
         //判断活动开关
-        String activeId = rewardConfig.getActiveId();
-        // 如果金额超限不参与奖励
-        int lockedActive = activeService.isLockedActive(activeId);
-        if (lockedActive > 0) {
-            log.warn("InviteController save 活动已结束 开关已关 activeId:{}",activeId);
+        Integer cashBackTotalAmount = redisUtil.get("invite_active_", "cashBackTotalAmount");
+        if(cashBackTotalAmount == null || cashBackTotalAmount <= 0 ){
+            log.warn("notifInviteController save 活动已结束 额度已完 cashBackTotalAmount:{}",cashBackTotalAmount);
             return Result.error(CodeMsg.ILLEGAL_CODE_ACTIVE);
         }
 
@@ -160,7 +154,7 @@ public class InviteController {
         BigDecimal sumAmount= CommonUtil.calSumAmount(cashbacklist);
         if (redisUtil.decr("invite_active_", "cashBackTotalAmount", Integer.valueOf(String.valueOf(sumAmount))) < 0 ) {
             log.warn("活动金额超限，活动结束");
-            throw new InviteException("活动金额超限，活动结束");
+            throw new InviteException("Event funds have been exhausted, thank you for your participation");
         }
 
         inviteOperateService.saveRelationAndRewardAndCashback(relation, list,cashbacklist);
@@ -196,11 +190,9 @@ public class InviteController {
         }
 
         //判断活动开关
-        String activeId = rewardConfig.getActiveId();
-        // 如果金额超限不参与奖励
-        int lockedActive = activeService.isLockedActive(activeId);
-        if (lockedActive > 0) {
-            log.warn("InviteController noTask 活动已结束 开关已关 activeId:{}",activeId);
+        Integer cashBackTotalAmount = redisUtil.get("invite_active_", "cashBackTotalAmount");
+        if(cashBackTotalAmount == null || cashBackTotalAmount <= 0 ){
+            log.warn("InviteController noTask 活动已结束 额度已完 cashBackTotalAmount:{}",cashBackTotalAmount);
             return Result.success();
         }
 

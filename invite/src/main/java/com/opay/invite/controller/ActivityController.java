@@ -6,7 +6,6 @@ import com.opay.invite.model.*;
 import com.opay.invite.model.request.InviteRequest;
 import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.resp.Result;
-import com.opay.invite.service.ActiveService;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.InviteService;
 import com.opay.invite.service.RpcService;
@@ -65,9 +64,6 @@ public class ActivityController {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
-
-    @Autowired
-    private ActiveService activeService;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -150,11 +146,9 @@ public class ActivityController {
         activity.setTask(noTask);
 
         //判断活动开关
-        String activeId = rewardConfig.getActiveId();
-        // 如果金额超限不参与奖励
-        int lockedActive = activeService.isLockedActive(activeId);
-        if (lockedActive > 0) {
-            log.warn("getActivity 活动已结束 开关已关 activeId:{}",activeId);
+        Integer cashBackTotalAmount = redisUtil.get("invite_active_", "cashBackTotalAmount");
+        if(cashBackTotalAmount == null || cashBackTotalAmount <= 0 ){
+            log.warn("getActivity 活动已结束 额度已完 cashBackTotalAmount:{}",cashBackTotalAmount);
             activity.setIsStart(2);
         }else{
             int isStart = inviteOperateService.checkActiveStatusTime(zone,rewardConfig.getStartTime(),rewardConfig.getEndTime());
@@ -164,13 +158,11 @@ public class ActivityController {
         activity.setEndTime(rewardConfig.getEndTime());
 
         //判断活动开关
-        String luckDrawId = rewardConfig.getLuckDrawId();
-        // 如果金额超限不参与奖励
-        int lockedActiveRet = activeService.isLockedActive(luckDrawId);
-        if (lockedActiveRet > 0) {
-            log.warn("getActivity 活动已结束 开关已关 luckDrawId:{}",luckDrawId);
+        Integer luckDrawTotalAmount = redisUtil.get("invite_active_", "luckDrawTotalAmount");
+        if(luckDrawTotalAmount == null || luckDrawTotalAmount <= 0 ){
+            log.warn("getActivity 活动已结束 额度已完 luckDrawTotalAmount:{}",luckDrawTotalAmount);
             activity.setIsTurntable(2);
-        }else {
+        }else{
             int isTurn = inviteOperateService.checkActiveStatusTime(zone, rewardConfig.getTurntableStart(), rewardConfig.getTurntableEnd());
             activity.setIsTurntable(isTurn);
         }
@@ -291,11 +283,9 @@ public class ActivityController {
         }
 
         //判断活动开关
-        String activeId = rewardConfig.getActiveId();
-        // 如果金额超限不参与奖励
-        int lockedActive = activeService.isLockedActive(activeId);
-        if (lockedActive > 0) {
-            log.warn("saveRecharge 活动已结束 开关已关 activeId:{}",activeId);
+        Integer cashBackTotalAmount = redisUtil.get("invite_active_", "cashBackTotalAmount");
+        if(cashBackTotalAmount == null || cashBackTotalAmount <= 0 ){
+            log.warn("saveRecharge 活动已结束 额度已完 cashBackTotalAmount:{}",cashBackTotalAmount);
             return Result.success();
         }
 
@@ -356,7 +346,7 @@ public class ActivityController {
         BigDecimal sumAmount= CommonUtil.calSumAmount(cashbacklist);
         if (redisUtil.decr("invite_active_", "cashBackTotalAmount", Integer.valueOf(String.valueOf(sumAmount))) < 0 ) {
             log.warn("活动金额超限，活动结束");
-            throw new InviteException("活动金额超限，活动结束");
+            throw new InviteException("Event funds have been exhausted, thank you for your participation");
         }
 
         inviteOperateService.saveRewardAndCashback(list2,cashbacklist);

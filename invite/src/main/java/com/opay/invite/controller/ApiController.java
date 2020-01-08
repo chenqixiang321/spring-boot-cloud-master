@@ -9,7 +9,10 @@ import com.opay.invite.model.request.WithdrawalApproval;
 import com.opay.invite.model.request.WithdrawalListRequest;
 import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.resp.Result;
-import com.opay.invite.service.*;
+import com.opay.invite.service.InviteOperateService;
+import com.opay.invite.service.InviteService;
+import com.opay.invite.service.RpcService;
+import com.opay.invite.service.WithdrawalService;
 import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.transferconfig.TransferConfig;
 import com.opay.invite.utils.CommonUtil;
@@ -63,9 +66,6 @@ public class ApiController {
     private WithdrawalService withdrawalService;
 
     @Autowired
-    private ActiveService activeService;
-
-    @Autowired
     private RedisUtil redisUtil;
 
     @ApiOperation(value = "用户填入邀请码回调", notes = "用户填入邀请码回调")
@@ -93,11 +93,9 @@ public class ApiController {
         }
 
         //判断活动开关
-        String activeId = rewardConfig.getActiveId();
-        // 如果金额超限不参与奖励
-        int lockedActive = activeService.isLockedActive(activeId);
-        if (lockedActive > 0) {
-            log.warn("notifyInvite 活动已结束 开关已关 activeId:{}",activeId);
+        Integer cashBackTotalAmount = redisUtil.get("invite_active_", "cashBackTotalAmount");
+        if(cashBackTotalAmount == null || cashBackTotalAmount <= 0 ){
+            log.warn("notifyInvite 活动已结束 额度已完 cashBackTotalAmount:{}",cashBackTotalAmount);
             return Result.success();
         }
 
@@ -177,7 +175,7 @@ public class ApiController {
             BigDecimal sumAmount= CommonUtil.calSumAmount(cashbacklist);
             if (redisUtil.decr("invite_active_", "cashBackTotalAmount", Integer.valueOf(String.valueOf(sumAmount))) < 0 ) {
                 log.warn("活动金额超限，活动结束");
-                throw new InviteException("活动金额超限，活动结束");
+                throw new InviteException("Event funds have been exhausted, thank you for your participation");
             }
 
             inviteOperateService.saveRelationAndRewardAndCashback(relation, list, cashbacklist);
