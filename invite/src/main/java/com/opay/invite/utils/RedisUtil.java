@@ -99,11 +99,10 @@ public class RedisUtil {
     public Integer get(String keyPre, String key) {
         String realKey = keyPre + key;
         Object o = redisTemplate.opsForValue().get(realKey);
-        if (o instanceof Long) {
-            return (Integer)o;
+        if (o == null) {
+            return 0;
         }
-
-        return 0;
+        return (Integer)o;
     }
 
 

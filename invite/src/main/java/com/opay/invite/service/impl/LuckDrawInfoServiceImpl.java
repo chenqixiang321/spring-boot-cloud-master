@@ -17,6 +17,7 @@ import com.opay.invite.service.LuckDrawInfoService;
 import com.opay.invite.service.OpayApiService;
 import com.opay.invite.service.RpcService;
 import com.opay.invite.stateconfig.BonusStatus;
+import com.opay.invite.transferconfig.LuckDrawConfig;
 import com.opay.invite.transferconfig.OrderType;
 import com.opay.invite.transferconfig.PayChannel;
 import com.opay.invite.transferconfig.TransferConfig;
@@ -71,6 +72,10 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private LuckDrawConfig luckDrawConfig;
+
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -194,9 +199,9 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
                 String reference = incrKeyService.getIncrKey("LD");
                 luckDrawInfoModel.setRequestId(requestId);
                 luckDrawInfoModel.setReference(reference);
-                Map<String, String> data = rpcService.getParamMap(opayConfig.getMerchantId(), opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), bonusCallBack, PayChannel.BalancePayment.getPayChannel());
+                Map<String, String> data = rpcService.getParamMap(luckDrawConfig.getMerchantId(), opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), bonusCallBack, PayChannel.BalancePayment.getPayChannel());
                 log.info("request to createOrder {}", data);
-                OpayApiResultResponse<OpayApiOrderResultResponse> opayApiResultResponse = opayApiService.createOrder(opayConfig.getMerchantId(), requestId, data, opayConfig.getAesKey(), opayConfig.getIv());
+                OpayApiResultResponse<OpayApiOrderResultResponse> opayApiResultResponse = opayApiService.createOrder(luckDrawConfig.getMerchantId(), requestId, data, luckDrawConfig.getAesKey(), luckDrawConfig.getIv());
                 log.info("response from createOrder {}", opayApiResultResponse.toString());
                 if (!"00000".equals(opayApiResultResponse.getCode())) {
                     luckDrawInfoModel.setStatus(3);
