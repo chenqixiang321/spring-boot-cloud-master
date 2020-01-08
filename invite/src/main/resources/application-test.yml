@@ -268,7 +268,7 @@ prize-pool:
   firstGrandPrizeTimeUp: "4:45:00"
   secondGrandPrizeTimeUp: "14:50:00"
   secondPoolRate: 4
-  count: 100000
+  count: 4
   firstPoolStart: 3
   firstPoolEnd: 5
   secondPoolStart: 6
