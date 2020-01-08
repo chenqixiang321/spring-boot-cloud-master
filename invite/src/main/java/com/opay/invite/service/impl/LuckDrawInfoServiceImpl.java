@@ -6,18 +6,9 @@ import com.opay.invite.exception.InviteException;
 import com.opay.invite.mapper.LuckDrawInfoMapper;
 import com.opay.invite.model.LuckDrawInfoModel;
 import com.opay.invite.model.PrizeModel;
-import com.opay.invite.model.response.LuckDrawInfoResponse;
-import com.opay.invite.model.response.LuckDrawListResponse;
-import com.opay.invite.model.response.OpayApiOrderResultResponse;
-import com.opay.invite.model.response.OpayApiResultResponse;
-import com.opay.invite.model.response.PrizePoolResponse;
-import com.opay.invite.service.AliasMethodService;
-import com.opay.invite.service.IncrKeyService;
-import com.opay.invite.service.LuckDrawInfoService;
-import com.opay.invite.service.OpayApiService;
-import com.opay.invite.service.RpcService;
+import com.opay.invite.model.response.*;
+import com.opay.invite.service.*;
 import com.opay.invite.stateconfig.BonusStatus;
-import com.opay.invite.transferconfig.LuckDrawConfig;
 import com.opay.invite.transferconfig.OrderType;
 import com.opay.invite.transferconfig.PayChannel;
 import com.opay.invite.transferconfig.TransferConfig;
@@ -35,12 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -70,11 +56,15 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
     @Value("${opay.luckDraw.callBack}")
     private String bonusCallBack;
 
-    @Autowired
-    private RedisUtil redisUtil;
+    @Value("${opay.luckDraw.merchantId}")
+    private String merchantId;
+    @Value("${opay.luckDraw.aesKey}")
+    private String aesKey;
+    @Value("${opay.luckDraw.iv}")
+    private String iv;
 
     @Autowired
-    private LuckDrawConfig luckDrawConfig;
+    private RedisUtil redisUtil;
 
 
     @Override
@@ -199,9 +189,9 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
                 String reference = incrKeyService.getIncrKey("LD");
                 luckDrawInfoModel.setRequestId(requestId);
                 luckDrawInfoModel.setReference(reference);
-                Map<String, String> data = rpcService.getParamMap(luckDrawConfig.getMerchantId(), opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), bonusCallBack, PayChannel.BalancePayment.getPayChannel());
+                Map<String, String> data = rpcService.getParamMap(merchantId, opayId, prize, null, null, reference, OrderType.bonusOffer.getOrderType(), bonusCallBack, PayChannel.BalancePayment.getPayChannel());
                 log.info("request to createOrder {}", data);
-                OpayApiResultResponse<OpayApiOrderResultResponse> opayApiResultResponse = opayApiService.createOrder(luckDrawConfig.getMerchantId(), requestId, data, luckDrawConfig.getAesKey(), luckDrawConfig.getIv());
+                OpayApiResultResponse<OpayApiOrderResultResponse> opayApiResultResponse = opayApiService.createOrder(merchantId, requestId, data, aesKey, iv);
                 log.info("response from createOrder {}", opayApiResultResponse.toString());
                 if (!"00000".equals(opayApiResultResponse.getCode())) {
                     luckDrawInfoModel.setStatus(3);
