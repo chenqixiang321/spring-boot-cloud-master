@@ -276,11 +276,16 @@ prize-pool:
   activityStart: 2019-12-06 00:00:01
   activityEnd: 2029-12-21 10:00:00
   firstPool:
-    - {id: 4,prize: 10,prob: 0.00015}
-    - {id: 5,prize: 5,prob: 0.0002}
-    - {id: 6,prize: 2,prob: 0.001}
-    - {id: 7,prize: 1,prob: 0.24865}
-    - {id: 8,prize: 0,prob: 0.75}
+#    - {id: 4,prize: 10,prob: 0.00015}
+#    - {id: 5,prize: 5,prob: 0.0002}
+#    - {id: 6,prize: 2,prob: 0.001}
+#    - {id: 7,prize: 1,prob: 0.24865}
+#    - {id: 8,prize: 0,prob: 0.75}
+    - {id: 4,prize: 10,prob: 1.0}
+    - {id: 5,prize: 5,prob: 0.0000}
+    - {id: 6,prize: 2,prob: 0.000}
+    - {id: 7,prize: 1,prob: 0.000}
+    - {id: 8,prize: 0,prob: 0.00}
   secondPool:
     - {id: 1,prize: phone,prob: 0.00001}
     - {id: 2,prize: 100,prob: 0.00004}
