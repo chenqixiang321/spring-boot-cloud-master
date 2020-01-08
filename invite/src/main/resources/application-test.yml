@@ -272,7 +272,7 @@ prize-pool:
   firstPoolStart: 3
   firstPoolEnd: 5
   secondPoolStart: 6
-  secondPoolEnd: 15
+  secondPoolEnd: 23
   activityStart: 2019-12-06 00:00:01
   activityEnd: 2029-12-21 10:00:00
   firstPool:
