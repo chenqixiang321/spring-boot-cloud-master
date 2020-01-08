@@ -12,9 +12,11 @@ import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.LuckDrawInfoService;
 import com.opay.invite.utils.DateFormatter;
+import com.opay.invite.utils.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,6 +34,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/luckDraw")
 @Api(value = "抽奖功能API")
@@ -59,6 +62,9 @@ public class LuckDrawController {
     private RedisTemplate redisTemplate;
     @Autowired
     private InviteOperateService inviteOperateService;
+    @Autowired
+    private RedisUtil redisUtil;
+
     private SimpleDateFormat format = new SimpleDateFormat("HH");
 
     @ApiOperation(value = "获取抽奖信息", notes = "获取抽奖信息")
@@ -115,6 +121,14 @@ public class LuckDrawController {
         luckDrawResponse.setActivityEnd(activityEnd);
         luckDrawResponse.setSystemTime(DateFormatter.formatDatetimeByZone(date, timeZone));
         luckDrawResponse.setPrizeInfo(luckDrawInfoService.getPrize());
+
+        //判断活动开关
+        Integer luckDrawTotalAmount = redisUtil.get("invite_active_", "luckDrawTotalAmount");
+        if(luckDrawTotalAmount == null || luckDrawTotalAmount <= 0 ){
+            log.warn("info 活动已结束 额度已完 luckDrawTotalAmount:{}",luckDrawTotalAmount);
+            luckDrawResponse.setCanLuckyDraw(false);
+        }
+
         resultResponse.setData(luckDrawResponse);
         return resultResponse;
     }
