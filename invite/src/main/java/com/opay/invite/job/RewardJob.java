@@ -69,7 +69,6 @@ public class RewardJob extends OpayJob {
             List<OpayMasterPupilAward> mplist =rewardJobService.calMasterPupilAward(list);
             //解析用户数据，计算金额奖励,//插入奖励
             List<OpayActiveCashback> nlist = rewardJobService.getCashbackList(mplist);
-            rewardJobService.saveAwardAndCashAndOrderStatus(nlist,mplist,list);
 
             // 判断活动金额是否超限
             BigDecimal sumAmount= CommonUtil.calSumAmount(nlist);
@@ -83,6 +82,10 @@ public class RewardJob extends OpayJob {
                 log.warn("判断活动金额是否超限，异常", e);
                 return;
             }
+
+            rewardJobService.saveAwardAndCashAndOrderStatus(nlist,mplist,list);
+
+
 
             if (list.size() < PAGE_SIZE) {
                 log.warn("RewardJob data pageSize,task finish day:{}",preDay);
