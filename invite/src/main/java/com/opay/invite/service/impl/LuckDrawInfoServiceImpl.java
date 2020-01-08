@@ -22,6 +22,7 @@ import com.opay.invite.transferconfig.PayChannel;
 import com.opay.invite.transferconfig.TransferConfig;
 import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.DateFormatter;
+import com.opay.invite.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,9 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
     private RpcService rpcService;
     @Value("${opay.luckDraw.callBack}")
     private String bonusCallBack;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public int deleteByPrimaryKey(Long id) {
@@ -174,6 +178,17 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             luckDrawInfoModel.setPrizePool(prizePoolResponse.getPool());
             luckDrawInfoResponse.setPrize(luckDrawInfoModel.getPrize());
             luckDrawInfoResponse.setPrizeId(pm.getId());
+
+            Integer prizeInt = new Integer(0);
+            if (CommonUtil.isInteger(prize)) {
+                prizeInt = new Integer(prize);
+            }
+            // 奖励金超过奖金限制
+            if (redisUtil.decr("invite_active_", "luckDrawTotalAmount", prizeInt) < 0 ) {
+                log.warn("活动金额超限，活动结束");
+                throw new InviteException("活动金额超限，活动结束");
+            }
+
             if (CommonUtil.isInteger(prize) && !"0".equals(prize)) {
                 String requestId = incrKeyService.getIncrKey();
                 String reference = incrKeyService.getIncrKey("LD");

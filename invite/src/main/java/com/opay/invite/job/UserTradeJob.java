@@ -6,6 +6,7 @@ import com.opay.invite.model.OpayInviteRelation;
 import com.opay.invite.model.OpayUserOrder;
 import com.opay.invite.model.response.OpayApiResultResponse;
 import com.opay.invite.model.response.OpayApiUserOrderResponse;
+import com.opay.invite.service.ActiveService;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.OpayApiService;
 import com.opay.invite.service.UserTradeService;
@@ -42,6 +43,9 @@ public class UserTradeJob extends OpayJob {
     @Autowired
     private RewardConfig rewardConfig;
 
+    @Autowired
+    private ActiveService activeService;
+
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext) {
         DataQuery dataQuery = getDataQuery(jobExecutionContext);
@@ -55,6 +59,16 @@ public class UserTradeJob extends OpayJob {
              log.warn("UserTradeJob 活动已结束 startTime:{}",startTime);
             return;
         }
+
+        //判断活动开关
+        String activeId = rewardConfig.getActiveId();
+        // 如果金额超限不参与奖励
+        int lockedActive = activeService.isLockedActive(activeId);
+        if (lockedActive > 0) {
+            log.warn("UserTradeJob 活动已结束 开关已关 activeId:{}",activeId);
+            return;
+        }
+
         int start=0;
         while (true) {
             List<OpayInviteRelation> list = userTradeService.getTaskRelationList(start, PAGE_SIZE,Integer.valueOf(day),3);

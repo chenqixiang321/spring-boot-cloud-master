@@ -77,6 +77,8 @@ config:
 
 activity:
   reward:
+    activeId: active_0108
+    luckDrawId: luckActive_0108
     registerReward: 10
     masterReward: 10
     rechargeReward: 100

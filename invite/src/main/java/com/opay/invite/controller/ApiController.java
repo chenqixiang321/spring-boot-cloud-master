@@ -3,23 +3,18 @@ package com.opay.invite.controller;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
-import com.opay.invite.model.NotifyInvite;
-import com.opay.invite.model.OpayActiveCashback;
-import com.opay.invite.model.OpayActiveTixian;
-import com.opay.invite.model.OpayInviteCode;
-import com.opay.invite.model.OpayInviteRelation;
-import com.opay.invite.model.OpayMasterPupilAward;
+import com.opay.invite.exception.InviteException;
+import com.opay.invite.model.*;
 import com.opay.invite.model.request.WithdrawalApproval;
 import com.opay.invite.model.request.WithdrawalListRequest;
 import com.opay.invite.resp.CodeMsg;
 import com.opay.invite.resp.Result;
-import com.opay.invite.service.InviteOperateService;
-import com.opay.invite.service.InviteService;
-import com.opay.invite.service.RpcService;
-import com.opay.invite.service.WithdrawalService;
+import com.opay.invite.service.*;
 import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.transferconfig.TransferConfig;
+import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.DateFormatter;
+import com.opay.invite.utils.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -70,6 +62,12 @@ public class ApiController {
     @Autowired
     private WithdrawalService withdrawalService;
 
+    @Autowired
+    private ActiveService activeService;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
     @ApiOperation(value = "用户填入邀请码回调", notes = "用户填入邀请码回调")
     @PostMapping("/notifyInvite")
     public Result notifyInvite(HttpServletRequest request, @RequestBody NotifyInvite notifyInvite) throws Exception {
@@ -93,6 +91,16 @@ public class ApiController {
             log.warn("活动未开始或已结束,notifyInvite info{},"+JSON.toJSONString(notifyInvite));
             return Result.success();
         }
+
+        //判断活动开关
+        String activeId = rewardConfig.getActiveId();
+        // 如果金额超限不参与奖励
+        int lockedActive = activeService.isLockedActive(activeId);
+        if (lockedActive > 0) {
+            log.warn("notifyInvite 活动已结束 开关已关 activeId:{}",activeId);
+            return Result.success();
+        }
+
         try {
             Date regDate = DateFormatter.parseDate(notifyInvite.getCreateTime());
             Date date = DateFormatter.getDateAfter(regDate,rewardConfig.getEffectiveDay());
@@ -164,6 +172,14 @@ public class ApiController {
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
         try {
             log.info("save invite:{}", JSON.toJSONString(relation));
+
+            // 判断活动金额是否超限
+            BigDecimal sumAmount= CommonUtil.calSumAmount(cashbacklist);
+            if (redisUtil.decr("invite_active_", "cashBackTotalAmount", Integer.valueOf(String.valueOf(sumAmount))) < 0 ) {
+                log.warn("活动金额超限，活动结束");
+                throw new InviteException("活动金额超限，活动结束");
+            }
+
             inviteOperateService.saveRelationAndRewardAndCashback(relation, list, cashbacklist);
         }catch (Exception e){
             return Result.error(CodeMsg.CustomCodeMsg(500,"system error"));

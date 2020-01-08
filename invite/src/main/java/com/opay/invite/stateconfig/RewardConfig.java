@@ -37,4 +37,8 @@ public class RewardConfig {
 
     private String turntableEnd;//转盘活动结束时间
 
+    private String activeId;//活动Id
+
+    private String luckDrawId;//抽奖活动Id
+
 }

@@ -30,6 +30,7 @@ public class Active {
 
     private String activeId;
 
+    //0 开关未打开  1 开关打开 活动已结束
     private Integer valid;
 
 }

@@ -4,6 +4,7 @@ package com.opay.invite.job;
 import com.opay.invite.model.OpayActiveCashback;
 import com.opay.invite.model.OpayMasterPupilAward;
 import com.opay.invite.model.OpayUserOrder;
+import com.opay.invite.service.ActiveService;
 import com.opay.invite.service.InviteOperateService;
 import com.opay.invite.service.RewardJobService;
 import com.opay.invite.stateconfig.RewardConfig;
@@ -31,6 +32,9 @@ public class RewardJob extends OpayJob {
     @Autowired
     private RewardConfig rewardConfig;
 
+    @Autowired
+    private ActiveService activeService;
+
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext) {
         DataQuery dataQuery = getDataQuery(jobExecutionContext);
@@ -42,6 +46,17 @@ public class RewardJob extends OpayJob {
             log.warn("RewardJob 活动已结束 startTime:{}",startTime);
             return;
         }
+
+        //判断活动开关
+        String activeId = rewardConfig.getActiveId();
+        // 如果金额超限不参与奖励
+        int lockedActive = activeService.isLockedActive(activeId);
+        if (lockedActive > 0) {
+            log.warn("RewardJob 活动已结束 开关已关 activeId:{}",activeId);
+            return;
+        }
+
+
         //获取所有需要执行用户数据
         int start=0;
         while (true) {

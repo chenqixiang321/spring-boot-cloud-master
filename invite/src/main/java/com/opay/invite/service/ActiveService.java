@@ -12,6 +12,8 @@ public interface ActiveService {
 
     int lockActive(String activeId);
 
+    int unLockActive(String activeId) throws Exception;
+
     int isLockedActive(String activeId);
 
 }

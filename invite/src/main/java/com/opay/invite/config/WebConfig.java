@@ -21,7 +21,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/luckDraw/**")
                 .addPathPatterns("/opay/job/**")
                 .excludePathPatterns("/swagger-resources/**", "/webjars/**", "/v2/**", "/swagger-ui.html/**")
-                .excludePathPatterns("/api/**");
+                .excludePathPatterns("/api/**")
+                .excludePathPatterns("/test/**");
     }
 
     @Override

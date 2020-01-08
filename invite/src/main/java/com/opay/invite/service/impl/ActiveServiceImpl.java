@@ -33,15 +33,34 @@ public class ActiveServiceImpl implements ActiveService {
 
     @Override
     public int lockActive(String activeId) {
-        Active active = new Active();
-        active.setActiveId(activeId);
-        active.setValid(1);
-        return activeMapper.insert(active);
+        Active active = activeMapper.selectByActiveId(activeId);
+        if(active == null){
+            Active activeNew = new Active();
+            activeNew.setActiveId(activeId);
+            activeNew.setValid(1);
+            return activeMapper.insert(activeNew);
+        }else{
+            active.setValid(1);
+            return activeMapper.update(active);
+        }
+    }
+
+    @Override
+    public int unLockActive(String activeId) throws Exception {
+        Active active = activeMapper.selectByActiveId(activeId);
+        if(active == null){
+            throw new Exception("error activeId");
+        }
+        active.setValid(0);
+        return activeMapper.update(active);
     }
 
     @Override
     public int isLockedActive(String activeId) {
         Active active = activeMapper.selectByActiveId(activeId);
-        return active == null ? 0 : 1;
+        if(active !=null && "1".equals(active.getValid())){
+            return 1;
+        }
+        return 0;
     }
 }

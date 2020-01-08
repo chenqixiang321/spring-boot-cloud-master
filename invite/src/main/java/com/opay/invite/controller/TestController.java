@@ -7,7 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,17 +25,31 @@ public class TestController {
     @Autowired
     private RewardConfig rewardConfig;
 
-    @ApiOperation(value = "活动限额锁定", notes = "活动限额锁定")
-    @PostMapping("/activeLimitLock")
-    public Result activeLimitLock(HttpServletRequest request) throws Exception {
-//        activeService.lockActive(rewardConfig.getActiveId());
+    @ApiOperation(value = "活动锁定", notes = "活动锁定")
+    @GetMapping("/activeLock")
+    public Result activeLock(HttpServletRequest request) throws Exception {
+        activeService.lockActive(rewardConfig.getActiveId());
         return Result.success();
     }
 
-    @ApiOperation(value = "抽奖活动限额锁定", notes = "抽奖活动限额锁定")
-    @PostMapping("/luckDrawActiveLock")
+    @ApiOperation(value = "活动解锁", notes = "活动解锁")
+    @GetMapping("/activeUnLock")
+    public Result activeUnLock(HttpServletRequest request) throws Exception {
+        activeService.unLockActive(rewardConfig.getActiveId());
+        return Result.success();
+    }
+
+    @ApiOperation(value = "抽奖活动锁定", notes = "抽奖活动锁定")
+    @GetMapping("/luckDrawActiveLock")
     public Result luckDrawActiveLock(HttpServletRequest request) throws Exception {
-//        activeService.lockActive(rewardConfig.getLuckDrawId());
+        activeService.lockActive(rewardConfig.getLuckDrawId());
+        return Result.success();
+    }
+
+    @ApiOperation(value = "抽奖活动解锁", notes = "抽奖活动解锁")
+    @GetMapping("/luckDrawActiveUnLock")
+    public Result luckDrawActiveUnLock(HttpServletRequest request) throws Exception {
+        activeService.unLockActive(rewardConfig.getLuckDrawId());
         return Result.success();
     }
 
