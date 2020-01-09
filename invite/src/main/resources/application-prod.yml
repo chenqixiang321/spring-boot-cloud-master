@@ -81,10 +81,10 @@ activity:
     masterReward: 10
     rechargeReward: 100
     agentOpen: 0
-    startTime: 2020-01-09 02:50:00
-    endTime: 2020-01-09 03:59:59
+    startTime: 2019-12-09 00:00:01
+    endTime: 2020-12-09 00:00:01
     effectiveDay: 7
-    turntableStart: 2020-12-06 00:00:01
+    turntableStart: 2019-12-06 00:00:01
     turntableEnd: 2020-12-22 00:00:01
     rewardList[0]:
       orderId: 1
@@ -237,8 +237,8 @@ prize-pool:
   firstPoolEnd: 14
   secondPoolStart: 20
   secondPoolEnd: 22
-  activityStart: 2029-12-06 00:00:01
-  activityEnd: 2029-12-21 10:00:00
+  activityStart: 2019-12-06 00:00:01
+  activityEnd: 2020-12-21 10:00:00
   firstPool:
     - {id: 4,prize: 10,prob: 0.00015}
     - {id: 5,prize: 5,prob: 0.0002}
