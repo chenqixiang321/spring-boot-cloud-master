@@ -169,6 +169,7 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
                 prizes = prizePoolConfig.getSecondPool();
             }
             PrizeModel pm = prizes.get(prizePoolResponse.getPrize());
+            log.info("getLuckDraw pm:{}", JSON.toJSONString(pm));
             String prize = pm.getPrize();
             luckDrawInfoModel.setPrizeLevel(pm.getId());
             luckDrawInfoModel.setPrize(prize);
@@ -181,13 +182,13 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
                 //判断redis库存
                 Integer phoneNum = redisUtil.get("invite_active_", "phoneNum");
                 if(phoneNum == null || phoneNum <= 0 ){
-                    log.warn("大奖已被抽完 phoneNum:{}",phoneNum);
+                    log.info("大奖已被抽完 phoneNum:{}",phoneNum);
                     luckDrawInfoModel.setPrizeLevel(2);
                     luckDrawInfoModel.setPrize("100");
                     luckDrawInfoResponse.setPrize("100");
                     luckDrawInfoResponse.setPrizeId(2);
                 }else{
-                    log.warn("恭喜你，抽到大奖了 phoneNum:{}",phoneNum);
+                    log.info("恭喜你，抽到大奖了 phoneNum:{}",phoneNum);
                     redisUtil.decr("invite_active_", "phoneNum", 1);
                 }
             }
