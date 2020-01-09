@@ -36,4 +36,7 @@ public class LuckDrawResponse {
     private Integer isStart;
     @ApiModelProperty(value = "奖品信息")
     private Map<Integer, PrizeModel> prizeInfo;
+
+    @ApiModelProperty(value = "转盘活动是否有效")
+    private boolean isLuckDrawAvailable;
 }
