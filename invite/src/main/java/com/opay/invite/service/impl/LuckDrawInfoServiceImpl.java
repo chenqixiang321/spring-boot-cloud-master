@@ -188,8 +188,8 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
                     luckDrawInfoResponse.setPrize("100");
                     luckDrawInfoResponse.setPrizeId(2);
                 }else{
-                    log.info("恭喜你，抽到大奖了 phoneNum:{}",phoneNum);
                     redisUtil.decr("invite_active_", "phoneNum", 1);
+                    log.warn("恭喜你，抽到大奖了，剩余 phoneNum:{}",redisUtil.get("invite_active_", "phoneNum"));
                 }
             }
 
