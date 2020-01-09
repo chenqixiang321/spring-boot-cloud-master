@@ -126,9 +126,7 @@ public class LuckDrawController {
         Integer luckDrawTotalAmount = redisUtil.get("invite_active_", "luckDrawTotalAmount");
         if(luckDrawTotalAmount == null || luckDrawTotalAmount <= 0 ){
             log.warn("info 活动已结束 额度已完 luckDrawTotalAmount:{}",luckDrawTotalAmount);
-            luckDrawResponse.setLuckDrawAvailable(false);
-        }else{
-            luckDrawResponse.setLuckDrawAvailable(true);
+            luckDrawResponse.setIsStart(2);
         }
 
         resultResponse.setData(luckDrawResponse);
