@@ -80,7 +80,7 @@ activity:
     registerReward: 10
     masterReward: 10
     rechargeReward: 100
-    agentOpen: 0
+    agentOpen: 1
     startTime: 2019-12-09 00:00:01
     endTime: 2020-12-09 00:00:01
     effectiveDay: 7
