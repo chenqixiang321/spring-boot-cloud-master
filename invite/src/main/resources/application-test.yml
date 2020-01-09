@@ -269,8 +269,8 @@ prize-pool:
   secondGrandPrizeTimeUp: "14:50:00"
   secondPoolRate: 4
   count: 4
-  firstPoolStart: 18
-  firstPoolEnd: 20
+  firstPoolStart: 0
+  firstPoolEnd: 19
   secondPoolStart: 20
   secondPoolEnd: 23
   activityStart: 2020-01-09 00:00:01
@@ -281,17 +281,17 @@ prize-pool:
 #    - {id: 6,prize: 2,prob: 0.001}
 #    - {id: 7,prize: 1,prob: 0.24865}
 #    - {id: 8,prize: 0,prob: 0.75}
-    - {id: 4,prize: 10,prob: 1.0}
-    - {id: 5,prize: 5,prob: 0.0000}
-    - {id: 6,prize: 2,prob: 0.000}
-    - {id: 7,prize: 1,prob: 0.000}
+    - {id: 4,prize: 10,prob: 1.000}
+    - {id: 5,prize: 5,prob: 0.000}
+    - {id: 6,prize: 2,prob: 0.00}
+    - {id: 7,prize: 1,prob: 0.00}
     - {id: 8,prize: 0,prob: 0.00}
   secondPool:
-    - {id: 1,prize: phone,prob: 0.00001}
-    - {id: 2,prize: 100,prob: 0.00004}
-    - {id: 3,prize: 50,prob: 0.0002}
-    - {id: 4,prize: 10,prob: 0.00035}
-    - {id: 5,prize: 5,prob: 0.0009}
-    - {id: 6,prize: 2,prob: 0.0285}
-    - {id: 7,prize: 1,prob: 0.27}
-    - {id: 8,prize: 0,prob: 0.7}
+    - {id: 1,prize: phone,prob: 1.00000}
+    - {id: 2,prize: 100,prob: 0.00000}
+    - {id: 3,prize: 50,prob: 0.0000}
+    - {id: 4,prize: 10,prob: 0.0000}
+    - {id: 5,prize: 5,prob: 0.0000}
+    - {id: 6,prize: 2,prob: 0.0000}
+    - {id: 7,prize: 1,prob: 0.000}
+    - {id: 8,prize: 0,prob: 0.00000}

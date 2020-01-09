@@ -1,5 +1,6 @@
 package com.opay.invite.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.opay.invite.config.PrizePoolConfig;
 import com.opay.invite.exception.InviteException;
@@ -156,6 +157,7 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             }
         }
         PrizePoolResponse prizePoolResponse = (PrizePoolResponse) redisTemplate.execute(inviteShareCountDec, keys, firstPrizePoolIndex, secondPrizePoolIndex, prizePoolConfig.getGrandPrizeIndex(), grandPrizeTimeUp, prizePoolConfig.getSecondPoolRate());
+        log.info("getLuckDraw prizePoolResponse:{}", JSON.toJSONString(prizePoolResponse));
         LuckDrawInfoModel luckDrawInfoModel = new LuckDrawInfoModel();
         if ("success".equals(prizePoolResponse.getMessage()) && prizePoolResponse.getPrize() != null) {
             luckDrawInfoModel.setCreateTime(date);
@@ -173,6 +175,22 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             luckDrawInfoModel.setPrizePool(prizePoolResponse.getPool());
             luckDrawInfoResponse.setPrize(luckDrawInfoModel.getPrize());
             luckDrawInfoResponse.setPrizeId(pm.getId());
+
+            //判断中手机大奖的数量
+            if ("phone".equals(prize)) {
+                //判断redis库存
+                Integer phoneNum = redisUtil.get("invite_active_", "phoneNum");
+                if(phoneNum == null || phoneNum <= 0 ){
+                    log.warn("大奖已被抽完 phoneNum:{}",phoneNum);
+                    luckDrawInfoModel.setPrizeLevel(2);
+                    luckDrawInfoModel.setPrize("100");
+                    luckDrawInfoResponse.setPrize("100");
+                    luckDrawInfoResponse.setPrizeId(2);
+                }else{
+                    log.warn("恭喜你，抽到大奖了 phoneNum:{}",phoneNum);
+                    redisUtil.decr("invite_active_", "phoneNum", 1);
+                }
+            }
 
             Integer prizeInt = new Integer(0);
             if (CommonUtil.isInteger(prize)) {
