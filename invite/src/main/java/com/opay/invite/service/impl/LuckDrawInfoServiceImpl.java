@@ -168,7 +168,12 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             if (prizePoolResponse.getPool() == 2) {
                 prizes = prizePoolConfig.getSecondPool();
             }
-            PrizeModel pm = prizes.get(prizePoolResponse.getPrize());
+            PrizeModel pm;
+            if (prizePoolResponse.getPrize() == -1) {
+                pm = prizes.get(prizes.size() - 1);
+            } else {
+                pm = prizes.get(prizePoolResponse.getPrize());
+            }
             log.info("getLuckDraw pm:{}", JSON.toJSONString(pm));
             String prize = pm.getPrize();
             luckDrawInfoModel.setPrizeLevel(pm.getId());

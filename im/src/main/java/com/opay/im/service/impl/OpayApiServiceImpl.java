@@ -30,6 +30,7 @@ public class OpayApiServiceImpl implements OpayApiService {
         batchQuery.setRequestId(requestId);
         batchQuery.setData(AESUtil.encrypt(mapper.writeValueAsString(object), aesKey, iv));
         return batchQuery;
+
     }
 
     protected String opayApiResultResponseHandler(OpayApiResultResponse<String> opayApiResultResponse, String aesKey, String iv) throws Exception {
