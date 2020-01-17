@@ -175,28 +175,25 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
                 pm = prizes.get(prizePoolResponse.getPrize());
             }
             log.info("getLuckDraw pm:{}", JSON.toJSONString(pm));
+            //判断中手机大奖的数量,手机库存为0后，则调整为最小的奖励
+            if ("phone".equals(pm.getPrize())) {
+                //判断redis库存
+                Integer phoneNum = redisUtil.get("invite_active_", "phoneNum");
+                if(phoneNum == null || phoneNum <= 0 ){
+                    log.info("大奖已被抽完 phoneNum:{}",phoneNum);
+                    pm = prizes.get(prizes.size() - 1);
+                }else{
+                    redisUtil.decr("invite_active_", "phoneNum", 1);
+                    log.warn("恭喜你，抽到大奖了，剩余 phoneNum:{}",redisUtil.get("invite_active_", "phoneNum"));
+                }
+            }
+
             String prize = pm.getPrize();
             luckDrawInfoModel.setPrizeLevel(pm.getId());
             luckDrawInfoModel.setPrize(prize);
             luckDrawInfoModel.setPrizePool(prizePoolResponse.getPool());
             luckDrawInfoResponse.setPrize(luckDrawInfoModel.getPrize());
             luckDrawInfoResponse.setPrizeId(pm.getId());
-
-            //判断中手机大奖的数量
-            if ("phone".equals(prize)) {
-                //判断redis库存
-                Integer phoneNum = redisUtil.get("invite_active_", "phoneNum");
-                if(phoneNum == null || phoneNum <= 0 ){
-                    log.info("大奖已被抽完 phoneNum:{}",phoneNum);
-                    luckDrawInfoModel.setPrizeLevel(2);
-                    luckDrawInfoModel.setPrize("100");
-                    luckDrawInfoResponse.setPrize("100");
-                    luckDrawInfoResponse.setPrizeId(2);
-                }else{
-                    redisUtil.decr("invite_active_", "phoneNum", 1);
-                    log.warn("恭喜你，抽到大奖了，剩余 phoneNum:{}",redisUtil.get("invite_active_", "phoneNum"));
-                }
-            }
 
             Integer prizeInt = new Integer(0);
             if (CommonUtil.isInteger(prize)) {
