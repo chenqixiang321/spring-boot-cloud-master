@@ -13,7 +13,7 @@ spring:
   application:
     name: opay-invite
   datasource:
-    url: jdbc:mysql://10.22.31.39:3306/opay_invite?useSSL=false&useAffectedRows=true&allowMultiQueries=true
+    url: jdbc:mysql://150.109.109.30:3306/opay_invite?useSSL=false&useAffectedRows=true&allowMultiQueries=true
     username: root
     password: jJ3TC3waaBex6bqd
     driver-class-name: com.mysql.jdbc.Driver
@@ -242,14 +242,22 @@ prize-pool:
   activityStart: 2029-12-06 00:00:01
   activityEnd: 2029-12-21 10:00:00
   firstPool:
-    - {id: 2,prize: 10,prob: 0.01}
-    - {id: 3,prize: 5,prob: 0.04}
-    - {id: 4,prize: 2,prob: 0.05}
-    - {id: 5,prize: 1,prob: 0.20}
-    - {id: 6,prize: 0,prob: 0.70}
+    #    - {id: 4,prize: 10,prob: 0.00015}
+    #    - {id: 5,prize: 5,prob: 0.0002}
+    #    - {id: 6,prize: 2,prob: 0.001}
+    #    - {id: 7,prize: 1,prob: 0.24865}
+    #    - {id: 8,prize: 0,prob: 0.75}
+    - {id: 4,prize: 10,prob: 1.000}
+    - {id: 5,prize: 5,prob: 0.000}
+    - {id: 6,prize: 2,prob: 0.00}
+    - {id: 7,prize: 1,prob: 0.00}
+    - {id: 8,prize: 0,prob: 0.00}
   secondPool:
-    - {id: 1,prize: phone,prob: 0.01}
-    - {id: 3,prize: 5,prob: 0.04}
-    - {id: 4,prize: 2,prob: 0.05}
-    - {id: 5,prize: 1,prob: 0.20}
-    - {id: 6,prize: 0,prob: 0.70}
+    - {id: 1,prize: phone,prob: 1.00000}
+    - {id: 2,prize: 100,prob: 0.00000}
+    - {id: 3,prize: 50,prob: 0.0000}
+    - {id: 4,prize: 10,prob: 0.0000}
+    - {id: 5,prize: 5,prob: 0.0000}
+    - {id: 6,prize: 2,prob: 0.0000}
+    - {id: 7,prize: 1,prob: 0.000}
+    - {id: 8,prize: 0,prob: 0.00000}
