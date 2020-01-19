@@ -165,6 +165,7 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             luckDrawInfoModel.setOpayName(opayName);
             luckDrawInfoModel.setOpayPhone(opayPhone);
             List<PrizeModel> prizes = prizePoolConfig.getFirstPool();
+            log.info("getLuckDraw prizes first:{}", JSON.toJSONString(prizes));
             if (prizePoolResponse.getPool() == 2) {
                 prizes = prizePoolConfig.getSecondPool();
             }

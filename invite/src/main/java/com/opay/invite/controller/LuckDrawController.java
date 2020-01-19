@@ -122,6 +122,7 @@ public class LuckDrawController {
         luckDrawResponse.setSystemTime(DateFormatter.formatDatetimeByZone(date, timeZone));
         luckDrawResponse.setPrizeInfo(luckDrawInfoService.getPrize());
 
+        log.info("getLuckDrawInfo luckDrawResponse:{}", luckDrawResponse);
         //判断活动开关
         Integer luckDrawTotalAmount = redisUtil.get("invite_active_", "luckDrawTotalAmount");
         if(luckDrawTotalAmount == null || luckDrawTotalAmount <= 0 ){
