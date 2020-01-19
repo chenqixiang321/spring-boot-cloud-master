@@ -1,5 +1,6 @@
 package com.opay.invite.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.opay.invite.model.LoginUser;
 import com.opay.invite.model.request.MyLuckDrawListRequest;
 import com.opay.invite.model.response.LuckDrawCountResponse;
@@ -122,7 +123,7 @@ public class LuckDrawController {
         luckDrawResponse.setSystemTime(DateFormatter.formatDatetimeByZone(date, timeZone));
         luckDrawResponse.setPrizeInfo(luckDrawInfoService.getPrize());
 
-        log.info("getLuckDrawInfo luckDrawResponse:{}", luckDrawResponse);
+        log.info("getLuckDrawInfo luckDrawResponse:{}", JSON.toJSONString(luckDrawResponse));
         //判断活动开关
         Integer luckDrawTotalAmount = redisUtil.get("invite_active_", "luckDrawTotalAmount");
         if(luckDrawTotalAmount == null || luckDrawTotalAmount <= 0 ){

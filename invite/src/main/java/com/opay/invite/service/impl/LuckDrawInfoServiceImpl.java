@@ -158,6 +158,8 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
         }
         PrizePoolResponse prizePoolResponse = (PrizePoolResponse) redisTemplate.execute(inviteShareCountDec, keys, firstPrizePoolIndex, secondPrizePoolIndex, prizePoolConfig.getGrandPrizeIndex(), grandPrizeTimeUp, prizePoolConfig.getSecondPoolRate());
         log.info("getLuckDraw prizePoolResponse:{}", JSON.toJSONString(prizePoolResponse));
+        log.info("getLuckDraw prizes first:{}", JSON.toJSONString(prizePoolConfig.getFirstPool()));
+        log.info("getLuckDraw prizes second:{}", JSON.toJSONString(prizePoolConfig.getSecondPool()));
         LuckDrawInfoModel luckDrawInfoModel = new LuckDrawInfoModel();
         if ("success".equals(prizePoolResponse.getMessage()) && prizePoolResponse.getPrize() != null) {
             luckDrawInfoModel.setCreateTime(date);
@@ -165,7 +167,6 @@ public class LuckDrawInfoServiceImpl implements LuckDrawInfoService {
             luckDrawInfoModel.setOpayName(opayName);
             luckDrawInfoModel.setOpayPhone(opayPhone);
             List<PrizeModel> prizes = prizePoolConfig.getFirstPool();
-            log.info("getLuckDraw prizes first:{}", JSON.toJSONString(prizes));
             if (prizePoolResponse.getPool() == 2) {
                 prizes = prizePoolConfig.getSecondPool();
             }
