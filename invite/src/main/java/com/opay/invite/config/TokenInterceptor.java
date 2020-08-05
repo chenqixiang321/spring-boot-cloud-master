@@ -1,20 +1,24 @@
 package com.opay.invite.config;
 
 
-import com.opos.service.OpayService;
+import com.opay.invite.model.OpayUser;
+import com.opay.invite.service.OpayApiService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import com.opos.feign.domain.OpayUser;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class TokenInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private OpayService opayService;
+    private OpayApiService opayService;
 
     @Override
     public void afterCompletion(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, Exception arg3)
@@ -30,19 +34,29 @@ public class TokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object obj) throws Exception {
-
-        System.out.println("getContextPath:" + request.getContextPath());
-        System.out.println("getServletPath:" + request.getServletPath());
-        System.out.println("getRequestURI:" + request.getRequestURI());
-        System.out.println("getRequestURL:" + request.getRequestURL());
-        System.out.println("getRealPath:" + request.getSession().getServletContext().getRealPath("image"));
-        System.out.println("token:" + request.getHeader("token"));
-        OpayUser opayUser = opayService.getOpayUser("Bearer "+request.getHeader("token"));
-        request.setAttribute("opayId",opayUser.getId());
-        request.setAttribute("phoneNumber",opayUser.getPhoneNumber());
-
-
+        OpayUser opayUser = opayService.getOpayUser("Bearer " + request.getHeader("token"));
+        request.setAttribute("opayId", opayUser.getId());
+        request.setAttribute("phoneNumber", opayUser.getPhoneNumber());
+        request.setAttribute("opayName", getName(opayUser));
         return true;
+    }
+
+    private String getName(OpayUser opayUser) {
+        List<String> names = new ArrayList<>();
+        if (StringUtils.isNotBlank(opayUser.getFirstName())) {
+            names.add(opayUser.getFirstName());
+        }
+        if (StringUtils.isNotBlank(opayUser.getMiddleName())) {
+            names.add(opayUser.getMiddleName());
+        }
+        if (StringUtils.isNotBlank(opayUser.getSurname())) {
+            names.add(opayUser.getSurname());
+        }
+        if (names.isEmpty()) {
+            return opayUser.getPhoneNumber();
+        } else {
+            return String.join(" ", names);
+        }
     }
 
 }

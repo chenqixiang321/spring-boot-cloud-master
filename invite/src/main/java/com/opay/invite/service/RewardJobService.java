@@ -34,6 +34,7 @@ public class RewardJobService {
     @Autowired
     private InviteMapper inviteMapper;
 
+    @Autowired
     private OpayActiveCashbackMapper cashbackMapper;
 
     public List<OpayUserOrder> getOpayUserOrderList(Integer day, int start, int pageSize) {
@@ -45,19 +46,34 @@ public class RewardJobService {
         Map<Integer, AgentRoyaltyReward> map = royList.stream().collect(Collectors.toMap(AgentRoyaltyReward::getAction, Function.identity()));
         List<OpayMasterPupilAward>  mpaList = new ArrayList<>();
         Date date = new Date();
-        int month = Integer.valueOf(DateFormatter.formatShortYMDate(new Date()));
-        int day= Integer.valueOf(DateFormatter.formatShortYMDDate(new Date()));
+//        int month = Integer.valueOf(DateFormatter.formatShortYMDate(new Date()));
+//        int day= Integer.valueOf(DateFormatter.formatShortYMDDate(new Date()));
         for(int i=0;i<list.size();i++){
             OpayUserOrder opayUserOrder =  list.get(i);
             AgentRoyaltyReward agentRoyaltyReward = map.get(opayUserOrder.getType());
-            BigDecimal masterReward = opayUserOrder.getAmount().multiply(agentRoyaltyReward.getMasterReward()).divide(BigDecimal.valueOf(100l)).setScale(2, RoundingMode.DOWN);
-            BigDecimal pupilReward = opayUserOrder.getAmount().multiply(agentRoyaltyReward.getPupilReward()).divide(BigDecimal.valueOf(100l)).setScale(2, RoundingMode.DOWN);
+            BigDecimal masterReward = opayUserOrder.getActualAmount().multiply(agentRoyaltyReward.getMasterReward()).divide(BigDecimal.valueOf(100l));
+            if(masterReward.compareTo(BigDecimal.valueOf(1l))>=0){
+                masterReward=masterReward.setScale(0, RoundingMode.HALF_UP);//
+            }else{
+                masterReward=BigDecimal.ZERO;
+            }
+
+            BigDecimal pupilReward = opayUserOrder.getActualAmount().multiply(agentRoyaltyReward.getPupilReward()).divide(BigDecimal.valueOf(100l));
+            if(pupilReward.compareTo(BigDecimal.valueOf(1l))>=0){
+                pupilReward=pupilReward.setScale(0, RoundingMode.HALF_UP);//
+            }else{
+                pupilReward=BigDecimal.ZERO;
+            }
             OpayMasterPupilAward master = new OpayMasterPupilAward(opayUserOrder.getMasterOpayId(),masterReward,
-                    date,1, opayUserOrder.getType(), BigDecimal.ZERO,opayUserOrder.getMarkType(),null,
-                    BigDecimal.ZERO,1,month,day);//师傅奖励
+                    date,1, opayUserOrder.getType(), opayUserOrder.getActualAmount(),opayUserOrder.getMarkType(),null,
+                    BigDecimal.ZERO,1,opayUserOrder.getMonth(),opayUserOrder.getDay());//师傅奖励
             OpayMasterPupilAward pupil = new OpayMasterPupilAward(opayUserOrder.getOpayId(),pupilReward,
-                    date,1,opayUserOrder.getType(), BigDecimal.ZERO,opayUserOrder.getMarkType(),null,
-                    masterReward,0,month,day);//徒弟奖励
+                    date,1,opayUserOrder.getType(), opayUserOrder.getActualAmount(),opayUserOrder.getMarkType(),null,
+                    masterReward,0,opayUserOrder.getMonth(),opayUserOrder.getDay());//徒弟奖励
+            master.setPupilId(opayUserOrder.getOpayId());
+            master.setOrderId(opayUserOrder.getOrderId());
+            pupil.setOrderId(opayUserOrder.getOrderId());
+            pupil.setPupilId(opayUserOrder.getOpayId());
             mpaList.add(master);
             mpaList.add(pupil);
         }
@@ -69,17 +85,18 @@ public class RewardJobService {
         List<OpayActiveCashback> list = new ArrayList<>();
         collect.entrySet().forEach(entry -> {
             List<OpayMasterPupilAward> palist =entry.getValue();
-            BigDecimal totalReward = palist.stream().map(OpayMasterPupilAward::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal totalReward = palist.stream().map(OpayMasterPupilAward::getReward).reduce(BigDecimal.ZERO, BigDecimal::add);
             OpayActiveCashback cashback = new OpayActiveCashback();
             cashback.setAmount(totalReward);
             cashback.setTotalAmount(totalReward);
             cashback.setOpayId(entry.getKey());
+            cashback.setUpdateAt(new Date());
             list.add(cashback);
         });
         return list;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveAwardAndCashAndOrderStatus(List<OpayActiveCashback> nlist, List<OpayMasterPupilAward> mplist, List<OpayUserOrder> list) {
         rewardJobMapper.updateOpayUserOrder(list);
         inviteMapper.saveInviteReward(mplist);

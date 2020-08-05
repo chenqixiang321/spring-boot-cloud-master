@@ -15,6 +15,7 @@ import com.opay.im.model.response.OpayApiResultResponse;
 import com.opay.im.model.response.ResultResponse;
 import com.opay.im.model.response.SuccessResponse;
 import com.opay.im.service.IncrKeyService;
+import com.opay.im.service.OpayFeignApiService;
 import com.opay.im.service.RongCloudService;
 import com.opay.im.utils.AESUtil;
 import io.swagger.annotations.Api;
@@ -46,7 +47,7 @@ public class UserController {
     @Autowired
     private RongCloudService rongCloudService;
     @Autowired
-    private com.opay.im.service.OpayFriends opayFriends;
+    private OpayFeignApiService opayFeignApiService;
     @Autowired
     private IncrKeyService incrKeyService;
     @Value("${config.opay.aesKey}")
@@ -107,7 +108,7 @@ public class UserController {
         BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
         batchQueryUserRequest.setMobile(String.join(",", opayFriendsRequest.getMobiles()));
         Map<String, String> userIdMap = rongCloudService.getBlackListMap(userId);
-        OpayApiResultResponse<String> opayApiResultResponse = opayFriends.batchQueryUserByPhone(getOpayApiRequest(batchQueryUserRequest));
+        OpayApiResultResponse<String> opayApiResultResponse = opayFeignApiService.batchQueryUserByPhone(getOpayApiRequest(batchQueryUserRequest));
         String json = opayApiResultResponseHandler(opayApiResultResponse);
         OpayApiQueryUserByPhoneResponse queryUserByPhoneResponse = mapper.readValue(json, OpayApiQueryUserByPhoneResponse.class);
         Map<String, OpayUserModel> userMap = new HashMap<>();
@@ -125,7 +126,7 @@ public class UserController {
             QueryUserRequest queryUserRequest = new QueryUserRequest();
             queryUserRequest.setMobile(mobileHandler(phoneNumber));
             queryUserRequest.setStartTime(opayFriendsRequest.getStartTime());
-            OpayApiResultResponse<String> resultResponse2 = opayFriends.queryUserListByPhone(getOpayApiRequest(queryUserRequest));
+            OpayApiResultResponse<String> resultResponse2 = opayFeignApiService.queryUserListByPhone(getOpayApiRequest(queryUserRequest));
             json = opayApiResultResponseHandler(resultResponse2);
             OpayApiQueryUserByPhoneResponse queryUserByPhoneResponse2 = mapper.readValue(json, OpayApiQueryUserByPhoneResponse.class);
             for (OpayUserModel user : queryUserByPhoneResponse2.getUsers()) {
@@ -155,12 +156,12 @@ public class UserController {
         Map<String, String> userIdMap = rongCloudService.getBlackListMap(userId);
         BatchQueryUserRequest batchQueryUserRequest = new BatchQueryUserRequest();
         batchQueryUserRequest.setUserId(opayFriendRequest.getOpayId());
-        OpayApiResultResponse<String> opayApiResultResponse = opayFriends.batchQueryUserByPhone(getOpayApiRequest(batchQueryUserRequest));
+        OpayApiResultResponse<String> opayApiResultResponse = opayFeignApiService.batchQueryUserByPhone(getOpayApiRequest(batchQueryUserRequest));
         String json = opayApiResultResponseHandler(opayApiResultResponse);
         OpayApiQueryUserByPhoneResponse queryUserByPhoneResponse = mapper.readValue(json, OpayApiQueryUserByPhoneResponse.class);
         List<OpayUserModel> users = queryUserByPhoneResponse.getUsers();
         if (users.isEmpty()) {
-            throw new ImException("opay user does not exist");
+            throw new ImException(SystemCode.IM_USER_DOES_NOT_EXIST.getCode(), SystemCode.IM_USER_DOES_NOT_EXIST.getMessage());
         }
         OpayUserModel user = users.get(0);
         user.setBlackList(false);
@@ -183,7 +184,7 @@ public class UserController {
 
     private String opayApiResultResponseHandler(OpayApiResultResponse<String> opayApiResultResponse) throws Exception {
         if (!SystemCode.SYS_API_SUCCESS.getCode().equals(opayApiResultResponse.getCode())) {
-            throw new ImException(opayApiResultResponse.getMessage());
+            throw new ImException(opayApiResultResponse.getCode(), opayApiResultResponse.getMessage());
         }
         return AESUtil.decrypt(opayApiResultResponse.getData(), aesKey, iv);
     }

@@ -1,6 +1,7 @@
 package com.opay.invite.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.opay.invite.exception.InviteException;
 import com.opay.invite.model.*;
 import com.opay.invite.model.request.InviteRequest;
 import com.opay.invite.resp.CodeMsg;
@@ -11,8 +12,9 @@ import com.opay.invite.service.RpcService;
 import com.opay.invite.stateconfig.ActionOperate;
 import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.transferconfig.TransferConfig;
-import com.opay.invite.utils.DateFormatter;
+import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.InviteCode;
+import com.opay.invite.utils.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -59,6 +58,9 @@ public class InviteController {
     @Value("${spring.jackson.time-zone:''}")
     private String zone;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     @ApiOperation(value = "生成邀请码", notes = "生成邀请码")
     @PostMapping("/getInviteCode")
     public Result<String> getInviteCode(HttpServletRequest request) {
@@ -84,6 +86,14 @@ public class InviteController {
             log.warn("活动未开始或已结束,inviteRequest info{},"+ JSON.toJSONString(inviteRequest));
             return Result.error(CodeMsg.ILLEGAL_CODE_ACTIVE);
         }
+
+        //判断活动开关
+        Integer cashBackTotalAmount = redisUtil.get("invite_active_", "cashBackTotalAmount");
+        if(cashBackTotalAmount == null || cashBackTotalAmount <= 0 ){
+            log.warn("notifInviteController save 活动已结束 额度已完 cashBackTotalAmount:{}",cashBackTotalAmount);
+            return Result.error(CodeMsg.ILLEGAL_CODE_ACTIVE);
+        }
+
         OpayInviteCode inviteCode = inviteService.getOpayIdByInviteCode(inviteRequest.getInviteCode());
         //获取code用户类型
         if(inviteCode==null){
@@ -139,9 +149,18 @@ public class InviteController {
         OpayInviteRelation relation = inviteOperateService.getInviteRelation(masterId,user.getOpayId(),inviteCode.getPhone(),user.getPhoneNumber(),vr,markType);
         List<OpayMasterPupilAward> list =inviteOperateService.getRegisterMasterPupilAward(masterId,user.getOpayId(),markType);
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
+
+        // 判断活动金额是否超限
+        BigDecimal sumAmount= CommonUtil.calSumAmount(cashbacklist);
+        if (redisUtil.decr("invite_active_", "cashBackTotalAmount", Integer.valueOf(String.valueOf(sumAmount))) < 0 ) {
+            log.warn("活动金额超限，活动结束");
+            throw new InviteException("Event funds have been exhausted, thank you for your participation");
+        }
+
         inviteOperateService.saveRelationAndRewardAndCashback(relation, list,cashbacklist);
         Map<String,Object> rmap = new HashMap<>();
         rmap.put("reward",rewardConfig.getRegisterReward());
+        inviteOperateService.updateInviteCount(masterId);
         return Result.success(rmap);
     }
 
@@ -165,6 +184,18 @@ public class InviteController {
     @PostMapping("/noTask")
     public Result<FinishTask> getNoTask(HttpServletRequest request) throws Exception {
         //登录用户是普通用户，如果是普通用户，有师徒关系，查看执行内容，如果没有提示一个
+        boolean activef = inviteOperateService.checkTime(zone);
+        if(activef) {
+            return Result.success();
+        }
+
+        //判断活动开关
+        Integer cashBackTotalAmount = redisUtil.get("invite_active_", "cashBackTotalAmount");
+        if(cashBackTotalAmount == null || cashBackTotalAmount <= 0 ){
+            log.warn("InviteController noTask 活动已结束 额度已完 cashBackTotalAmount:{}",cashBackTotalAmount);
+            return Result.success();
+        }
+
         LoginUser user = inviteOperateService.getOpayInfo(request);
         long mlis = System.currentTimeMillis();
         Map<String,String> map =rpcService.getOpayUser(user.getPhoneNumber(),String.valueOf(mlis),transferConfig.getMerchantId());

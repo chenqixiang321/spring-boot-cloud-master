@@ -2,6 +2,7 @@ package com.opay.im.controller;
 
 import com.opay.im.common.SystemCode;
 import com.opay.im.exception.ImException;
+import com.opay.im.exception.LuckyMoneyException;
 import com.opay.im.model.response.ResultResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -32,7 +33,9 @@ public class GlobalExceptionHandler {
             }
             return new ResultResponse(SystemCode.SYS_ARG_NOT_VALID.getCode(), builder.toString(), null);
         } else if (e instanceof ImException) {
-            return new ResultResponse(SystemCode.IM_ERROR.getCode(), e.getMessage(), null);
+            return new ResultResponse(((ImException) e).getCode(), e.getMessage(), null);
+        } else if (e instanceof LuckyMoneyException) {
+            return new ResultResponse(((LuckyMoneyException) e).getCode(), e.getMessage(), null);
         } else {//其他未捕获异常
             return new ResultResponse(SystemCode.SYS_ERROR.getCode(), e.getMessage(), null);
         }

@@ -33,4 +33,9 @@ public class RewardConfig {
 
     private int effectiveDay;//新注册用户有效期天数
 
+    private String turntableStart;//转盘活动开始时间
+
+    private String turntableEnd;//转盘活动结束时间
+
+
 }

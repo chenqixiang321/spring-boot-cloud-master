@@ -1,7 +1,7 @@
 package com.opay.invite.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.google.inject.internal.cglib.core.$CodeEmitter;
+import com.opay.invite.exception.InviteException;
 import com.opay.invite.model.*;
 import com.opay.invite.model.request.InviteRequest;
 import com.opay.invite.resp.CodeMsg;
@@ -14,12 +14,11 @@ import com.opay.invite.stateconfig.AgentRoyaltyReward;
 import com.opay.invite.stateconfig.MsgConst;
 import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.transferconfig.TransferConfig;
-import com.opay.invite.utils.DateFormatter;
+import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.InviteCode;
+import com.opay.invite.utils.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,10 +30,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -65,6 +64,9 @@ public class ActivityController {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @ApiOperation(value = "获取活动页内容", notes = "获取活动页内容")
     @PostMapping("/getActivity")
@@ -103,12 +105,13 @@ public class ActivityController {
             activity.setAmount(BigDecimal.ZERO);
         }else {
             activity.setAmount(cashback.getAmount());
+            activity.setTotalReward(cashback.getTotalAmount());
         }
         int count =inviteService.getRelationCount(user.getOpayId());
 
         //计算用户所属阶段
         List<StepReward> stepList = inviteOperateService.getStepList(count);
-        BigDecimal rd = BigDecimal.ZERO;
+        BigDecimal rd = stepList.get(0).getWalletReward();
         for(int i=0;i<stepList.size();i++){
             StepReward stepReward = stepList.get(i);
             if(stepList.size()==1 || (stepReward.getStep()==1 && i==stepList.size()-1)){
@@ -132,20 +135,37 @@ public class ActivityController {
         //邀请人数
         if(count==0){
             activity.setIsFriend(0);
-            StepReward stepReward =stepList.get(0);
-            activity.setFriendText(MsgConst.noFriend+stepReward.getWalletReward());
+            activity.setFriendText(MsgConst.noFriend+rd.toString());
         }else {//有徒弟，并且有对应阶段
             activity.setFriendText(MsgConst.friend+rd.toString());
             activity.setIsFriend(1);
         }
         List<OpayMasterPupilAwardVo> task = inviteService.getTaskByOpayId(user.getOpayId());//获取注册任务和充值任务
         OpayInviteRelation ir = inviteService.selectRelationMasterByMasterId(user.getOpayId());
-        List<OpayMasterPupilAwardVo> noTask =inviteOperateService.getActivityTask(task,ir,isF7,activity.getIsAgent(),user.getPhoneNumber());
+        List<OpayMasterPupilAwardVo> noTask =inviteOperateService.getActivityTask(task,ir,isF7,activity.getIsAgent(),user.getPhoneNumber(),rd);
         activity.setTask(noTask);
-        int isStart = inviteOperateService.checkActiveTime(zone);
-        activity.setIsStart(isStart);
+
+        //判断活动开关
+        Integer cashBackTotalAmount = redisUtil.get("invite_active_", "cashBackTotalAmount");
+        if(cashBackTotalAmount == null || cashBackTotalAmount <= 0 ){
+            log.warn("getActivity 活动已结束 额度已完 cashBackTotalAmount:{}",cashBackTotalAmount);
+            activity.setIsStart(2);
+        }else{
+            int isStart = inviteOperateService.checkActiveStatusTime(zone,rewardConfig.getStartTime(),rewardConfig.getEndTime());
+            activity.setIsStart(isStart);
+        }
         activity.setStartTime(rewardConfig.getStartTime());
         activity.setEndTime(rewardConfig.getEndTime());
+
+        //判断活动开关
+        Integer luckDrawTotalAmount = redisUtil.get("invite_active_", "luckDrawTotalAmount");
+        if(luckDrawTotalAmount == null || luckDrawTotalAmount <= 0 ){
+            log.warn("getActivity 活动已结束 额度已完 luckDrawTotalAmount:{}",luckDrawTotalAmount);
+            activity.setIsTurntable(2);
+        }else{
+            int isTurn = inviteOperateService.checkActiveStatusTime(zone, rewardConfig.getTurntableStart(), rewardConfig.getTurntableEnd());
+            activity.setIsTurntable(isTurn);
+        }
         return Result.success(activity);
     }
 
@@ -262,6 +282,13 @@ public class ActivityController {
             return Result.success();
         }
 
+        //判断活动开关
+        Integer cashBackTotalAmount = redisUtil.get("invite_active_", "cashBackTotalAmount");
+        if(cashBackTotalAmount == null || cashBackTotalAmount <= 0 ){
+            log.warn("saveRecharge 活动已结束 额度已完 cashBackTotalAmount:{}",cashBackTotalAmount);
+            return Result.success();
+        }
+
         OpayInviteRelation relation = inviteService.selectRelationMasterByMasterId(user.getOpayId());
         if(relation==null){//没有师徒关系
             log.warn("当前用户没有师徒关系info:{}", JSON.toJSONString(user));
@@ -315,6 +342,13 @@ public class ActivityController {
             cashbacklist.add(masterCashback);
         }
         cashbacklist = inviteOperateService.getOpayCashback(list2,cashbacklist);
+        // 判断活动金额是否超限
+        BigDecimal sumAmount= CommonUtil.calSumAmount(cashbacklist);
+        if (redisUtil.decr("invite_active_", "cashBackTotalAmount", Integer.valueOf(String.valueOf(sumAmount))) < 0 ) {
+            log.warn("活动金额超限，活动结束");
+            throw new InviteException("Event funds have been exhausted, thank you for your participation");
+        }
+
         inviteOperateService.saveRewardAndCashback(list2,cashbacklist);
         return Result.success();
     }

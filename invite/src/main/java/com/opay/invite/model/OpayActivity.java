@@ -50,4 +50,10 @@ public class OpayActivity {
 
     @ApiModelProperty(value = "结束时间")
     private String endTime;
+
+    @ApiModelProperty(value = "活动是否开始：0未开始，1:开始,2:已经结束")
+    private Integer isTurntable;
+
+    @ApiModelProperty(value = "用户共赚总额")
+    private BigDecimal totalReward =BigDecimal.ZERO;
 }

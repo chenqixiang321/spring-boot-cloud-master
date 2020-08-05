@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @ToString
@@ -17,4 +15,8 @@ public class PrizePoolResponse {
     private Integer prize;
     private String message;
     private Integer pool;
+    private Integer activityCount;
+    private Integer loginCount;
+    private Integer shareCount;
+    private Integer inviteCount;
 }

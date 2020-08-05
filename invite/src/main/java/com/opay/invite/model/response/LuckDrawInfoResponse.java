@@ -17,15 +17,17 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LuckDrawInfoResponse {
-
-    @ApiModelProperty(value = "id")
-    private Long id;
-    @ApiModelProperty(value = "中奖者的opay_id")
-    private String opayId;
-    @ApiModelProperty(value = "中奖者的opay名字")
-    private String opayName;
+    @ApiModelProperty(value = "奖品ID")
+    private Integer prizeId;
     @ApiModelProperty(value = "奖品")
     private String prize;
-    @ApiModelProperty(value = "创建时间")
-    private Date createTime;
+    @ApiModelProperty(value = "活动剩余抽奖次数")
+    private int activityCount;
+    @ApiModelProperty(value = "用户剩余抽奖次数-登陆")
+    private Integer loginCount;
+    @ApiModelProperty(value = "用户剩余抽奖次数-分享")
+    private Integer shareCount;
+    @ApiModelProperty(value = "用户剩余抽奖次数-邀请")
+    private Integer inviteCount;
+
 }

@@ -1,7 +1,9 @@
 package com.opay.im.service;
 
 import com.opay.im.model.LuckyMoneyRecordModel;
-public interface LuckyMoneyRecordService{
+import com.opay.im.model.response.opaycallback.OPayCallBackResponse;
+
+public interface LuckyMoneyRecordService {
 
 
     int deleteByPrimaryKey(Long id);
@@ -16,4 +18,7 @@ public interface LuckyMoneyRecordService{
 
     int updateByPrimaryKey(LuckyMoneyRecordModel record);
 
+    int updateGetStatus(Long luckyMoneyId, Long luckyMoneyRecordId, OPayCallBackResponse oPayCallBackResponse) throws Exception;
+
+    void updateRecordStatus(Long luckMoneyId, OPayCallBackResponse oPayCallBackResponse) throws Exception;
 }

@@ -3,6 +3,7 @@ package com.opay.invite.controller;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
+import com.opay.invite.exception.InviteException;
 import com.opay.invite.model.*;
 import com.opay.invite.model.request.WithdrawalApproval;
 import com.opay.invite.model.request.WithdrawalListRequest;
@@ -14,14 +15,16 @@ import com.opay.invite.service.RpcService;
 import com.opay.invite.service.WithdrawalService;
 import com.opay.invite.stateconfig.RewardConfig;
 import com.opay.invite.transferconfig.TransferConfig;
+import com.opay.invite.utils.CommonUtil;
 import com.opay.invite.utils.DateFormatter;
+import com.opay.invite.utils.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.mockito.cglib.beans.BeanMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Slf4j
@@ -61,6 +65,9 @@ public class ApiController {
     @Autowired
     private WithdrawalService withdrawalService;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     @ApiOperation(value = "用户填入邀请码回调", notes = "用户填入邀请码回调")
     @PostMapping("/notifyInvite")
     public Result notifyInvite(HttpServletRequest request, @RequestBody NotifyInvite notifyInvite) throws Exception {
@@ -84,6 +91,14 @@ public class ApiController {
             log.warn("活动未开始或已结束,notifyInvite info{},"+JSON.toJSONString(notifyInvite));
             return Result.success();
         }
+
+        //判断活动开关
+        Integer cashBackTotalAmount = redisUtil.get("invite_active_", "cashBackTotalAmount");
+        if(cashBackTotalAmount == null || cashBackTotalAmount <= 0 ){
+            log.warn("notifyInvite 活动已结束 额度已完 cashBackTotalAmount:{}",cashBackTotalAmount);
+            return Result.success();
+        }
+
         try {
             Date regDate = DateFormatter.parseDate(notifyInvite.getCreateTime());
             Date date = DateFormatter.getDateAfter(regDate,rewardConfig.getEffectiveDay());
@@ -155,12 +170,21 @@ public class ApiController {
         cashbacklist = inviteOperateService.getOpayCashback(list,cashbacklist);
         try {
             log.info("save invite:{}", JSON.toJSONString(relation));
+
+            // 判断活动金额是否超限
+            BigDecimal sumAmount= CommonUtil.calSumAmount(cashbacklist);
+            if (redisUtil.decr("invite_active_", "cashBackTotalAmount", Integer.valueOf(String.valueOf(sumAmount))) < 0 ) {
+                log.warn("活动金额超限，活动结束");
+                throw new InviteException("Event funds have been exhausted, thank you for your participation");
+            }
+
             inviteOperateService.saveRelationAndRewardAndCashback(relation, list, cashbacklist);
         }catch (Exception e){
             return Result.error(CodeMsg.CustomCodeMsg(500,"system error"));
         }
         Map<String,Object> rmap = new HashMap<>();
         rmap.put("reward",rewardConfig.getRegisterReward());
+        inviteOperateService.updateInviteCount(masterId);
         return Result.success(rmap);
     }
 

@@ -10,8 +10,8 @@ public class CodeMsg {
     public static final CodeMsg NEED_AUTHORIZATION = new CodeMsg(2005, "you need to be authorization");
 
     //
-    public static final CodeMsg ILLEGAL_CODE = new CodeMsg(1006, "Invalid referral code, please confirm.");
-    public static final CodeMsg ILLEGAL_CODE_RELATION = new CodeMsg(1007, "Invalid referral code, please confirm.");
+    public static final CodeMsg ILLEGAL_CODE = new CodeMsg(1006, "Invalid event referral code, please confirm.");
+    public static final CodeMsg ILLEGAL_CODE_RELATION = new CodeMsg(1007, "Invalid event referral code, please confirm.");
 
     public static final CodeMsg ILLEGAL_CODE_DAY = new CodeMsg(1008, "Oops, something went wrong, you're not rewarded");
 
@@ -26,6 +26,8 @@ public class CodeMsg {
 
     public static final CodeMsg ILLEGAL_CODE_ACTIVE = new CodeMsg(1014, "Activity ended");
 
+
+    public static final CodeMsg LUCKY_DRAW_NOT_START_CODE = new CodeMsg(2001, "The lucky draw has not yet started");
     private int code;
     private String message;
 

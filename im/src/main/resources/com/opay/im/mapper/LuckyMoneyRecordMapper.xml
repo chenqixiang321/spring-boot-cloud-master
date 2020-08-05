@@ -1,138 +1,188 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.opay.im.mapper.LuckyMoneyRecordMapper">
-  <resultMap id="BaseResultMap" type="com.opay.im.model.LuckyMoneyRecordModel">
-    <!--@mbg.generated-->
-    <!--@Table lucky_money_record-->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="luck_money_id" jdbcType="BIGINT" property="luckMoneyId" />
-    <result column="opay_id" jdbcType="VARCHAR" property="opayId" />
-    <result column="opay_name" jdbcType="VARCHAR" property="opayName" />
-    <result column="opay_phone" jdbcType="VARCHAR" property="opayPhone" />
-    <result column="amount" jdbcType="DECIMAL" property="amount" />
-    <result column="get_time" jdbcType="TIMESTAMP" property="getTime" />
-    <result column="version" jdbcType="BIGINT" property="version" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id, luck_money_id, opay_id, opay_name, opay_phone, amount, get_time, version
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    <!--@mbg.generated-->
-    select 
-    <include refid="Base_Column_List" />
-    from lucky_money_record
-    where id = #{id,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    <!--@mbg.generated-->
-    delete from lucky_money_record
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.opay.im.model.LuckyMoneyRecordModel" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into lucky_money_record (luck_money_id, opay_id, opay_name, 
-      opay_phone, amount, get_time, 
-      version)
-    values (#{luckMoneyId,jdbcType=BIGINT}, #{opayId,jdbcType=VARCHAR}, #{opayName,jdbcType=VARCHAR}, 
-      #{opayPhone,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, #{getTime,jdbcType=TIMESTAMP}, 
-      #{version,jdbcType=BIGINT})
-  </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.opay.im.model.LuckyMoneyRecordModel" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into lucky_money_record
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="luckMoneyId != null">
-        luck_money_id,
-      </if>
-      <if test="opayId != null">
-        opay_id,
-      </if>
-      <if test="opayName != null">
-        opay_name,
-      </if>
-      <if test="opayPhone != null">
-        opay_phone,
-      </if>
-      <if test="amount != null">
-        amount,
-      </if>
-      <if test="getTime != null">
-        get_time,
-      </if>
-      <if test="version != null">
-        version,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="luckMoneyId != null">
-        #{luckMoneyId,jdbcType=BIGINT},
-      </if>
-      <if test="opayId != null">
-        #{opayId,jdbcType=VARCHAR},
-      </if>
-      <if test="opayName != null">
-        #{opayName,jdbcType=VARCHAR},
-      </if>
-      <if test="opayPhone != null">
-        #{opayPhone,jdbcType=VARCHAR},
-      </if>
-      <if test="amount != null">
-        #{amount,jdbcType=DECIMAL},
-      </if>
-      <if test="getTime != null">
-        #{getTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="version != null">
-        #{version,jdbcType=BIGINT},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.opay.im.model.LuckyMoneyRecordModel">
-    <!--@mbg.generated-->
-    update lucky_money_record
-    <set>
-      <if test="luckMoneyId != null">
-        luck_money_id = #{luckMoneyId,jdbcType=BIGINT},
-      </if>
-      <if test="opayId != null">
+    <resultMap id="BaseResultMap" type="com.opay.im.model.LuckyMoneyRecordModel">
+        <!--@mbg.generated-->
+        <!--@Table lucky_money_record-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="luck_money_id" jdbcType="BIGINT" property="luckMoneyId"/>
+        <result column="opay_id" jdbcType="VARCHAR" property="opayId"/>
+        <result column="opay_name" jdbcType="VARCHAR" property="opayName"/>
+        <result column="opay_phone" jdbcType="VARCHAR" property="opayPhone"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="get_time" jdbcType="TIMESTAMP" property="getTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="version" jdbcType="BIGINT" property="version"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, luck_money_id, opay_id, opay_name, opay_phone, amount, get_time, create_time, version
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from lucky_money_record
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        <!--@mbg.generated-->
+        delete from lucky_money_record
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.opay.im.model.LuckyMoneyRecordModel"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into lucky_money_record (luck_money_id, opay_id, opay_name,
+        opay_phone, amount, get_time,
+        version)
+        values (#{luckMoneyId,jdbcType=BIGINT}, #{opayId,jdbcType=VARCHAR}, #{opayName,jdbcType=VARCHAR},
+        #{opayPhone,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, #{getTime,jdbcType=TIMESTAMP},
+        #{version,jdbcType=BIGINT})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.opay.im.model.LuckyMoneyRecordModel"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into lucky_money_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="luckMoneyId != null">
+                luck_money_id,
+            </if>
+            <if test="opayId != null">
+                opay_id,
+            </if>
+            <if test="opayName != null">
+                opay_name,
+            </if>
+            <if test="opayPhone != null">
+                opay_phone,
+            </if>
+            <if test="amount != null">
+                amount,
+            </if>
+            <if test="getTime != null">
+                get_time,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="luckMoneyId != null">
+                #{luckMoneyId,jdbcType=BIGINT},
+            </if>
+            <if test="opayId != null">
+                #{opayId,jdbcType=VARCHAR},
+            </if>
+            <if test="opayName != null">
+                #{opayName,jdbcType=VARCHAR},
+            </if>
+            <if test="opayPhone != null">
+                #{opayPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="amount != null">
+                #{amount,jdbcType=DECIMAL},
+            </if>
+            <if test="getTime != null">
+                #{getTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null">
+                #{version,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.opay.im.model.LuckyMoneyRecordModel">
+        <!--@mbg.generated-->
+        update lucky_money_record
+        <set>
+            <if test="luckMoneyId != null">
+                luck_money_id = #{luckMoneyId,jdbcType=BIGINT},
+            </if>
+            <if test="opayId != null">
+                opay_id = #{opayId,jdbcType=VARCHAR},
+            </if>
+            <if test="opayName != null">
+                opay_name = #{opayName,jdbcType=VARCHAR},
+            </if>
+            <if test="opayPhone != null">
+                opay_phone = #{opayPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="amount != null">
+                amount = #{amount,jdbcType=DECIMAL},
+            </if>
+            <if test="getTime != null">
+                get_time = #{getTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null">
+                version = #{version,jdbcType=BIGINT},
+            </if>
+            <if test="getStatus != null">
+                get_status = #{getStatus,jdbcType=TINYINT},
+            </if>
+            <if test="transactionId != null">
+                transaction_id = #{transactionId,jdbcType=VARCHAR},
+            </if>
+            <if test="reference != null">
+                reference = #{reference,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.opay.im.model.LuckyMoneyRecordModel">
+        <!--@mbg.generated-->
+        update lucky_money_record
+        set luck_money_id = #{luckMoneyId,jdbcType=BIGINT},
         opay_id = #{opayId,jdbcType=VARCHAR},
-      </if>
-      <if test="opayName != null">
         opay_name = #{opayName,jdbcType=VARCHAR},
-      </if>
-      <if test="opayPhone != null">
         opay_phone = #{opayPhone,jdbcType=VARCHAR},
-      </if>
-      <if test="amount != null">
         amount = #{amount,jdbcType=DECIMAL},
-      </if>
-      <if test="getTime != null">
         get_time = #{getTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="version != null">
-        version = #{version,jdbcType=BIGINT},
-      </if>
-    </set>
-    where id = #{id,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.opay.im.model.LuckyMoneyRecordModel">
-    <!--@mbg.generated-->
-    update lucky_money_record
-    set luck_money_id = #{luckMoneyId,jdbcType=BIGINT},
-      opay_id = #{opayId,jdbcType=VARCHAR},
-      opay_name = #{opayName,jdbcType=VARCHAR},
-      opay_phone = #{opayPhone,jdbcType=VARCHAR},
-      amount = #{amount,jdbcType=DECIMAL},
-      get_time = #{getTime,jdbcType=TIMESTAMP},
-      version = #{version,jdbcType=BIGINT}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        version = #{version,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="selectLuckyMoneyRecord" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from lucky_money_record
+        where luck_money_id = #{luckMoneyId,jdbcType=BIGINT}
+    </select>
 
-  <select id="selectLuckyMoneyRecord" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from lucky_money_record
-    where luck_money_id = #{luckMoneyId,jdbcType=BIGINT}
-  </select>
+    <select id="selectLuckyMoneyRecordByOpayId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from lucky_money_record
+        where luck_money_id = #{luckMoneyId,jdbcType=BIGINT} and opay_id=#{opayId}
+    </select>
+
+    <!-- 查询需要退款的定时 -->
+
+    <update id="updateStatusAndRefundIdByLuckMoneyIdId">
+
+        update lucky_money_record
+        set record_status = #{recordStatus,jdbcType=TINYINT},
+        <if test="refundId != null">
+            refund_id = #{refundId,jdbcType=VARCHAR},
+        </if>
+        version = version + 1
+        where luck_money_id = #{luckMoneyId,jdbcType=BIGINT}
+        and record_status = #{oldRecordStatus,jdbcType=TINYINT}
+        and version = #{version,jdbcType=BIGINT}
+
+    </update>
+
+    <select id="selectListByCreateTime" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from lucky_money_record
+        where create_time between #{startDate} and #{endDate}
+        and get_time is null
+        and refund_id is null;
+    </select>
+
 </mapper>

@@ -39,4 +39,6 @@ public interface RongCloudService {
     void blockMember(String userId, String groupId) throws Exception;
 
     void unblockMember(String userId, String groupId) throws Exception;
+
+    void sendMessage(String fromUserId, String toUserId, String content, String extra) throws Exception;
 }

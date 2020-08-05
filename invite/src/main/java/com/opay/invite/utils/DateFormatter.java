@@ -33,6 +33,12 @@ public class DateFormatter {
         return DATE_FMT.get().format(date);
     }
 
+    public static String formatDateByZone(Date date, String zone) {
+        SimpleDateFormat format = DATE_FMT.get();
+        format.setTimeZone(TimeZone.getTimeZone(zone));
+        return format.format(date);
+    }
+
     public static String formatShortYMDDate(Date date) {
         return DATE_SHORT_FMT.get().format(date);
     }
@@ -40,14 +46,15 @@ public class DateFormatter {
     public static String formatShortYMDate(Date date) {
         return DATE_SHORT.get().format(date);
     }
-    public static String formatShortYMDDateByZone(Date date,String zone) {
-        SimpleDateFormat format= DATE_SHORT_FMT.get();
+
+    public static String formatShortYMDDateByZone(Date date, String zone) {
+        SimpleDateFormat format = DATE_SHORT_FMT.get();
         format.setTimeZone(TimeZone.getTimeZone(zone));
         return format.format(date);
     }
 
-    public static String formatShortYMDateByZone(Date date,String zone) {
-        SimpleDateFormat format= DATE_SHORT.get();
+    public static String formatShortYMDateByZone(Date date, String zone) {
+        SimpleDateFormat format = DATE_SHORT.get();
         format.setTimeZone(TimeZone.getTimeZone(zone));
         return format.format(date);
     }
@@ -70,7 +77,7 @@ public class DateFormatter {
     }
 
     public static String formatDatetimeByZone(Date date, String zone) {
-        SimpleDateFormat format= DATE_TIME_FMT.get();
+        SimpleDateFormat format = DATE_TIME_FMT.get();
         format.setTimeZone(TimeZone.getTimeZone(zone));
         return format.format(date);
     }
@@ -103,28 +110,52 @@ public class DateFormatter {
         return now.getTime();
     }
 
-    /***
-     *获得日期前几月
-     * @param date
-     * @param month
-     * @return
-     */
-    public static Date getDateBeforeMonth(Date date ,int month){
-        Calendar now = Calendar.getInstance();
+    public static Date getDateAfter(Date date, int day, String zone) {
+        Calendar now = Calendar.getInstance(TimeZone.getTimeZone(zone));
         now.setTime(date);
-        now.set(Calendar.MONTH,now.get(Calendar.MONTH) - month);
+        now.set(Calendar.DATE, now.get(Calendar.DATE) + day);
         return now.getTime();
     }
+
+    public static Date getStartTime(Calendar day) {
+        day.set(Calendar.HOUR_OF_DAY, 0);
+        day.set(Calendar.MINUTE, 0);
+        day.set(Calendar.SECOND, 0);
+        day.set(Calendar.MILLISECOND, 0);
+        return day.getTime();
+    }
+
+    public static Date getEndTime(Calendar day) {
+        day.set(Calendar.HOUR_OF_DAY, 23);
+        day.set(Calendar.MINUTE, 59);
+        day.set(Calendar.SECOND, 59);
+        day.set(Calendar.MILLISECOND, 999);
+        return day.getTime();
+    }
+
     /***
      *获得日期前几月
      * @param date
      * @param month
      * @return
      */
-    public static Date getDateAfterMonth(Date date ,int month){
+    public static Date getDateBeforeMonth(Date date, int month) {
         Calendar now = Calendar.getInstance();
         now.setTime(date);
-        now.set(Calendar.MONTH,now.get(Calendar.MONTH) + month);
+        now.set(Calendar.MONTH, now.get(Calendar.MONTH) - month);
+        return now.getTime();
+    }
+
+    /***
+     *获得日期前几月
+     * @param date
+     * @param month
+     * @return
+     */
+    public static Date getDateAfterMonth(Date date, int month) {
+        Calendar now = Calendar.getInstance();
+        now.setTime(date);
+        now.set(Calendar.MONTH, now.get(Calendar.MONTH) + month);
         return now.getTime();
     }
 }

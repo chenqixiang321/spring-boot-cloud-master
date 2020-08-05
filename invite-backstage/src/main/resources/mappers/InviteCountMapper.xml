@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.opay.invite.backstage.dao.mapper.InviteCountMapper" >
+  <resultMap id="BaseResultMap" type="com.opay.invite.backstage.dao.entity.InviteCount" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="opay_id" property="opayId" jdbcType="VARCHAR" />
+    <result column="day" property="day" jdbcType="VARCHAR" />
+    <result column="opay_name" property="opayName" jdbcType="VARCHAR" />
+    <result column="opay_phone" property="opayPhone" jdbcType="VARCHAR" />
+    <result column="login" property="login" jdbcType="INTEGER" />
+    <result column="share" property="share" jdbcType="INTEGER" />
+    <result column="invite" property="invite" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="version" property="version" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, opay_id, day, opay_name, opay_phone, login, share, invite, create_time, version
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.opay.invite.backstage.dao.entity.InviteCountExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from invite_count
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from invite_count
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from invite_count
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.opay.invite.backstage.dao.entity.InviteCountExample" >
+    delete from invite_count
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.opay.invite.backstage.dao.entity.InviteCount" >
+    insert into invite_count (id, opay_id, day, 
+      opay_name, opay_phone, login, 
+      share, invite, create_time, 
+      version)
+    values (#{id,jdbcType=BIGINT}, #{opayId,jdbcType=VARCHAR}, #{day,jdbcType=VARCHAR}, 
+      #{opayName,jdbcType=VARCHAR}, #{opayPhone,jdbcType=VARCHAR}, #{login,jdbcType=INTEGER}, 
+      #{share,jdbcType=INTEGER}, #{invite,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{version,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.opay.invite.backstage.dao.entity.InviteCount" >
+    insert into invite_count
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="opayId != null" >
+        opay_id,
+      </if>
+      <if test="day != null" >
+        day,
+      </if>
+      <if test="opayName != null" >
+        opay_name,
+      </if>
+      <if test="opayPhone != null" >
+        opay_phone,
+      </if>
+      <if test="login != null" >
+        login,
+      </if>
+      <if test="share != null" >
+        share,
+      </if>
+      <if test="invite != null" >
+        invite,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="opayId != null" >
+        #{opayId,jdbcType=VARCHAR},
+      </if>
+      <if test="day != null" >
+        #{day,jdbcType=VARCHAR},
+      </if>
+      <if test="opayName != null" >
+        #{opayName,jdbcType=VARCHAR},
+      </if>
+      <if test="opayPhone != null" >
+        #{opayPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="login != null" >
+        #{login,jdbcType=INTEGER},
+      </if>
+      <if test="share != null" >
+        #{share,jdbcType=INTEGER},
+      </if>
+      <if test="invite != null" >
+        #{invite,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.opay.invite.backstage.dao.entity.InviteCountExample" resultType="java.lang.Integer" >
+    select count(*) from invite_count
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update invite_count
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.opayId != null" >
+        opay_id = #{record.opayId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.day != null" >
+        day = #{record.day,jdbcType=VARCHAR},
+      </if>
+      <if test="record.opayName != null" >
+        opay_name = #{record.opayName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.opayPhone != null" >
+        opay_phone = #{record.opayPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.login != null" >
+        login = #{record.login,jdbcType=INTEGER},
+      </if>
+      <if test="record.share != null" >
+        share = #{record.share,jdbcType=INTEGER},
+      </if>
+      <if test="record.invite != null" >
+        invite = #{record.invite,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.version != null" >
+        version = #{record.version,jdbcType=BIGINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update invite_count
+    set id = #{record.id,jdbcType=BIGINT},
+      opay_id = #{record.opayId,jdbcType=VARCHAR},
+      day = #{record.day,jdbcType=VARCHAR},
+      opay_name = #{record.opayName,jdbcType=VARCHAR},
+      opay_phone = #{record.opayPhone,jdbcType=VARCHAR},
+      login = #{record.login,jdbcType=INTEGER},
+      share = #{record.share,jdbcType=INTEGER},
+      invite = #{record.invite,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      version = #{record.version,jdbcType=BIGINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.opay.invite.backstage.dao.entity.InviteCount" >
+    update invite_count
+    <set >
+      <if test="opayId != null" >
+        opay_id = #{opayId,jdbcType=VARCHAR},
+      </if>
+      <if test="day != null" >
+        day = #{day,jdbcType=VARCHAR},
+      </if>
+      <if test="opayName != null" >
+        opay_name = #{opayName,jdbcType=VARCHAR},
+      </if>
+      <if test="opayPhone != null" >
+        opay_phone = #{opayPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="login != null" >
+        login = #{login,jdbcType=INTEGER},
+      </if>
+      <if test="share != null" >
+        share = #{share,jdbcType=INTEGER},
+      </if>
+      <if test="invite != null" >
+        invite = #{invite,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.opay.invite.backstage.dao.entity.InviteCount" >
+    update invite_count
+    set opay_id = #{opayId,jdbcType=VARCHAR},
+      day = #{day,jdbcType=VARCHAR},
+      opay_name = #{opayName,jdbcType=VARCHAR},
+      opay_phone = #{opayPhone,jdbcType=VARCHAR},
+      login = #{login,jdbcType=INTEGER},
+      share = #{share,jdbcType=INTEGER},
+      invite = #{invite,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      version = #{version,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

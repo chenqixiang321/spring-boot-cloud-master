@@ -47,11 +47,11 @@
     </select>
 
     <select id="selectRelationByMasterId" resultMap="BaseVoResultMap">
-        select
-        a.master_id,a.pupil_id,a.pupil_phone,b.create_at,b.master_reward
+         select
+        a.master_id,a.pupil_id,a.pupil_phone,a.create_at,
+	(select sum(master_reward) from opay_master_pupil_award where  opay_id= a.pupil_id and master_type=0  and a.create_at <![CDATA[<=]]> create_at) master_reward
         from opay_invite_relation a
-        left join opay_master_pupil_award b on a.pupil_id = b.opay_id
-        where a.master_id=#{masterId,jdbcType=VARCHAR} and b.master_type=0
+        where a.master_id=#{masterId,jdbcType=VARCHAR}
         order by a.id desc
     </select>
 
@@ -59,9 +59,9 @@
         insert into opay_master_pupil_award (opay_id, reward,create_at,status,`action`,amount,`mark_type`,step_json,master_reward,master_type,`month`,`day`,order_id,pupil_id)
         values
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.opayId,jdbcType=VARCHAR}, #{item.reward,jdbcType=BIGINT},#{item.createAt,jdbcType=BIGINT},#{item.status,jdbcType=INTEGER},
-            #{item.action,jdbcType=INTEGER},#{item.amount,jdbcType=BIGINT},#{item.markType,jdbcType=INTEGER},#{item.stepJson,jdbcType=VARCHAR}
-            ,#{item.masterReward,jdbcType=BIGINT},#{item.masterType,jdbcType=INTEGER},#{item.month,jdbcType=INTEGER}, #{item.day,jdbcType=INTEGER}, #{item.orderId,jdbcType=INTEGER}, #{item.pupilId,jdbcType=VARCHAR})
+            (#{item.opayId,jdbcType=VARCHAR}, #{item.reward},#{item.createAt},#{item.status,jdbcType=INTEGER},
+            #{item.action,jdbcType=INTEGER},#{item.amount},#{item.markType,jdbcType=INTEGER},#{item.stepJson,jdbcType=VARCHAR}
+            ,#{item.masterReward},#{item.masterType,jdbcType=INTEGER},#{item.month,jdbcType=INTEGER}, #{item.day,jdbcType=INTEGER}, #{item.orderId,jdbcType=VARCHAR}, #{item.pupilId,jdbcType=VARCHAR})
         </foreach>
     </insert>
 
@@ -87,6 +87,7 @@
             <![CDATA[
                 and a.`day` <= #{endYmd}
             ]]>
+            and a.reward>0
             order by a.id desc
     </select>
     
@@ -122,5 +123,4 @@
              from opay_master_pupil_award a
             where a.opay_id = #{opayId,jdbcType=VARCHAR}
     </select>
-    
 </mapper>

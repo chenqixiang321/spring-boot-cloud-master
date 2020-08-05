@@ -27,24 +27,32 @@ public class LuckyMoneyInfoResponse {
      */
     @ApiModelProperty(value = "发送者的opay_id")
     private String opayId;
+
+    @ApiModelProperty(value = "发送者的opay名字")
+    private String opayName;
     /**
      * 红包说明Best Wishes!
      */
     @ApiModelProperty(value = "红包说明Best Wishes!")
     private String show;
 
+    @ApiModelProperty(value = "主题")
+    private String theme;
     /**
      * 红包总金额
      */
     @ApiModelProperty(value = "红包总金额")
     private BigDecimal amount;
 
+
+    @ApiModelProperty(value = "抢到的红包金额")
+    private BigDecimal grabAmount;
     /**
      * 红包个数
      */
     @ApiModelProperty(value = "红包个数")
     private Integer quantity;
 
-    @ApiModelProperty(value = "抢了多少")
-    private List<LuckyMoneyRecordInfoResponse> LuckyMoneyRecordInfoResponses;
+    @ApiModelProperty(value = "红包状态0:未抢,1:已抢 ,2:过期")
+    private String status;
 }

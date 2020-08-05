@@ -54,16 +54,19 @@ rongyun:
   api: http://api-sg01.ronghub.com
 config:
   opay:
-    domain: https://api.operapay.com/
-    merchantId: 256619120756000
-    aesKey: f0utFRLpio5ltjH7
+    domain: http://internal-campaignapiinternal-1831570749.eu-west-1.elb.amazonaws.com
+    merchantId: 256619122168000
+    aesKey: Xw8RjcXMoPnxfi9i
     iv: qazwert12345!@#$
+    publickey: OPAYPUB15769333886080.45086047237636484
+    privatekey: OPAYPRV15769333886080.03629076818522026
 im:
   group:
     maxMember: 200
   luckyMoney:
-    max: 500
-    expirationDays: 3
+    singleMax: 500
+    dayMax: 8000
+    expirationDays: 1
 management:
   endpoints:
     web:
@@ -76,3 +79,20 @@ prometheus:
   client:
     enabled: true
     basePackage: com.opay.im
+feign:
+  httpclient:
+    connectionTimeout: 5000
+  hystrix:
+    enabled: true
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+task:
+  executeIp: 10.10.23.139
+  minusHour:
+    start: 25
+    end: 24

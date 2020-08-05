@@ -2,7 +2,9 @@ package com.opay.invite.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,7 +44,6 @@ public class LuckDrawInfoModel {
      */
     @ApiModelProperty(value = "奖品")
     private String prize;
-
     /**
      * 奖品级别 数越小越值钱
      */
@@ -56,4 +57,12 @@ public class LuckDrawInfoModel {
      */
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
+    @ApiModelProperty(value = "requestId", hidden = true)
+    private String requestId;
+    @ApiModelProperty(value = "reference", hidden = true)
+    private String reference;
+    @ApiModelProperty(value = "OPay订单号", hidden = true)
+    private String orderNo;
+    @ApiModelProperty(value = "订单状态,SUCCESS、PENDING、FAIL。状态为PENDING需发起查单", hidden = true)
+    private int status;
 }

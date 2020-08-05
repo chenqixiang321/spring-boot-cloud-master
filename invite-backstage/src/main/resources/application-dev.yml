@@ -1,0 +1,148 @@
+swagger:
+  show: true
+server:
+  port: 8083
+logging:
+  config: classpath:logback.xml
+
+spring:
+  application:
+    name: opay-invite-backstage
+  datasource:
+    url: jdbc:mysql://localhost:3306/opay_invite?useSSL=false&useAffectedRows=true&allowMultiQueries=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initial-size: 8
+      min-idle: 1
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runsMillis: 60000
+      min-evictable-idle-timeMillis: 300000
+      pool-prepared-statements: true
+      max-open-prepared-statements: 20
+      max-pool-prepared-statement-per-connection-size: 20
+      filters: stat
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      use-global-data-source-stat: true
+      filter:
+        stat:
+          db-type: mysql
+          log-slow-sql: true
+          slow-sql-millis: 2000
+        wall:
+          enabled: false
+          db-type: mysql
+          config:
+            delete-allow: false
+            drop-table-allow: false
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    timeout: 2000
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: 1
+        max-idle: 8
+        min-idle: 0
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+1
+
+
+config:
+  opay:
+    domain: http://api.test.opaydev.com:8081
+    merchantId: 256619090900002
+    aesKey: UxanhvcUC3aeiLRR
+    iv: qazwert12345!@#$
+
+activity:
+  reward:
+    registerReward: 10
+    masterReward: 20
+    rechargeReward: 100
+    agentOpen: 1
+    startTime: 2019-12-06 00:00:01
+    endTime: 2019-12-22 23:59:59
+    effectiveDay: 7
+    turntableStart: 2019-12-06 00:00:01
+    turntableEnd: 2019-12-26 00:00:01
+    rewardList[0]:
+      orderId: 1
+      min: 1
+      max: 5
+      walletReward: 300
+      totalReward: 1550
+    rewardList[1]:
+      orderId: 2
+      min: 6
+      max: 10
+      walletReward: 320
+      totalReward: 1650
+    rewardList[2]:
+      orderId: 3
+      min: 11
+      max: 20
+      walletReward: 340
+      totalReward: 3500
+    rewardList[3]:
+      orderId: 4
+      min: 21
+      max: 1000
+      walletReward: 350
+      totalReward: 7500
+    royList[0]:
+      action: 3
+      masterReward: 1
+      pupilReward: 1
+    royList[1]:
+      action: 4
+      masterReward: 0.3
+      pupilReward: 0.3
+    royList[2]:
+      action: 5
+      masterReward: 1
+      pupilReward: 1
+tixian:
+  limit:
+    open: 1
+    perDayAmount: 3000
+    perAmount: 1000
+    list[0]:
+      min: 0
+      max: 24
+      minAmount: 8000
+#    list[1]:
+#      min: 25
+#      max: 42
+#      minAmount: 15000
+#    list[2]:
+#      min: 43
+#      max: 79
+#      minAmount: 30000
+
+invite:
+  code: opay9102c7uw27er4$!=
+  productKey: opay9102codec7uw27er4$!=
+
+transfer:
+  opay:
+    domain: http://api.test.opaydev.com:8081
+    merchantId: 256619090900002
+    aesKey: UxanhvcUC3aeiLRR
+    iv: qazwert12345!@#$
+    url: /api/m/createOrder
+    reference: IVE
+    userUrl: /api/users/queryUserInfoByPhone
+    userRecordUrl: /api/im/queryUserRecordByPhone
+    queryOrderUrl: /api/m/queryOrder
+    transferNotify: http://t-api.iminvite.pos.operapay.com/invite/api/transferNotify
+    batchListUrl: /api/im/batchQueryUserByPhone
+
+
+mybatis:
+  mapper-locations: classpath:mappers/*.xml

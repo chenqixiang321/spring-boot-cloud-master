@@ -7,10 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 
 @ApiModel(value = "抢红包请求参数")
 @Getter
@@ -26,11 +24,20 @@ public class GrabLuckyMoneyRequest {
      * 发送者的opay_id
      */
     @ApiModelProperty(value = "发送者的opay_id")
-    private String opayId;
+    private String senderId;
+
+    @ApiModelProperty(value = "当前用户的opay_id", hidden = true)
+    private String currentOpayId;
+
+    @ApiModelProperty(value = "当前用户的opayName", hidden = true)
+    private String currentOpayName;
+
+    @ApiModelProperty(value = "当前用户的phone", hidden = true)
+    private String currentPhone;
     /**
      * 发送目标 群or人
      */
-    @ApiModelProperty(value = "发送目标 群or人的id,不传则默认为当前用户id")
+    @ApiModelProperty(value = "发送目标 群or人的id")
     @NotNull
     private String targetId;
 

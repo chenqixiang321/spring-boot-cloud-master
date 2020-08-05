@@ -4,13 +4,18 @@ server:
   port: 8081
 logging:
   config: classpath:log/logback.xml
+  level:
+    com:
+      opay:
+        invite:
+          mapper: debug
 spring:
   application:
     name: opay-invite
   datasource:
-    url: jdbc:mysql://localhost:3306/opay_invite_activitie?useSSL=false&useAffectedRows=true
+    url: jdbc:mysql://150.109.109.30:3306/opay_invite?useSSL=false&useAffectedRows=true&allowMultiQueries=true
     username: root
-    password: 123456
+    password: jJ3TC3waaBex6bqd
     driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
@@ -50,10 +55,26 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+1
-upperLimit:
-  invite: 100
-  share: 5
-
+  quartz:
+    properties:
+      scheduler:
+        instanceName: opay.invite
+        instanceId: AUTO
+      jobStore:
+        misfireThreshold: 60000
+        class: org.quartz.impl.jdbcjobstore.JobStoreTX
+        driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+        dataSource: qrtz
+        tablePrefix: QRTZ_
+        isClustered: true
+        clusterCheckinInterval: 2000
+      dataSource:
+        qrtz:
+          driver: "com.mysql.jdbc.Driver"
+          validationQuery: "select 1"
+          URL: "jdbc:mysql://10.22.31.39:3306/opay_invite?useUnicode=true&characterEncoding=utf-8"
+          user: "root"
+          password: "jJ3TC3waaBex6bqd"
 config:
   opay:
     domain: http://api.test.opaydev.com:8081
@@ -66,10 +87,12 @@ activity:
     registerReward: 10
     masterReward: 20
     rechargeReward: 100
-    agentOpen: 0
+    agentOpen: 1
     startTime: 2019-12-06 00:00:01
     endTime: 2019-12-22 23:59:59
     effectiveDay: 7
+    turntableStart: 2019-12-06 00:00:01
+    turntableEnd: 2019-12-26 00:00:01
     rewardList[0]:
       orderId: 1
       min: 1
@@ -133,6 +156,7 @@ transfer:
     domain: http://api.test.opaydev.com:8081
     merchantId: 256619090900002
     aesKey: UxanhvcUC3aeiLRR
+    iv: qazwert12345!@#$
     url: /api/m/createOrder
     reference: IVE
     userUrl: /api/users/queryUserInfoByPhone
@@ -143,10 +167,25 @@ transfer:
 opay:
   settings:
     jobs:
-      fix-merchant-balance:
-        expression: "*/2 * * * * ?"
+      fix-user-trade:
+        expression: "19 47 10 * * ?"
         jobClass: "com.opay.invite.job.UserTradeJob"
-
+      fix-user-reward:
+        expression: "05 56 12 * * ?"
+        jobClass: "com.opay.invite.job.RewardJob"
+      first-luck-draw:
+        expression: "0 50 11 * * ?"
+        jobClass: "com.opay.invite.job.InitPrizePoolJob"
+      second-luck-draw:
+        expression: "0 50 19 * * ?"
+        jobClass: "com.opay.invite.job.InitPrizePoolJob"
+  luckDraw:
+    callBack: http://t-api.iminvite.pos.operapay.com/invite/callback/bonus
+    merchantId: 256619120522011
+    aesKey: gepy7T6jTldRMq7A
+    iv: qazwert12345!@#$
+    publickey: OPAYPUB15755298483140.9696556588602406
+    privatekey: OPAYPRV15755298483140.06665533965779369
 management:
   endpoints:
     web:
@@ -159,7 +198,18 @@ prometheus:
   client:
     enabled: true
     basePackage: com.opay.invite
-
+feign:
+  httpclient:
+    connectionTimeout: 5000
+  hystrix:
+    enabled: true
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
 #prize-pool:
 #  count: 100000
 #  firstPool:
@@ -178,18 +228,36 @@ prometheus:
 #    - {prize: 1,prob: 0.27}
 #    - {prize: 0,prob: 0.7}
 prize-pool:
-  grandPrizeIndex: 37
-  secondPoolRate: 3
-  count: 100
+  inviteLimit: 100
+  shareLimit: 3 #每天分享上线
+  grandPrizeIndex: 1238 #还剩n次时,开出大奖
+  firstGrandPrizeTimeUp: "4:45:00"
+  secondGrandPrizeTimeUp: "14:50:00"
+  secondPoolRate: 4
+  count: 10000
+  firstPoolStart: 0
+  firstPoolEnd: 19
+  secondPoolStart: 20
+  secondPoolEnd: 23
+  activityStart: 2020-01-09 00:00:01
+  activityEnd: 2020-12-21 10:00:00
   firstPool:
-    - {prize: 10,prob: 0.01}
-    - {prize: 5,prob: 0.04}
-    - {prize: 2,prob: 0.05}
-    - {prize: 1,prob: 0.20}
-    - {prize: 0,prob: 0.70}
+    #    - {id: 4,prize: 10,prob: 0.00015}
+    #    - {id: 5,prize: 5,prob: 0.0002}
+    #    - {id: 6,prize: 2,prob: 0.001}
+    #    - {id: 7,prize: 1,prob: 0.24865}
+    #    - {id: 8,prize: 0,prob: 0.75}
+    - {id: 4,prize: 10,prob: 1.000}
+    - {id: 5,prize: 5,prob: 0.000}
+    - {id: 6,prize: 2,prob: 0.00}
+    - {id: 7,prize: 1,prob: 0.00}
+    - {id: 8,prize: 0,prob: 0.00}
   secondPool:
-    - {prize: 100,prob: 0.01}
-    - {prize: 5,prob: 0.04}
-    - {prize: 2,prob: 0.05}
-    - {prize: 1,prob: 0.20}
-    - {prize: 0,prob: 0.70}
+    - {id: 1,prize: phone,prob: 1.00000}
+    - {id: 2,prize: 100,prob: 0.00000}
+    - {id: 3,prize: 50,prob: 0.0000}
+    - {id: 4,prize: 10,prob: 0.0000}
+    - {id: 5,prize: 5,prob: 0.0000}
+    - {id: 6,prize: 2,prob: 0.0000}
+    - {id: 7,prize: 1,prob: 0.000}
+    - {id: 8,prize: 0,prob: 0.00000}
