@@ -1,0 +1,28 @@
+
+eureka:
+  instance:
+    hostname: 127.0.0.1
+    prefer-ip-address: true
+    metadata-map:
+      user.name: ${spring.security.user.name}
+      user.password: ${spring.security.user.password}
+  client:
+    service-url:
+      defaultZone: http://user:password@127.0.0.1:8761/eureka/
+
+server:
+  port: 9411
+
+
+spring:
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    virtual-host: /
+    username: guest
+    password: guest
+  security:
+    user:
+      password: ${ZIPKIN_SERVER_PASSWORD:admin}
+      name: admin
+

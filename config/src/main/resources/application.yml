@@ -1,0 +1,44 @@
+logging:
+  level:
+    org.springframework.cloud.netflix.zuul.filters.post.SendErrorFilter: error
+
+server:
+  port: 8060
+
+eureka:
+  instance:
+    hostname: 127.0.0.1
+    prefer-ip-address: true
+    metadata-map:
+      user.name: ${spring.security.user.name}
+      user.password: ${spring.security.user.password}
+  client:
+    service-url:
+      defaultZone: http://user:password@127.0.0.1:8761/eureka/
+#    registerWithEureka: false
+#    fetchRegistry: false
+
+spring:
+  security:
+    user:
+      password: admin
+      name: admin
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: /Users/chenqixiang/waibuworkspace/spring-boot-cloud-master/config-repo/
+#        git:
+#          uri: https://github.com/cqx/spring-boot-cloud-master
+#          search-paths: config-repo
+    rabbitmq:
+      host: 127.0.0.1
+      port: 5672
+      virtual-host: /
+      username: guest
+      password: guest
+
+
+endpoints:
+  refresh:
+    enabled: true
